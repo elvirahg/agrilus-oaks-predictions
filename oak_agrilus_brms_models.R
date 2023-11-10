@@ -1427,8 +1427,7 @@ box(lwd=3)
 # ## IMPORTANT (!): I have also decided to remove any reported hosts that are non-native
 # ## for those Agrilus species that have been introduced into new areas.
 # ## A. auroguttatus: introduced from AZ (USA) to CA (USA). In CA, reported novel larval
-# ## hosts are Q. kelloggii (not in my DS), Q. chrysolepis (not in my DS) & Q. agrifolia
-# ## (in my DS).
+# ## hosts are Q. kelloggii, Q. chrysolepis & Q. agrifolia.
 # ## A. bilineatus: introduced from N America to Turkey (no new reported hosts so far).
 # ## A. sulcicollis: introduced from Europe to N America, where Q. macrocarpa (in my DS)
 # ## is a new reported larval host.
@@ -3451,14 +3450,13 @@ fourfoldplot(conf_matrix, color = c("#CC6666", "#99CC99"),
 
 
 ## iii) Agrilus auroguttatus (native to AZ in USA, introduced to CA in USA)
-## NB, Q. chrysolepsis is also a novel reported host, but not present in the phylo
-q <- c("Q. kelloggii", "Q. agrifolia", "Q. engelmannii")
+q <- c("Q. kelloggii", "Q. agrifolia", "Q. engelmannii", "Q. chrysolepis")
 predictions$colour <- "black"
 predictions[predictions$quercus.sp %in% q &
             predictions$agrilus.sp == "A. auroguttatus",]$colour <- rep("maroon",
                                                                         length(q))
 
-# svg(file = "results/a_aur_preds.svg")
+# svg(file = paste0(pw, "results/a_aur_preds.svg"))
 ggplot(subset(predictions, agrilus.sp == "A. auroguttatus"),
        aes(x = host.status, y = prediction.logodds, col = colour)) +
   scale_color_manual(values = c("black", "maroon")) +
@@ -3826,7 +3824,7 @@ rm(conf_matrix, i)
 
 
 #
-##### X)    MISCELANEOUS EXPLORATORY THINGS                                          #####
+##### XII)  MISCELANEOUS EXPLORATORY THINGS                                          #####
 ## A) RELATIONSHIP BETWEEN GEOGRAPHIC DISTANCE AND NUMBER OF INTERACTIONS
 ## i) Do oak species that are closer in space to Agrilus hosts tend to host more
 ## Agrilus species?
@@ -3893,6 +3891,7 @@ hosts$quercus.sp <- gsub(pattern = "Quercus", replacement = "Q.", fixed = T,
                          x = hosts$quercus.sp)
 str(hosts)
 
+
 ## ii) Plot data for A. auroguttatus
 ## Phylogenetic tree
 ## Group oaks according to host status: 0 = oaks not known to be hosts, 1 = native
@@ -3901,7 +3900,7 @@ str(hosts)
 hosts_aur <- list("1" = c("Q. conzattii", "Q. emoryi",
                           "Q. hypoleucoides", "Q. peduncularis"),
                   "2" = c("Q. agrifolia", "Q. kelloggii",
-                        "Q. crysolepsis", "Q. engelmannii"),
+                        "Q. chrysolepis", "Q. engelmannii"),
                   "3" = "Q. arizonica")
 oak_nodesig <-groupOTU(oak_nodesig, hosts_aur)
 
@@ -3934,15 +3933,15 @@ pdists_aur <- subset(interaction_data, agrilus.sp == "A. auroguttatus" &
                                          "Q. peduncularis",
                                          "Q. agrifolia",
                                          "Q. kelloggii",
-                                         "Q. crysolepsis",
+                                         "Q. chrysolepis",
                                          "Q. engelmannii",
                                          "Q. arizonica"))[,c(1,3,12)]
-pdists_aur <- pdists_aur[c(1, 3, 4:8, 2),]
+pdists_aur <- pdists_aur[c(1, 3, 4:9, 2),]
 
-# svg("A_auroguttatus_phylo_min_dist.svg")
+# svg("results/A_auroguttatus_phylo_min_dist.svg")
 barplot(pdists_aur$phylo.dist.min, names.arg = pdists_aur$quercus.sp,
         ylab = "min phylo dist", las = 2, cex.names = 0.5,
-        col = brewer.pal(n = 3, name = "Dark2")[c(1,1,1,1,2,2,2,3)])
+        col = brewer.pal(n = 3, name = "Dark2")[c(1,1,1,1,2,2,2,2,3)])
 # dev.off()
 
 ## Ranef values
@@ -3954,15 +3953,17 @@ ranef_aur <- data.frame(rbind(ranef(oak_mod043)$quercus.sp[,,1]['Q. conzattii',]
                               ranef(oak_mod043)$quercus.sp[,,1]['Q. agrifolia',],     ## 2
                               ranef(oak_mod043)$quercus.sp[,,1]['Q. kelloggii',],     ## 2
                               ranef(oak_mod043)$quercus.sp[,,1]['Q. engelmannii',],   ## 2
+                              ranef(oak_mod043)$quercus.sp[,,1]['Q. chrysolepis',],   ## 2
                               ranef(oak_mod043)$quercus.sp[,,1]['Q. arizonica',]      ## 3
                               ))
 ranef_aur$quercus.sp <- c('Q. conzattii', 'Q. emoryi', 'Q. hypoleucoides',
                           'Q. peduncularis', 'Q. agrifolia', 'Q. kelloggii',
-                          'Q. engelmannii', 'Q. arizonica')
-# svg("A_auroguttatus_ranef.svg")
+                          'Q. engelmannii', 'Q. chrysolepis', 'Q. arizonica')
+
+# svg("results/A_auroguttatus_ranef.svg")
 barplot(ranef_aur$Estimate, names.arg = ranef_aur$quercus.sp,
         ylab = "ranef estimate", las = 2, cex.names = 0.5,
-        col = brewer.pal(n = 3, name = "Dark2")[c(1,1,1,1,2,2,2,3)])
+        col = brewer.pal(n = 3, name = "Dark2")[c(1,1,1,1,2,2,2,2,3)])
 # dev.off()
 
 ## Geographic distances
@@ -3973,16 +3974,17 @@ gdists_aur <- subset(interaction_data, agrilus.sp == "A. auroguttatus" &
                                                          "Q. peduncularis",
                                                          "Q. agrifolia",
                                                          "Q. kelloggii",
-                                                         "Q. crysolepsis",
+                                                         "Q. chrysolepis",
                                                          "Q. engelmannii",
                                                          "Q. arizonica"))[,c(1,3,5)]
-gdists_aur <- gdists_aur[c(1, 3, 4:8, 2),]
+gdists_aur <- gdists_aur[c(1, 3, 4:9, 2),]
 
-# svg("A_auroguttatus_geo_min_dist_mean_norm.svg")
+# svg("results/A_auroguttatus_geo_min_dist_mean_norm.svg")
 barplot(gdists_aur$min.dist.mean.norm, names.arg = gdists_aur$quercus.sp,
         ylab = "min.dist.mean (geo)", las = 2, cex.names = 0.5,
-        col = brewer.pal(n = 3, name = "Dark2")[c(1,1,1,1,2,2,2,3)])
+        col = brewer.pal(n = 3, name = "Dark2")[c(1,1,1,1,2,2,2,2,3)])
 # dev.off()
+
 
 ## iii) Plot data for A. bilineatus
 ## Phylogenetic tree
@@ -4073,6 +4075,7 @@ barplot(gdists_bil$min.dist.mean.norm, names.arg = gdists_bil$quercus.sp,
         col = brewer.pal(n = 3, name = "Dark2")[c(rep(1, 8), 2)])
 # dev.off()
 
+
 ## iv) Plot data for A. sulcicollis
 ## Phylogenetic tree
 ## Group oaks according to host status: 0 = oaks not known to be hosts, 1 = native
@@ -4151,6 +4154,355 @@ barplot(gdists_sul$min.dist.mean.norm, names.arg = gdists_sul$quercus.sp,
         las = 2, cex.names = 0.5,
         col = brewer.pal(n = 3, name = "Dark2")[c(rep(1, 5), 2)])
 # dev.off()
+
+
+
+## C) LOOK FOR JUMPS BETWEEN RED AND WHITE OAKS
+## Reminder:
+## A. auroguttatus: AZ (USA) to CA (USA), new hosts: Q. kelloggii Q. chrysolepis & Q. agrifolia
+## A. bilineatus: introduced from N America to Turkey (no new reported hosts so far)
+## A. sulcicollis: Europe to N America, novel hosts: Q. macrocarpa
+
+str(agrilus_hosts)
+subset(agrilus_hosts, agrilus.sp == "A. sulcicollis")
+subset(agrilus_hosts, agrilus.sp == "A. auroguttatus")
+
+## i) Divide opak spp. into red and white
+## Red oaks = sec. Lobatae
+## White oaks s.s. = sec. Quercus, Virentes & Ponticae
+
+red_oaks <- c("Quercus crassifolia",       ## Quercus brachystachys is a syn
+              "Quercus mcvaughii",
+              "Quercus scytophylla",
+              "Quercus hypoleucoides",
+              "Quercus sideroxyla",
+              "Quercus jonesii",
+              "Quercus emoryi",
+              "Quercus durifolia",
+              "Quercus conzattii",
+              "Quercus radiata",
+              "Quercus calophylla",
+              "Quercus fulva",
+              "Quercus urbani",
+              "Quercus viminea",
+              "Quercus eduardi",
+              "Quercus crassipes",
+              "Quercus confertifolia",     ## Quercus gentryi is a syn
+              "Quercus castanea",
+              "Quercus acutifolia",
+              "Quercus grahamii",
+              "Quercus humboldtii",
+              "Quercus costaricensis",
+              "Quercus seemannii",         ## Quercus eugeniifolia is a syn
+              "Quercus cortesii",
+              "Quercus benthamii",         ## Quercus lowilliamsii is a syn
+              "Quercus delgadoana",
+              "Quercus sapotifolia",
+              "Quercus iltisii",
+              "Quercus crispifolia",
+              "Quercus elliptica",
+              "Quercus uxoris",
+              "Quercus aristata",
+              "Quercus planipocula",
+              "Quercus laurina",
+              "Quercus pinnativenulosa",
+              "Quercus sartorii",
+              "Quercus mexicana",
+              "Quercus affinis",
+              "Quercus gravesii",
+              "Quercus canbyi",
+              "Quercus incana",
+              "Quercus hemisphaerica",
+              "Quercus inopina",
+              "Quercus myrtifolia",
+              "Quercus laevis",
+              "Quercus nigra",
+              "Quercus arkansana",
+              "Quercus pumila",            ## Quercus elliottii is a syn
+              "Quercus phellos",
+              "Quercus laurifolia",
+              "Quercus falcata",
+              "Quercus marilandica",
+              "Quercus pagoda",
+              "Quercus imbricaria",
+              "Quercus georgiana",
+              "Quercus ilicifolia",
+              "Quercus acerifolia",
+              "Quercus shumardii",
+              "Quercus buckleyi",
+              "Quercus rubra",
+              "Quercus ellipsoidalis",
+              "Quercus velutina",
+              "Quercus coccinea",
+              "Quercus texana",
+              "Quercus palustris",
+              "Quercus wislizeni",
+              "Quercus parvula",
+              "Quercus agrifolia",
+              "Quercus kelloggii")
+
+red_oaks[!(red_oaks %in% gsub("Q.", "Quercus", interaction_data$quercus.sp))]
+
+white_oaks <- c("Quercus turbinella",
+                "Quercus ajoensis",
+                "Quercus toumeyi",
+                "Quercus striatula",
+                "Quercus grisea",
+                "Quercus arizonica",
+                "Quercus engelmannii",
+                "Quercus oblongifolia",
+                "Quercus rugosa",
+                "Quercus greggii",
+                "Quercus diversifolia",
+                "Quercus obtusata",
+                "Quercus potosina",
+                "Quercus peduncularis",
+                "Quercus laeta",
+                "Quercus chihuahuensis",
+                "Quercus deserticola",
+                "Quercus glaucoides",
+                "Quercus resinosa",
+                "Quercus magnoliifolia",         ## Quercus nudinervis is a syn
+                "Quercus subspathulata",
+                "Quercus liebmannii",
+                "Quercus segoviensis",
+                "Quercus purulhana",
+                "Quercus glaucescens",
+                "Quercus lancifolia",
+                "Quercus copeyensis",
+                "Quercus insignis",
+                "Quercus corrugata",
+                "Quercus glabrescens",
+                "Quercus martinezii",
+                "Quercus germana",
+                "Quercus vaseyana",
+                "Quercus pungens",
+                "Quercus hinckleyi",
+                "Quercus polymorpha",
+                "Quercus mohriana",
+                "Quercus laceyi",
+                "Quercus margarettae",
+                "Quercus austrina",
+                "Quercus havardii",
+                "Quercus chapmanii",
+                "Quercus similis",
+                "Quercus stellata",
+                "Quercus boyntonii",
+                "Quercus oglethorpensis",
+                "Quercus sinuata",
+                "Quercus infectoria",            ## Quercus boissieri is a syn
+                "Quercus kotschyana",
+                "Quercus pubescens",
+                "Quercus vulcanica",
+                "Quercus faginea",
+                "Quercus macranthera",
+                "Quercus frainetto",
+                "Quercus dalechampii",
+                "Quercus lusitanica",
+                "Quercus petraea",              ## Quercus cedrorum is a syn
+                "Quercus pyrenaica",
+                "Quercus canariensis",
+                "Quercus robur",
+                "Quercus hartwissiana",
+                "Quercus aliena",
+                "Quercus griffithii",
+                "Quercus fabrei",
+                "Quercus serrata",
+                "Quercus mongolica",
+                "Quercus dentata",              ## Quercus yunnanensis is a syn
+                "Quercus alba",
+                "Quercus michauxii",
+                "Quercus montana",
+                "Quercus bicolor",
+                "Quercus lyrata",
+                "Quercus macrocarpa",
+                "Quercus muehlenbergii",
+                "Quercus prinoides",
+                "Quercus pacifica",
+                "Quercus dumosa",
+                "Quercus douglasii",
+                "Quercus johntuckeri",
+                "Quercus corneliusmulleri",
+                "Quercus berberidifolia",
+                "Quercus durata",
+                "Quercus garryana",
+                "Quercus lobata",
+                "Quercus geminata",
+                "Quercus virginiana",
+                "Quercus minima",
+                "Quercus oleoides",
+                # "Quercus sagraeana",          ## not in my DS (not in GBIF)
+                "Quercus brandegeei",
+                "Quercus fusiformis",
+                "Quercus pontica",
+                "Quercus sadleriana")
+
+white_oaks[!(white_oaks %in% gsub("Q.", "Quercus", interaction_data$quercus.sp))]
+which(white_oaks %in% red_oaks)
+
+## Divide oaks into red and white
+oaks <- data.frame(matrix(nrow = 236, ncol = 2))
+colnames(oaks) <- c("quercus.sp", "type")
+oaks$quercus.sp <- gsub("Q.", "Quercus",
+                        unique(grep("Q.", interaction_data$quercus.sp, value = TRUE)))
+str(oaks)
+
+oaks[oaks$quercus.sp %in% red_oaks, ]$type <- "red"
+oaks[oaks$quercus.sp %in% white_oaks, ]$type <- "white"
+
+## 236 spp in total, out of which 75 are not white or red
+length(which(!(is.na(oaks$type))))
+length(which(is.na(oaks$type)))
+
+
+## ii) Find which Agrilus spp. use red/white oaks
+agrilus_redwhite <- data.frame(matrix(ncol = 4,
+                                      nrow = length(unique(interaction_data$agrilus.sp))))
+colnames(agrilus_redwhite) <- c("agrilus.sp", "red.hosts", "white.hosts", "na.hosts")
+agrilus_redwhite$agrilus.sp <- unique(interaction_data$agrilus.sp)
+agrilus_redwhite$colour <- NA
+
+for (i in 1:nrow(agrilus_redwhite)) {
+  agrilus <- agrilus_redwhite$agrilus.sp[i]
+  hosts <- gsub("Q.", "Quercus",
+                subset(interaction_data, agrilus.sp == agrilus & interaction == 1)$quercus.sp)
+  colours <- subset(oaks, quercus.sp %in% hosts)$type
+  colours[is.na(colours)] <- 0
+  colours <- round(table(colours)/sum(table(colours)), 2)
+  agrilus_redwhite$red.hosts[i] <- colours[2]
+  agrilus_redwhite$white.hosts[i] <- colours[3]
+  agrilus_redwhite$na.hosts[i] <- colours[1]
+
+  cols <- which(agrilus_redwhite[i, 2:4] > 0)
+  if (length(cols > 0) == 1) {
+    if (cols == 1) { agrilus_redwhite[i, ]$colour <- "red" }
+    if (cols == 2) { agrilus_redwhite[i, ]$colour <- "white" }
+    if (cols == 3) { agrilus_redwhite[i, ]$colour <- "na" }
+  } else if (length(cols) == 2) {
+    if (setequal(cols, c(1, 2))) { agrilus_redwhite[i, ]$colour <- "pink" }
+    if (setequal(cols, c(1, 3))) { agrilus_redwhite[i, ]$colour <- "red.na" }
+    if (setequal(cols, c(2, 3))) { agrilus_redwhite[i, ]$colour <- "white.na" }
+  } else if (length(cols) == 3) {
+    agrilus_redwhite[i, ]$colour <- "pink.na"
+  }
+}; rm(i, agrilus, hosts, colours, cols)
+agrilus_redwhite[is.na(agrilus_redwhite)] <- 0
+
+str(agrilus_redwhite)
+unique(agrilus_redwhite$colour)
+
+
+## iii) Find whether there are jumps in the predictions
+agrilus_redwhite$red.hosts.pred <- NA
+agrilus_redwhite$white.hosts.pred <- NA
+agrilus_redwhite$na.hosts.pred <- NA
+agrilus_redwhite$colour.pred <- NA
+
+for (i in 1:nrow(agrilus_redwhite)) {
+  agrilus <- agrilus_redwhite$agrilus.sp[i]
+  hosts <- gsub("Q.", "Quercus",
+                subset(predictions, agrilus.sp == agrilus & prediction.cutoff == 1)$quercus.sp)
+  known <- gsub("Q.", "Quercus",
+                subset(interaction_data, agrilus.sp == agrilus & interaction == 1)$quercus.sp)
+  hosts <- hosts[!(hosts %in% known)]
+  colours <- subset(oaks, quercus.sp %in% hosts)$type
+  colours[is.na(colours)] <- 0
+  colours <- round(table(colours)/sum(table(colours)), 2)
+  agrilus_redwhite$red.hosts.pred[i] <- colours[2]
+  agrilus_redwhite$white.hosts.pred[i] <- colours[3]
+  agrilus_redwhite$na.hosts.pred[i] <- colours[1]
+
+  cols <- which(agrilus_redwhite[i, 6:8] > 0)
+  if (length(cols > 0) == 1) {
+    if (cols == 1) { agrilus_redwhite[i, ]$colour.pred <- "red" }
+    if (cols == 2) { agrilus_redwhite[i, ]$colour.pred <- "white" }
+    if (cols == 3) { agrilus_redwhite[i, ]$colour.pred <- "na" }
+  } else if (length(cols) == 2) {
+    if (setequal(cols, c(1, 2))) { agrilus_redwhite[i, ]$colour.pred <- "pink" }
+    if (setequal(cols, c(1, 3))) { agrilus_redwhite[i, ]$colour.pred <- "red.na" }
+    if (setequal(cols, c(2, 3))) { agrilus_redwhite[i, ]$colour.pred <- "white.na" }
+  } else if (length(cols) == 3) {
+    agrilus_redwhite[i, ]$colour.pred <- "pink.na"
+  }
+}; rm(i, agrilus, hosts, known, colours, cols)
+agrilus_redwhite[is.na(agrilus_redwhite)] <- 0
+
+str(agrilus_redwhite)
+unique(agrilus_redwhite$colour)
+
+
+
+## D) FIND WHETHER THERE IS A CORRELATION BETWEEN NO. HOSTS & PHYLO SIGNAL BTW. HOSTS
+agrilus_no <-  as.data.frame(table(agrilus_hosts[grep("Quercus",
+                                                      agrilus_hosts$plant.sp),]$agrilus.sp))
+colnames(agrilus_no) <- c("agrilus.sp", "no.hosts")
+agrilus_no <- agrilus_no[agrilus_no$no.hosts > 1, ]
+head(agrilus_no)
+
+## Phylo cov matrix
+oak_phylo <- paste0("/data/SBCS-NicholsLab/elvirahg/oak_analyses/",
+                    "01_original_models/input/quercus_nodesig_result.nex")
+oak_phylo <- read.nexus(oak_phylo)[[1]]
+
+## Edit node label information
+oak_phylo$node.label <- gsub("'", "", oak_phylo$node.label)
+oak_phylo$node.label <- gsub("N", "", oak_phylo$node.label)
+oak_phylo$tip.label <- gsub(pattern = "_", replacement = " ", oak_phylo$tip.label)
+oak_phylo$tip.label <- gsub(pattern = "Quercus", replacement = "Q.",
+                            oak_phylo$tip.label, fixed = TRUE)
+
+## Create phylo matrix
+oak_phylo_cov <- vcv.phylo(oak_phylo)
+rm(oak_phylo)
+
+## For each Agrilus species, extract the name of its host species and then look for the mean
+## phylo distance between them
+agrilus_no$mean.phylo.dist.hosts <- NA
+
+for (i in 1:nrow(agrilus_no)) {
+  agrilus <- agrilus_no$agrilus.sp[i]
+  hosts <- subset(interaction_data, agrilus.sp == agrilus & interaction == 1)$quercus.sp
+
+  # if (length(hosts) == 1) {
+  #   mean_phylo_dist <- max(oak_phylo_cov)
+  # }
+  # else {
+  nos <- which(colnames(oak_phylo_cov) %in% hosts)
+  mean_phylo_dist <- c()
+
+  for (j in 1:length(hosts)) {
+
+    dist_j <- mean(oak_phylo_cov[nos[j], nos[-j]])
+    mean_phylo_dist <- c(mean_phylo_dist, dist_j)
+
+  }
+  mean_phylo_dist <- mean(mean_phylo_dist)
+  # }
+  agrilus_no$mean.phylo.dist.hosts[i] <- mean_phylo_dist
+}; rm(dist_j, mean_phylo_dist, agrilus, hosts, i, j, nos)
+
+head(agrilus_no)
+
+mod1 <- lm(no.hosts ~ mean.phylo.dist.hosts, data = agrilus_no)
+summary(mod1)
+
+plot(no.hosts ~ mean.phylo.dist.hosts, data = agrilus_no,
+     pch = 16)
+abline(a = 5.76034, b = -0.07327)
+
+mod2 <- glm(no.hosts ~ mean.phylo.dist.hosts,
+            family = poisson(link = log),
+            data = agrilus_no)
+summary(mod2)
+
+## https://thestatsgeek.com/2014/04/26/deviance-goodness-of-fit-test-for-poisson-regression/
+# pchisq(mod2$deviance, df = mod2$df.residual,
+#        lower.tail = FALSE)                      ## H0: model is correctly specified
+
+ggplot(data =  agrilus_no, aes(x = mean.phylo.dist.hosts, y = no.hosts)) +
+  geom_point() +
+  geom_smooth()  # method = "glm", method.args = list(family = "poisson")
+
 
 
 

@@ -1,0 +1,1243 @@
+#NEXUS
+[output from phylocom, written Mon Nov 15 11:10:28 2021vel_nodes.tre]
+
+BEGIN TAXA;
+TITLE Phylocom_Phylogeny_Taxa;
+	DIMENSIONS NTAX=238;
+	TAXLABELS
+	   Quercus_turbinella   Quercus_ajoensis   Quercus_toumeyi   Quercus_striatula   Quercus_grisea   Quercus_engelmannii   Quercus_oblongifolia   Quercus_rugosa   Quercus_greggii   Quercus_diversifolia   Quercus_obtusata   Quercus_potosina   Quercus_arizonica   Quercus_peduncularis   Quercus_chihuahuensis   Quercus_laeta   Quercus_deserticola   Quercus_glaucoides   Quercus_resinosa   Quercus_magnoliifolia   Quercus_subspathulata   Quercus_liebmannii   Quercus_segoviensis   Quercus_purulhana   Quercus_new_species   Quercus_glaucescens   Quercus_lancifolia   Quercus_copeyensis   Quercus_insignis   Quercus_corrugata   Quercus_glabrescens   Quercus_martinezii   Quercus_germana   Quercus_vaseyana   Quercus_pungens   Quercus_hinckleyi   Quercus_polymorpha   Quercus_mohriana   Quercus_laceyi   Quercus_margarettae   Quercus_austrina   Quercus_havardii   Quercus_chapmanii   Quercus_similis   Quercus_stellata   Quercus_boyntonii   Quercus_oglethorpensis   Quercus_sinuata   Quercus_infectoria   Quercus_kotschyana   Quercus_pubescens   Quercus_vulcanica   Quercus_faginea   Quercus_macranthera   Quercus_frainetto   Quercus_dalechampii   Quercus_lusitanica   Quercus_petraea   Quercus_pyrenaica   Quercus_canariensis   Quercus_robur   Quercus_hartwissiana   Quercus_aliena   Quercus_griffithii   Quercus_fabrei   Quercus_serrata   Quercus_mongolica   Quercus_dentata   Quercus_alba   Quercus_michauxii   Quercus_montana   Quercus_bicolor   Quercus_lyrata   Quercus_macrocarpa   Quercus_muehlenbergii   Quercus_prinoides   Quercus_pacifica   Quercus_dumosa   Quercus_douglasii   Quercus_johntuckeri   Quercus_corneliusmulleri   Quercus_berberidifolia   Quercus_durata   Quercus_garryana   Quercus_lobata   Quercus_geminata   Quercus_virginiana   Quercus_minima   Quercus_oleoides   Quercus_sagrana   Quercus_brandegeei   Quercus_fusiformis   Quercus_pontica   Quercus_sadleriana   Quercus_chrysolepis   Quercus_vacciniifolia   Quercus_tomentella   Quercus_palmeri   Quercus_cedrosensis   Quercus_crassifolia   Quercus_mcvaughii   Quercus_scytophylla   Quercus_hypoleucoides   Quercus_sideroxyla   Quercus_jonesii   Quercus_emoryi   Quercus_durifolia   Quercus_radiata   Quercus_conzattii   Quercus_calophylla   Quercus_fulva   Quercus_urbani   Quercus_viminea   Quercus_eduardi   Quercus_crassipes   Quercus_confertifolia   Quercus_castanea   Quercus_acutifolia   Quercus_grahamii   Quercus_humboldtii   Quercus_costaricensis   Quercus_seemannii   Quercus_cortesii   Quercus_benthamii   Quercus_delgadoana   Quercus_sapotifolia   Quercus_iltisii   Quercus_crispifolia   Quercus_elliptica   Quercus_uxoris   Quercus_aristata   Quercus_planipocula   Quercus_laurina   Quercus_pinnativenulosa   Quercus_sartorii   Quercus_mexicana   Quercus_affinis   Quercus_gravesii   Quercus_canbyi   Quercus_incana   Quercus_hemisphaerica   Quercus_inopina   Quercus_myrtifolia   Quercus_laevis   Quercus_nigra   Quercus_arkansana   Quercus_pumila   Quercus_phellos   Quercus_laurifolia   Quercus_falcata   Quercus_marilandica   Quercus_pagoda   Quercus_imbricaria   Quercus_georgiana   Quercus_ilicifolia   Quercus_acerifolia   Quercus_shumardii   Quercus_buckleyi   Quercus_rubra   Quercus_ellipsoidalis   Quercus_velutina   Quercus_coccinea   Quercus_texana   Quercus_palustris   Quercus_wislizeni   Quercus_parvula   Quercus_agrifolia   Quercus_kelloggii   Quercus_senescens   Quercus_guyavifolia   Quercus_monimotricha   Quercus_rehderiana   Quercus_longispica   Quercus_semecarpifolia   Quercus_sp.nov.   Quercus_coccifera   Quercus_aucheri   Quercus_alnifolia   Quercus_ilex   Quercus_rotundifolia   Quercus_baloot   Quercus_floribunda   Quercus_utilis   Quercus_engleriana   Quercus_yiwuensis   Quercus_setulosa   Quercus_phillyreoides   Quercus_acrodonta   Quercus_baronii   Quercus_dolicholepis   Quercus_franchetii   Quercus_trojana   Quercus_libani   Quercus_cerris   Quercus_look   Quercus_afares   Quercus_castaneifolia   Quercus_brantii   Quercus_ithaburensis   Quercus_crenata   Quercus_suber   Quercus_variabilis   Quercus_acutissima   Quercus_chenii   Quercus_phanera   Quercus_blakei   Quercus_bella   Quercus_lineata   Quercus_litoralis   Quercus_macrocalyx   Quercus_langbianensis   Quercus_pachyloma   Quercus_daimingshanensis   Quercus_poilanei   Quercus_asymmetrica   Quercus_arbutifolia   Quercus_ciliaris   Quercus_stewardiana   Quercus_acuta   Quercus_sessilifolia   Quercus_salicina   Quercus_hypargyrea   Quercus_myrsinifolia   Quercus_kouangsiensis   Quercus_chrysocalyx   Quercus_annulata   Quercus_oxyodon   Quercus_schottkyana   Quercus_lamellosa   Quercus_augustini   Quercus_jenseniana   Quercus_delavayi   Quercus_chungii   Quercus_austrocochinchinensis   Quercus_kerrii   Quercus_rex   Quercus_championii   Quercus_gilva;
+END;
+
+BEGIN CHARACTERS;
+	TITLE  Phylocom_Presence_in_Sample;
+	DIMENSIONS NCHAR=2;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	CHARSTATELABELS
+		1 host, 2 nonhost;
+	MATRIX
+	Quercus_turbinella	01
+	Quercus_ajoensis	01
+	Quercus_toumeyi	01
+	Quercus_striatula	01
+	Quercus_grisea	10
+	Quercus_engelmannii	01
+	Quercus_oblongifolia	01
+	Quercus_rugosa	01
+	Quercus_greggii	01
+	Quercus_diversifolia	01
+	Quercus_obtusata	01
+	Quercus_potosina	01
+	Quercus_arizonica	10
+	Quercus_peduncularis	10
+	Quercus_chihuahuensis	01
+	Quercus_laeta	01
+	Quercus_deserticola	01
+	Quercus_glaucoides	01
+	Quercus_resinosa	01
+	Quercus_magnoliifolia	01
+	Quercus_subspathulata	01
+	Quercus_liebmannii	01
+	Quercus_segoviensis	01
+	Quercus_purulhana	01
+	Quercus_new_species	01
+	Quercus_glaucescens	01
+	Quercus_lancifolia	01
+	Quercus_copeyensis	01
+	Quercus_insignis	01
+	Quercus_corrugata	01
+	Quercus_glabrescens	01
+	Quercus_martinezii	01
+	Quercus_germana	01
+	Quercus_vaseyana	01
+	Quercus_pungens	01
+	Quercus_hinckleyi	01
+	Quercus_polymorpha	01
+	Quercus_mohriana	01
+	Quercus_laceyi	01
+	Quercus_margarettae	01
+	Quercus_austrina	01
+	Quercus_havardii	01
+	Quercus_chapmanii	01
+	Quercus_similis	01
+	Quercus_stellata	10
+	Quercus_boyntonii	01
+	Quercus_oglethorpensis	01
+	Quercus_sinuata	01
+	Quercus_infectoria	10
+	Quercus_kotschyana	01
+	Quercus_pubescens	10
+	Quercus_vulcanica	01
+	Quercus_faginea	10
+	Quercus_macranthera	10
+	Quercus_frainetto	10
+	Quercus_dalechampii	10
+	Quercus_lusitanica	01
+	Quercus_petraea	10
+	Quercus_pyrenaica	10
+	Quercus_canariensis	01
+	Quercus_robur	10
+	Quercus_hartwissiana	01
+	Quercus_aliena	01
+	Quercus_griffithii	01
+	Quercus_fabrei	01
+	Quercus_serrata	10
+	Quercus_mongolica	10
+	Quercus_dentata	10
+	Quercus_alba	10
+	Quercus_michauxii	10
+	Quercus_montana	01
+	Quercus_bicolor	10
+	Quercus_lyrata	10
+	Quercus_macrocarpa	10
+	Quercus_muehlenbergii	10
+	Quercus_prinoides	10
+	Quercus_pacifica	01
+	Quercus_dumosa	01
+	Quercus_douglasii	01
+	Quercus_johntuckeri	01
+	Quercus_corneliusmulleri	01
+	Quercus_berberidifolia	01
+	Quercus_durata	10
+	Quercus_garryana	01
+	Quercus_lobata	01
+	Quercus_geminata	01
+	Quercus_virginiana	01
+	Quercus_minima	01
+	Quercus_oleoides	01
+	Quercus_sagrana	01
+	Quercus_brandegeei	01
+	Quercus_fusiformis	01
+	Quercus_pontica	01
+	Quercus_sadleriana	01
+	Quercus_chrysolepis	10
+	Quercus_vacciniifolia	01
+	Quercus_tomentella	01
+	Quercus_palmeri	01
+	Quercus_cedrosensis	01
+	Quercus_crassifolia	01
+	Quercus_mcvaughii	01
+	Quercus_scytophylla	01
+	Quercus_hypoleucoides	10
+	Quercus_sideroxyla	01
+	Quercus_jonesii	01
+	Quercus_emoryi	10
+	Quercus_durifolia	01
+	Quercus_radiata	01
+	Quercus_conzattii	10
+	Quercus_calophylla	01
+	Quercus_fulva	01
+	Quercus_urbani	01
+	Quercus_viminea	01
+	Quercus_eduardi	01
+	Quercus_crassipes	01
+	Quercus_confertifolia	01
+	Quercus_castanea	01
+	Quercus_acutifolia	01
+	Quercus_grahamii	01
+	Quercus_humboldtii	01
+	Quercus_costaricensis	01
+	Quercus_seemannii	01
+	Quercus_cortesii	01
+	Quercus_benthamii	01
+	Quercus_delgadoana	01
+	Quercus_sapotifolia	01
+	Quercus_iltisii	01
+	Quercus_crispifolia	01
+	Quercus_elliptica	01
+	Quercus_uxoris	01
+	Quercus_aristata	01
+	Quercus_planipocula	01
+	Quercus_laurina	01
+	Quercus_pinnativenulosa	01
+	Quercus_sartorii	01
+	Quercus_mexicana	01
+	Quercus_affinis	01
+	Quercus_gravesii	01
+	Quercus_canbyi	01
+	Quercus_incana	01
+	Quercus_hemisphaerica	01
+	Quercus_inopina	01
+	Quercus_myrtifolia	01
+	Quercus_laevis	01
+	Quercus_nigra	01
+	Quercus_arkansana	01
+	Quercus_pumila	01
+	Quercus_phellos	10
+	Quercus_laurifolia	01
+	Quercus_falcata	10
+	Quercus_marilandica	10
+	Quercus_pagoda	01
+	Quercus_imbricaria	10
+	Quercus_georgiana	01
+	Quercus_ilicifolia	10
+	Quercus_acerifolia	01
+	Quercus_shumardii	10
+	Quercus_buckleyi	01
+	Quercus_rubra	10
+	Quercus_ellipsoidalis	01
+	Quercus_velutina	10
+	Quercus_coccinea	10
+	Quercus_texana	01
+	Quercus_palustris	01
+	Quercus_wislizeni	10
+	Quercus_parvula	01
+	Quercus_agrifolia	10
+	Quercus_kelloggii	10
+	Quercus_senescens	01
+	Quercus_guyavifolia	01
+	Quercus_monimotricha	01
+	Quercus_rehderiana	01
+	Quercus_longispica	01
+	Quercus_semecarpifolia	01
+	Quercus_sp.nov.	01
+	Quercus_coccifera	10
+	Quercus_aucheri	01
+	Quercus_alnifolia	10
+	Quercus_ilex	10
+	Quercus_rotundifolia	01
+	Quercus_baloot	01
+	Quercus_floribunda	10
+	Quercus_utilis	01
+	Quercus_engleriana	01
+	Quercus_yiwuensis	01
+	Quercus_setulosa	01
+	Quercus_phillyreoides	01
+	Quercus_acrodonta	01
+	Quercus_baronii	01
+	Quercus_dolicholepis	01
+	Quercus_franchetii	01
+	Quercus_trojana	01
+	Quercus_libani	01
+	Quercus_cerris	10
+	Quercus_look	01
+	Quercus_afares	01
+	Quercus_castaneifolia	10
+	Quercus_brantii	01
+	Quercus_ithaburensis	10
+	Quercus_crenata	01
+	Quercus_suber	10
+	Quercus_variabilis	10
+	Quercus_acutissima	10
+	Quercus_chenii	01
+	Quercus_phanera	01
+	Quercus_blakei	01
+	Quercus_bella	01
+	Quercus_lineata	01
+	Quercus_litoralis	01
+	Quercus_macrocalyx	01
+	Quercus_langbianensis	01
+	Quercus_pachyloma	01
+	Quercus_daimingshanensis	01
+	Quercus_poilanei	01
+	Quercus_asymmetrica	01
+	Quercus_arbutifolia	01
+	Quercus_ciliaris	01
+	Quercus_stewardiana	01
+	Quercus_acuta	01
+	Quercus_sessilifolia	01
+	Quercus_salicina	01
+	Quercus_hypargyrea	01
+	Quercus_myrsinifolia	01
+	Quercus_kouangsiensis	01
+	Quercus_chrysocalyx	01
+	Quercus_annulata	01
+	Quercus_oxyodon	01
+	Quercus_schottkyana	01
+	Quercus_lamellosa	01
+	Quercus_augustini	01
+	Quercus_jenseniana	01
+	Quercus_delavayi	01
+	Quercus_chungii	01
+	Quercus_austrocochinchinensis	01
+	Quercus_kerrii	01
+	Quercus_rex	01
+	Quercus_championii	01
+	Quercus_gilva	01
+;
+END;
+
+BEGIN CHARACTERS;
+	TITLE  Phylocom_Abundance_in_Sample;
+	DIMENSIONS NCHAR=2;
+	FORMAT DATATYPE = CONTINUOUS GAP = - MISSING = ?;
+	CHARSTATELABELS
+		1 host, 2 nonhost;
+	MATRIX
+	Quercus_turbinella	  0.000000  1.000000
+	Quercus_ajoensis	  0.000000  1.000000
+	Quercus_toumeyi	  0.000000  1.000000
+	Quercus_striatula	  0.000000  1.000000
+	Quercus_grisea	  1.000000  0.000000
+	Quercus_engelmannii	  0.000000  1.000000
+	Quercus_oblongifolia	  0.000000  1.000000
+	Quercus_rugosa	  0.000000  1.000000
+	Quercus_greggii	  0.000000  1.000000
+	Quercus_diversifolia	  0.000000  1.000000
+	Quercus_obtusata	  0.000000  1.000000
+	Quercus_potosina	  0.000000  1.000000
+	Quercus_arizonica	  1.000000  0.000000
+	Quercus_peduncularis	  1.000000  0.000000
+	Quercus_chihuahuensis	  0.000000  1.000000
+	Quercus_laeta	  0.000000  1.000000
+	Quercus_deserticola	  0.000000  1.000000
+	Quercus_glaucoides	  0.000000  1.000000
+	Quercus_resinosa	  0.000000  1.000000
+	Quercus_magnoliifolia	  0.000000  1.000000
+	Quercus_subspathulata	  0.000000  1.000000
+	Quercus_liebmannii	  0.000000  1.000000
+	Quercus_segoviensis	  0.000000  1.000000
+	Quercus_purulhana	  0.000000  1.000000
+	Quercus_new_species	  0.000000  1.000000
+	Quercus_glaucescens	  0.000000  1.000000
+	Quercus_lancifolia	  0.000000  1.000000
+	Quercus_copeyensis	  0.000000  1.000000
+	Quercus_insignis	  0.000000  1.000000
+	Quercus_corrugata	  0.000000  1.000000
+	Quercus_glabrescens	  0.000000  1.000000
+	Quercus_martinezii	  0.000000  1.000000
+	Quercus_germana	  0.000000  1.000000
+	Quercus_vaseyana	  0.000000  1.000000
+	Quercus_pungens	  0.000000  1.000000
+	Quercus_hinckleyi	  0.000000  1.000000
+	Quercus_polymorpha	  0.000000  1.000000
+	Quercus_mohriana	  0.000000  1.000000
+	Quercus_laceyi	  0.000000  1.000000
+	Quercus_margarettae	  0.000000  1.000000
+	Quercus_austrina	  0.000000  1.000000
+	Quercus_havardii	  0.000000  1.000000
+	Quercus_chapmanii	  0.000000  1.000000
+	Quercus_similis	  0.000000  1.000000
+	Quercus_stellata	  1.000000  0.000000
+	Quercus_boyntonii	  0.000000  1.000000
+	Quercus_oglethorpensis	  0.000000  1.000000
+	Quercus_sinuata	  0.000000  1.000000
+	Quercus_infectoria	  1.000000  0.000000
+	Quercus_kotschyana	  0.000000  1.000000
+	Quercus_pubescens	  1.000000  0.000000
+	Quercus_vulcanica	  0.000000  1.000000
+	Quercus_faginea	  1.000000  0.000000
+	Quercus_macranthera	  1.000000  0.000000
+	Quercus_frainetto	  1.000000  0.000000
+	Quercus_dalechampii	  1.000000  0.000000
+	Quercus_lusitanica	  0.000000  1.000000
+	Quercus_petraea	  1.000000  0.000000
+	Quercus_pyrenaica	  1.000000  0.000000
+	Quercus_canariensis	  0.000000  1.000000
+	Quercus_robur	  1.000000  0.000000
+	Quercus_hartwissiana	  0.000000  1.000000
+	Quercus_aliena	  0.000000  1.000000
+	Quercus_griffithii	  0.000000  1.000000
+	Quercus_fabrei	  0.000000  1.000000
+	Quercus_serrata	  1.000000  0.000000
+	Quercus_mongolica	  1.000000  0.000000
+	Quercus_dentata	  1.000000  0.000000
+	Quercus_alba	  1.000000  0.000000
+	Quercus_michauxii	  1.000000  0.000000
+	Quercus_montana	  0.000000  1.000000
+	Quercus_bicolor	  1.000000  0.000000
+	Quercus_lyrata	  1.000000  0.000000
+	Quercus_macrocarpa	  1.000000  0.000000
+	Quercus_muehlenbergii	  1.000000  0.000000
+	Quercus_prinoides	  1.000000  0.000000
+	Quercus_pacifica	  0.000000  1.000000
+	Quercus_dumosa	  0.000000  1.000000
+	Quercus_douglasii	  0.000000  1.000000
+	Quercus_johntuckeri	  0.000000  1.000000
+	Quercus_corneliusmulleri	  0.000000  1.000000
+	Quercus_berberidifolia	  0.000000  1.000000
+	Quercus_durata	  1.000000  0.000000
+	Quercus_garryana	  0.000000  1.000000
+	Quercus_lobata	  0.000000  1.000000
+	Quercus_geminata	  0.000000  1.000000
+	Quercus_virginiana	  0.000000  1.000000
+	Quercus_minima	  0.000000  1.000000
+	Quercus_oleoides	  0.000000  1.000000
+	Quercus_sagrana	  0.000000  1.000000
+	Quercus_brandegeei	  0.000000  1.000000
+	Quercus_fusiformis	  0.000000  1.000000
+	Quercus_pontica	  0.000000  1.000000
+	Quercus_sadleriana	  0.000000  1.000000
+	Quercus_chrysolepis	  1.000000  0.000000
+	Quercus_vacciniifolia	  0.000000  1.000000
+	Quercus_tomentella	  0.000000  1.000000
+	Quercus_palmeri	  0.000000  1.000000
+	Quercus_cedrosensis	  0.000000  1.000000
+	Quercus_crassifolia	  0.000000  1.000000
+	Quercus_mcvaughii	  0.000000  1.000000
+	Quercus_scytophylla	  0.000000  1.000000
+	Quercus_hypoleucoides	  1.000000  0.000000
+	Quercus_sideroxyla	  0.000000  1.000000
+	Quercus_jonesii	  0.000000  1.000000
+	Quercus_emoryi	  1.000000  0.000000
+	Quercus_durifolia	  0.000000  1.000000
+	Quercus_radiata	  0.000000  1.000000
+	Quercus_conzattii	  1.000000  0.000000
+	Quercus_calophylla	  0.000000  1.000000
+	Quercus_fulva	  0.000000  1.000000
+	Quercus_urbani	  0.000000  1.000000
+	Quercus_viminea	  0.000000  1.000000
+	Quercus_eduardi	  0.000000  1.000000
+	Quercus_crassipes	  0.000000  1.000000
+	Quercus_confertifolia	  0.000000  1.000000
+	Quercus_castanea	  0.000000  1.000000
+	Quercus_acutifolia	  0.000000  1.000000
+	Quercus_grahamii	  0.000000  1.000000
+	Quercus_humboldtii	  0.000000  1.000000
+	Quercus_costaricensis	  0.000000  1.000000
+	Quercus_seemannii	  0.000000  1.000000
+	Quercus_cortesii	  0.000000  1.000000
+	Quercus_benthamii	  0.000000  1.000000
+	Quercus_delgadoana	  0.000000  1.000000
+	Quercus_sapotifolia	  0.000000  1.000000
+	Quercus_iltisii	  0.000000  1.000000
+	Quercus_crispifolia	  0.000000  1.000000
+	Quercus_elliptica	  0.000000  1.000000
+	Quercus_uxoris	  0.000000  1.000000
+	Quercus_aristata	  0.000000  1.000000
+	Quercus_planipocula	  0.000000  1.000000
+	Quercus_laurina	  0.000000  1.000000
+	Quercus_pinnativenulosa	  0.000000  1.000000
+	Quercus_sartorii	  0.000000  1.000000
+	Quercus_mexicana	  0.000000  1.000000
+	Quercus_affinis	  0.000000  1.000000
+	Quercus_gravesii	  0.000000  1.000000
+	Quercus_canbyi	  0.000000  1.000000
+	Quercus_incana	  0.000000  1.000000
+	Quercus_hemisphaerica	  0.000000  1.000000
+	Quercus_inopina	  0.000000  1.000000
+	Quercus_myrtifolia	  0.000000  1.000000
+	Quercus_laevis	  0.000000  1.000000
+	Quercus_nigra	  0.000000  1.000000
+	Quercus_arkansana	  0.000000  1.000000
+	Quercus_pumila	  0.000000  1.000000
+	Quercus_phellos	  1.000000  0.000000
+	Quercus_laurifolia	  0.000000  1.000000
+	Quercus_falcata	  1.000000  0.000000
+	Quercus_marilandica	  1.000000  0.000000
+	Quercus_pagoda	  0.000000  1.000000
+	Quercus_imbricaria	  1.000000  0.000000
+	Quercus_georgiana	  0.000000  1.000000
+	Quercus_ilicifolia	  1.000000  0.000000
+	Quercus_acerifolia	  0.000000  1.000000
+	Quercus_shumardii	  1.000000  0.000000
+	Quercus_buckleyi	  0.000000  1.000000
+	Quercus_rubra	  1.000000  0.000000
+	Quercus_ellipsoidalis	  0.000000  1.000000
+	Quercus_velutina	  1.000000  0.000000
+	Quercus_coccinea	  1.000000  0.000000
+	Quercus_texana	  0.000000  1.000000
+	Quercus_palustris	  0.000000  1.000000
+	Quercus_wislizeni	  1.000000  0.000000
+	Quercus_parvula	  0.000000  1.000000
+	Quercus_agrifolia	  1.000000  0.000000
+	Quercus_kelloggii	  1.000000  0.000000
+	Quercus_senescens	  0.000000  1.000000
+	Quercus_guyavifolia	  0.000000  1.000000
+	Quercus_monimotricha	  0.000000  1.000000
+	Quercus_rehderiana	  0.000000  1.000000
+	Quercus_longispica	  0.000000  1.000000
+	Quercus_semecarpifolia	  0.000000  1.000000
+	Quercus_sp.nov.	  0.000000  1.000000
+	Quercus_coccifera	  1.000000  0.000000
+	Quercus_aucheri	  0.000000  1.000000
+	Quercus_alnifolia	  1.000000  0.000000
+	Quercus_ilex	  1.000000  0.000000
+	Quercus_rotundifolia	  0.000000  1.000000
+	Quercus_baloot	  0.000000  1.000000
+	Quercus_floribunda	  1.000000  0.000000
+	Quercus_utilis	  0.000000  1.000000
+	Quercus_engleriana	  0.000000  1.000000
+	Quercus_yiwuensis	  0.000000  1.000000
+	Quercus_setulosa	  0.000000  1.000000
+	Quercus_phillyreoides	  0.000000  1.000000
+	Quercus_acrodonta	  0.000000  1.000000
+	Quercus_baronii	  0.000000  1.000000
+	Quercus_dolicholepis	  0.000000  1.000000
+	Quercus_franchetii	  0.000000  1.000000
+	Quercus_trojana	  0.000000  1.000000
+	Quercus_libani	  0.000000  1.000000
+	Quercus_cerris	  1.000000  0.000000
+	Quercus_look	  0.000000  1.000000
+	Quercus_afares	  0.000000  1.000000
+	Quercus_castaneifolia	  1.000000  0.000000
+	Quercus_brantii	  0.000000  1.000000
+	Quercus_ithaburensis	  1.000000  0.000000
+	Quercus_crenata	  0.000000  1.000000
+	Quercus_suber	  1.000000  0.000000
+	Quercus_variabilis	  1.000000  0.000000
+	Quercus_acutissima	  1.000000  0.000000
+	Quercus_chenii	  0.000000  1.000000
+	Quercus_phanera	  0.000000  1.000000
+	Quercus_blakei	  0.000000  1.000000
+	Quercus_bella	  0.000000  1.000000
+	Quercus_lineata	  0.000000  1.000000
+	Quercus_litoralis	  0.000000  1.000000
+	Quercus_macrocalyx	  0.000000  1.000000
+	Quercus_langbianensis	  0.000000  1.000000
+	Quercus_pachyloma	  0.000000  1.000000
+	Quercus_daimingshanensis	  0.000000  1.000000
+	Quercus_poilanei	  0.000000  1.000000
+	Quercus_asymmetrica	  0.000000  1.000000
+	Quercus_arbutifolia	  0.000000  1.000000
+	Quercus_ciliaris	  0.000000  1.000000
+	Quercus_stewardiana	  0.000000  1.000000
+	Quercus_acuta	  0.000000  1.000000
+	Quercus_sessilifolia	  0.000000  1.000000
+	Quercus_salicina	  0.000000  1.000000
+	Quercus_hypargyrea	  0.000000  1.000000
+	Quercus_myrsinifolia	  0.000000  1.000000
+	Quercus_kouangsiensis	  0.000000  1.000000
+	Quercus_chrysocalyx	  0.000000  1.000000
+	Quercus_annulata	  0.000000  1.000000
+	Quercus_oxyodon	  0.000000  1.000000
+	Quercus_schottkyana	  0.000000  1.000000
+	Quercus_lamellosa	  0.000000  1.000000
+	Quercus_augustini	  0.000000  1.000000
+	Quercus_jenseniana	  0.000000  1.000000
+	Quercus_delavayi	  0.000000  1.000000
+	Quercus_chungii	  0.000000  1.000000
+	Quercus_austrocochinchinensis	  0.000000  1.000000
+	Quercus_kerrii	  0.000000  1.000000
+	Quercus_rex	  0.000000  1.000000
+	Quercus_championii	  0.000000  1.000000
+	Quercus_gilva	  0.000000  1.000000
+;
+END;
+
+BEGIN CHARACTERS;
+	TITLE  Phylocom_Discrete_Traits;
+	DIMENSIONS NCHAR=1;
+	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1 2 3 4 5 6 7 8 9";
+	CHARSTATELABELS
+		1 host.status;
+	MATRIX
+	Quercus_wislizeni	1
+	Quercus_velutina	1
+	Quercus_variabilis	1
+	Quercus_suber	1
+	Quercus_stellata	1
+	Quercus_shumardii	1
+	Quercus_serrata	1
+	Quercus_rubra	1
+	Quercus_robur	1
+	Quercus_pyrenaica	1
+	Quercus_pubescens	1
+	Quercus_prinoides	1
+	Quercus_phellos	1
+	Quercus_petraea	1
+	Quercus_peduncularis	1
+	Quercus_muehlenbergii	1
+	Quercus_mongolica	1
+	Quercus_michauxii	1
+	Quercus_marilandica	1
+	Quercus_macrocarpa	1
+	Quercus_macranthera	1
+	Quercus_lyrata	1
+	Quercus_kelloggii	1
+	Quercus_ithaburensis	1
+	Quercus_infectoria	1
+	Quercus_imbricaria	1
+	Quercus_ilicifolia	1
+	Quercus_ilex	1
+	Quercus_hypoleucoides	1
+	Quercus_grisea	1
+	Quercus_frainetto	1
+	Quercus_floribunda	1
+	Quercus_falcata	1
+	Quercus_faginea	1
+	Quercus_emoryi	1
+	Quercus_durata	1
+	Quercus_dentata	1
+	Quercus_dalechampii	1
+	Quercus_conzattii	1
+	Quercus_coccinea	1
+	Quercus_coccifera	1
+	Quercus_chrysolepis	1
+	Quercus_cerris	1
+	Quercus_castaneifolia	1
+	Quercus_bicolor	1
+	Quercus_arizonica	1
+	Quercus_alnifolia	1
+	Quercus_alba	1
+	Quercus_agrifolia	1
+	Quercus_acutissima	1
+	Quercus_yiwuensis	0
+	Quercus_vulcanica	0
+	Quercus_virginiana	0
+	Quercus_viminea	0
+	Quercus_vaseyana	0
+	Quercus_vacciniifolia	0
+	Quercus_uxoris	0
+	Quercus_utilis	0
+	Quercus_urbani	0
+	Quercus_turbinella	0
+	Quercus_trojana	0
+	Quercus_toumeyi	0
+	Quercus_tomentella	0
+	Quercus_texana	0
+	Quercus_subspathulata	0
+	Quercus_striatula	0
+	Quercus_stewardiana	0
+	Quercus_sp.nov.	0
+	Quercus_sinuata	0
+	Quercus_similis	0
+	Quercus_sideroxyla	0
+	Quercus_setulosa	0
+	Quercus_sessilifolia	0
+	Quercus_senescens	0
+	Quercus_semecarpifolia	0
+	Quercus_segoviensis	0
+	Quercus_seemannii	0
+	Quercus_scytophylla	0
+	Quercus_schottkyana	0
+	Quercus_sartorii	0
+	Quercus_sapotifolia	0
+	Quercus_salicina	0
+	Quercus_sagrana	0
+	Quercus_sadleriana	0
+	Quercus_rugosa	0
+	Quercus_rotundifolia	0
+	Quercus_rex	0
+	Quercus_resinosa	0
+	Quercus_rehderiana	0
+	Quercus_radiata	0
+	Quercus_purulhana	0
+	Quercus_pungens	0
+	Quercus_pumila	0
+	Quercus_potosina	0
+	Quercus_pontica	0
+	Quercus_polymorpha	0
+	Quercus_poilanei	0
+	Quercus_planipocula	0
+	Quercus_pinnativenulosa	0
+	Quercus_phillyreoides	0
+	Quercus_phanera	0
+	Quercus_parvula	0
+	Quercus_palustris	0
+	Quercus_palmeri	0
+	Quercus_pagoda	0
+	Quercus_pacifica	0
+	Quercus_pachyloma	0
+	Quercus_oxyodon	0
+	Quercus_oleoides	0
+	Quercus_oglethorpensis	0
+	Quercus_obtusata	0
+	Quercus_oblongifolia	0
+	Quercus_nigra	0
+	Quercus_new_species	0
+	Quercus_myrtifolia	0
+	Quercus_myrsinifolia	0
+	Quercus_montana	0
+	Quercus_monimotricha	0
+	Quercus_mohriana	0
+	Quercus_minima	0
+	Quercus_mexicana	0
+	Quercus_mcvaughii	0
+	Quercus_martinezii	0
+	Quercus_margarettae	0
+	Quercus_magnoliifolia	0
+	Quercus_macrocalyx	0
+	Quercus_lusitanica	0
+	Quercus_look	0
+	Quercus_longispica	0
+	Quercus_lobata	0
+	Quercus_litoralis	0
+	Quercus_lineata	0
+	Quercus_liebmannii	0
+	Quercus_libani	0
+	Quercus_laurina	0
+	Quercus_laurifolia	0
+	Quercus_langbianensis	0
+	Quercus_lancifolia	0
+	Quercus_lamellosa	0
+	Quercus_laevis	0
+	Quercus_laeta	0
+	Quercus_laceyi	0
+	Quercus_kouangsiensis	0
+	Quercus_kotschyana	0
+	Quercus_kerrii	0
+	Quercus_jonesii	0
+	Quercus_johntuckeri	0
+	Quercus_jenseniana	0
+	Quercus_insignis	0
+	Quercus_inopina	0
+	Quercus_incana	0
+	Quercus_iltisii	0
+	Quercus_hypargyrea	0
+	Quercus_humboldtii	0
+	Quercus_hinckleyi	0
+	Quercus_hemisphaerica	0
+	Quercus_havardii	0
+	Quercus_hartwissiana	0
+	Quercus_guyavifolia	0
+	Quercus_griffithii	0
+	Quercus_greggii	0
+	Quercus_gravesii	0
+	Quercus_grahamii	0
+	Quercus_glaucoides	0
+	Quercus_glaucescens	0
+	Quercus_glabrescens	0
+	Quercus_gilva	0
+	Quercus_germana	0
+	Quercus_georgiana	0
+	Quercus_geminata	0
+	Quercus_garryana	0
+	Quercus_fusiformis	0
+	Quercus_fulva	0
+	Quercus_franchetii	0
+	Quercus_fabrei	0
+	Quercus_engleriana	0
+	Quercus_engelmannii	0
+	Quercus_elliptica	0
+	Quercus_ellipsoidalis	0
+	Quercus_eduardi	0
+	Quercus_durifolia	0
+	Quercus_dumosa	0
+	Quercus_douglasii	0
+	Quercus_dolicholepis	0
+	Quercus_diversifolia	0
+	Quercus_deserticola	0
+	Quercus_delgadoana	0
+	Quercus_delavayi	0
+	Quercus_daimingshanensis	0
+	Quercus_crispifolia	0
+	Quercus_crenata	0
+	Quercus_crassipes	0
+	Quercus_crassifolia	0
+	Quercus_costaricensis	0
+	Quercus_cortesii	0
+	Quercus_corrugata	0
+	Quercus_corneliusmulleri	0
+	Quercus_copeyensis	0
+	Quercus_confertifolia	0
+	Quercus_ciliaris	0
+	Quercus_chungii	0
+	Quercus_chrysocalyx	0
+	Quercus_chihuahuensis	0
+	Quercus_chenii	0
+	Quercus_chapmanii	0
+	Quercus_championii	0
+	Quercus_cedrosensis	0
+	Quercus_castanea	0
+	Quercus_canbyi	0
+	Quercus_canariensis	0
+	Quercus_calophylla	0
+	Quercus_buckleyi	0
+	Quercus_brantii	0
+	Quercus_brandegeei	0
+	Quercus_boyntonii	0
+	Quercus_blakei	0
+	Quercus_berberidifolia	0
+	Quercus_benthamii	0
+	Quercus_bella	0
+	Quercus_baronii	0
+	Quercus_baloot	0
+	Quercus_austrocochinchinensis	0
+	Quercus_austrina	0
+	Quercus_augustini	0
+	Quercus_aucheri	0
+	Quercus_asymmetrica	0
+	Quercus_arkansana	0
+	Quercus_aristata	0
+	Quercus_arbutifolia	0
+	Quercus_annulata	0
+	Quercus_aliena	0
+	Quercus_ajoensis	0
+	Quercus_affinis	0
+	Quercus_afares	0
+	Quercus_acutifolia	0
+	Quercus_acuta	0
+	Quercus_acrodonta	0
+	Quercus_acerifolia	0
+;
+END;
+
+BEGIN TREES;
+	TITLE Phylocom_Phylogenies;
+	LINK Taxa = Phylocom_Phylogeny_Taxa;
+	TRANSLATE
+	 1 Quercus_turbinella,
+	2 Quercus_ajoensis,
+	3 Quercus_toumeyi,
+	4 Quercus_striatula,
+	5 Quercus_grisea,
+	6 Quercus_engelmannii,
+	7 Quercus_oblongifolia,
+	8 Quercus_rugosa,
+	9 Quercus_greggii,
+	10 Quercus_diversifolia,
+	11 Quercus_obtusata,
+	12 Quercus_potosina,
+	13 Quercus_arizonica,
+	14 Quercus_peduncularis,
+	15 Quercus_chihuahuensis,
+	16 Quercus_laeta,
+	17 Quercus_deserticola,
+	18 Quercus_glaucoides,
+	19 Quercus_resinosa,
+	20 Quercus_magnoliifolia,
+	21 Quercus_subspathulata,
+	22 Quercus_liebmannii,
+	23 Quercus_segoviensis,
+	24 Quercus_purulhana,
+	25 Quercus_new_species,
+	26 Quercus_glaucescens,
+	27 Quercus_lancifolia,
+	28 Quercus_copeyensis,
+	29 Quercus_insignis,
+	30 Quercus_corrugata,
+	31 Quercus_glabrescens,
+	32 Quercus_martinezii,
+	33 Quercus_germana,
+	34 Quercus_vaseyana,
+	35 Quercus_pungens,
+	36 Quercus_hinckleyi,
+	37 Quercus_polymorpha,
+	38 Quercus_mohriana,
+	39 Quercus_laceyi,
+	40 Quercus_margarettae,
+	41 Quercus_austrina,
+	42 Quercus_havardii,
+	43 Quercus_chapmanii,
+	44 Quercus_similis,
+	45 Quercus_stellata,
+	46 Quercus_boyntonii,
+	47 Quercus_oglethorpensis,
+	48 Quercus_sinuata,
+	49 Quercus_infectoria,
+	50 Quercus_kotschyana,
+	51 Quercus_pubescens,
+	52 Quercus_vulcanica,
+	53 Quercus_faginea,
+	54 Quercus_macranthera,
+	55 Quercus_frainetto,
+	56 Quercus_dalechampii,
+	57 Quercus_lusitanica,
+	58 Quercus_petraea,
+	59 Quercus_pyrenaica,
+	60 Quercus_canariensis,
+	61 Quercus_robur,
+	62 Quercus_hartwissiana,
+	63 Quercus_aliena,
+	64 Quercus_griffithii,
+	65 Quercus_fabrei,
+	66 Quercus_serrata,
+	67 Quercus_mongolica,
+	68 Quercus_dentata,
+	69 Quercus_alba,
+	70 Quercus_michauxii,
+	71 Quercus_montana,
+	72 Quercus_bicolor,
+	73 Quercus_lyrata,
+	74 Quercus_macrocarpa,
+	75 Quercus_muehlenbergii,
+	76 Quercus_prinoides,
+	77 Quercus_pacifica,
+	78 Quercus_dumosa,
+	79 Quercus_douglasii,
+	80 Quercus_johntuckeri,
+	81 Quercus_corneliusmulleri,
+	82 Quercus_berberidifolia,
+	83 Quercus_durata,
+	84 Quercus_garryana,
+	85 Quercus_lobata,
+	86 Quercus_geminata,
+	87 Quercus_virginiana,
+	88 Quercus_minima,
+	89 Quercus_oleoides,
+	90 Quercus_sagrana,
+	91 Quercus_brandegeei,
+	92 Quercus_fusiformis,
+	93 Quercus_pontica,
+	94 Quercus_sadleriana,
+	95 Quercus_chrysolepis,
+	96 Quercus_vacciniifolia,
+	97 Quercus_tomentella,
+	98 Quercus_palmeri,
+	99 Quercus_cedrosensis,
+	100 Quercus_crassifolia,
+	101 Quercus_mcvaughii,
+	102 Quercus_scytophylla,
+	103 Quercus_hypoleucoides,
+	104 Quercus_sideroxyla,
+	105 Quercus_jonesii,
+	106 Quercus_emoryi,
+	107 Quercus_durifolia,
+	108 Quercus_radiata,
+	109 Quercus_conzattii,
+	110 Quercus_calophylla,
+	111 Quercus_fulva,
+	112 Quercus_urbani,
+	113 Quercus_viminea,
+	114 Quercus_eduardi,
+	115 Quercus_crassipes,
+	116 Quercus_confertifolia,
+	117 Quercus_castanea,
+	118 Quercus_acutifolia,
+	119 Quercus_grahamii,
+	120 Quercus_humboldtii,
+	121 Quercus_costaricensis,
+	122 Quercus_seemannii,
+	123 Quercus_cortesii,
+	124 Quercus_benthamii,
+	125 Quercus_delgadoana,
+	126 Quercus_sapotifolia,
+	127 Quercus_iltisii,
+	128 Quercus_crispifolia,
+	129 Quercus_elliptica,
+	130 Quercus_uxoris,
+	131 Quercus_aristata,
+	132 Quercus_planipocula,
+	133 Quercus_laurina,
+	134 Quercus_pinnativenulosa,
+	135 Quercus_sartorii,
+	136 Quercus_mexicana,
+	137 Quercus_affinis,
+	138 Quercus_gravesii,
+	139 Quercus_canbyi,
+	140 Quercus_incana,
+	141 Quercus_hemisphaerica,
+	142 Quercus_inopina,
+	143 Quercus_myrtifolia,
+	144 Quercus_laevis,
+	145 Quercus_nigra,
+	146 Quercus_arkansana,
+	147 Quercus_pumila,
+	148 Quercus_phellos,
+	149 Quercus_laurifolia,
+	150 Quercus_falcata,
+	151 Quercus_marilandica,
+	152 Quercus_pagoda,
+	153 Quercus_imbricaria,
+	154 Quercus_georgiana,
+	155 Quercus_ilicifolia,
+	156 Quercus_acerifolia,
+	157 Quercus_shumardii,
+	158 Quercus_buckleyi,
+	159 Quercus_rubra,
+	160 Quercus_ellipsoidalis,
+	161 Quercus_velutina,
+	162 Quercus_coccinea,
+	163 Quercus_texana,
+	164 Quercus_palustris,
+	165 Quercus_wislizeni,
+	166 Quercus_parvula,
+	167 Quercus_agrifolia,
+	168 Quercus_kelloggii,
+	169 Quercus_senescens,
+	170 Quercus_guyavifolia,
+	171 Quercus_monimotricha,
+	172 Quercus_rehderiana,
+	173 Quercus_longispica,
+	174 Quercus_semecarpifolia,
+	175 Quercus_sp.nov.,
+	176 Quercus_coccifera,
+	177 Quercus_aucheri,
+	178 Quercus_alnifolia,
+	179 Quercus_ilex,
+	180 Quercus_rotundifolia,
+	181 Quercus_baloot,
+	182 Quercus_floribunda,
+	183 Quercus_utilis,
+	184 Quercus_engleriana,
+	185 Quercus_yiwuensis,
+	186 Quercus_setulosa,
+	187 Quercus_phillyreoides,
+	188 Quercus_acrodonta,
+	189 Quercus_baronii,
+	190 Quercus_dolicholepis,
+	191 Quercus_franchetii,
+	192 Quercus_trojana,
+	193 Quercus_libani,
+	194 Quercus_cerris,
+	195 Quercus_look,
+	196 Quercus_afares,
+	197 Quercus_castaneifolia,
+	198 Quercus_brantii,
+	199 Quercus_ithaburensis,
+	200 Quercus_crenata,
+	201 Quercus_suber,
+	202 Quercus_variabilis,
+	203 Quercus_acutissima,
+	204 Quercus_chenii,
+	205 Quercus_phanera,
+	206 Quercus_blakei,
+	207 Quercus_bella,
+	208 Quercus_lineata,
+	209 Quercus_litoralis,
+	210 Quercus_macrocalyx,
+	211 Quercus_langbianensis,
+	212 Quercus_pachyloma,
+	213 Quercus_daimingshanensis,
+	214 Quercus_poilanei,
+	215 Quercus_asymmetrica,
+	216 Quercus_arbutifolia,
+	217 Quercus_ciliaris,
+	218 Quercus_stewardiana,
+	219 Quercus_acuta,
+	220 Quercus_sessilifolia,
+	221 Quercus_salicina,
+	222 Quercus_hypargyrea,
+	223 Quercus_myrsinifolia,
+	224 Quercus_kouangsiensis,
+	225 Quercus_chrysocalyx,
+	226 Quercus_annulata,
+	227 Quercus_oxyodon,
+	228 Quercus_schottkyana,
+	229 Quercus_lamellosa,
+	230 Quercus_augustini,
+	231 Quercus_jenseniana,
+	232 Quercus_delavayi,
+	233 Quercus_chungii,
+	234 Quercus_austrocochinchinensis,
+	235 Quercus_kerrii,
+	236 Quercus_rex,
+	237 Quercus_championii,
+	238 Quercus_gilva;
+	TREE NodeSig_host = (((((((((((((((((1:1.782132,2:1.782132)'N255':0.468263,3:2.250395)'N254':0.431538,(4:2.213548,5:2.213548)'N256':0.468385)'N253':0.528156,(6:2.405256,7:2.405256)'N257':0.804833)'N252':0.779748,((8:1.923393,9:1.923393)'N259':0.639406,10:2.562799)'N258':1.427038)'N251':2.290648,(((((11:1.737453,12:1.737453)'N264':0.504871,13:2.242324)'N263':0.530471,14:2.772795)'N262':0.523209,(15:2.462961,16:2.462961)'N265':0.833043)'N261':1.153091,(17:3.127534,18:3.127534)'N266':1.321560)'N260':1.831389)'N250':1.756179,(((((19:1.445482,20:1.445482)'N271':0.739556,21:2.185038)'N270':0.514983,22:2.700021)'N269':0.587569,((23:0.924837,24:0.924837)'N273':1.814320,25:2.739157)'N272':0.548432)'N268':0.943141,26:4.230730)'N267':3.805933)'N249':3.919283,((((27:2.925145,28:2.925145)'N277':0.800486,(29:3.230637,30:3.230637)'N278':0.494994)'N276':2.259176,(31:3.247886,32:3.247886)'N279':2.736921)'N275':3.027047,33:9.011855)'N274':2.944091)'N248':4.058934,((((34:2.965374,35:2.965374)'N283':1.024185,36:3.989560)'N282':1.785039,(37:3.384822,38:3.384822)'N284':2.389776)'N281':2.271385,39:8.045983)'N280':7.968897)'N247':7.978289[%note = 'string:SIGLESS'],((((((40:2.332264,41:2.332264)'N290':0.352566,42:2.684831)'N289':0.431317,43:3.116147)'N288':0.673330,((44:2.435204,45:2.435204)'N292':0.597600,46:3.032804)'N291':0.756674)'N287':2.257346,47:6.046824)'N286':5.939868,48:11.986691)'N285':12.006477)'N246':12.013954[%note = 'string:SIGLESS'],(((((((((49:2.206585,50:2.206585)'N301':0.385330,(51:2.176871,52:2.176871)'N302':0.415045)'N300':0.433064,53:3.024980)'N299':1.591316,(54:2.996149,55:2.996149)'N303':1.620147)'N298':2.584635[%note = 'string:SIGMORE'],(((56:2.246738,57:2.246738)'N306':0.576704,58:2.823442)'N305':1.962612,59:4.786055)'N304':2.414877)'N297':2.158287[%note = 'string:SIGMORE'],((60:3.386899,61:3.386899)'N308':2.914366,62:6.301264)'N307':3.057954)'N296':2.751341[%note = 'string:SIGMORE'],(((((63:1.246368,64:1.246368)'N313':0.399737,65:1.646105)'N312':1.100165,66:2.746270)'N311':0.345551,67:3.091822)'N310':2.892616,68:5.984437)'N309':6.126122)'N295':5.964149[%note = 'string:SIGMORE'],((69:4.680302,70:4.680302)'N315':4.304718,71:8.985020)'N314':9.089688)'N294':8.918077[%note = 'string:SIGMORE'],(((72:4.490669,73:4.490669)'N318':4.551050,74:9.041718)'N317':8.967016[%note = 'string:SIGMORE'],(75:8.980288,76:8.980288)'N319':9.028448)'N316':8.984051[%note = 'string:SIGMORE'])'N293':9.014338[%note = 'string:SIGMORE'])'N245':8.992876,((((((77:3.413505,78:3.413505)'N325':2.407118,(79:3.445068,80:3.445068)'N326':2.375555)'N324':3.185740,81:9.006363)'N323':8.986108,(82:9.011610,83:9.011610)'N327':8.980860)'N322':9.007884,84:27.000355)'N321':9.008812,85:36.009167)'N320':8.990834)'N244':1.699246,((((86:7.896177,87:7.896177)'N331':7.832697,88:15.728874)'N330':7.895548,(89:11.784919,90:11.784919)'N332':11.839503)'N329':7.812593,(91:15.737842,92:15.737842)'N333':15.699174)'N328':15.262231)'N243':1.874298,(93:24.709427,94:24.709427)'N334':23.864117)'N242':2.728007,((((95:3.439976,96:3.439976)'N338':2.845381,97:6.285356)'N337':6.708996,98:12.994352)'N336':12.810320,99:25.804672)'N335':25.496880)'N241':2.782907,(((((((((((((100:1.831049,101:1.831049)'N351':0.494036,((102:1.662593,103:1.662593)'N353':0.304609,104:1.967202)'N352':0.357882)'N350':0.462055,(((105:1.737458,106:1.737458)'N356':0.359941,107:2.097399)'N355':0.377785,(108:2.118153,109:2.118153)'N357':0.357031)'N354':0.311956)'N349':0.504778,(((110:1.940554,111:1.940554)'N360':0.342166,112:2.282720)'N359':0.419925,113:2.702645)'N358':0.589273)'N348':1.197567,114:4.489484)'N347':4.483460,(((115:2.197636,116:2.197636)'N363':1.064225,117:3.261860)'N362':2.574812,(118:3.405201,119:3.405201)'N364':2.431471)'N361':3.136272)'N346':3.011769,(((((120:2.233490,121:2.233490)'N369':0.639438,122:2.872928)'N368':0.685240,(123:2.679896,124:2.679896)'N370':0.878271)'N367':2.471935,(125:3.186563,126:3.186563)'N371':2.843539)'N366':2.888170,(((((127:1.559384,128:1.559384)'N376':0.515691,129:2.075075)'N375':0.457947,130:2.533022)'N374':0.777843,131:3.310864)'N373':1.134227,132:4.445092)'N372':4.473181)'N365':3.066441)'N345':2.967105,((133:3.931427,134:3.931427)'N378':3.540551,135:7.471978)'N377':7.479841)'N344':3.000330[%note = 'string:SIGLESS'],(136:8.987960,137:8.987960)'N379':8.964189)'N343':8.972423[%note = 'string:SIGLESS'],(138:13.466778,139:13.466778)'N380':13.457794)'N342':8.981174[%note = 'string:SIGLESS'],(((((((((140:1.862539,141:1.862539)'N389':0.721318,(142:1.900188,143:1.900188)'N390':0.683670)'N388':0.386579,144:2.970437)'N387':0.698329,(145:2.776256,146:2.776256)'N391':0.892510)'N386':2.189731,(((147:2.807367,148:2.807367)'N394':0.738425,149:3.545792)'N393':0.375402,150:3.921194)'N392':1.937303)'N385':2.107447,151:7.965944)'N384':2.026483,152:9.992426)'N383':9.950112,((153:5.039766,154:5.039766)'N396':4.928947,155:9.968714)'N395':9.973825)'N382':9.977449,((((156:6.015038,157:6.015038)'N400':5.948527,158:11.963565)'N399':5.989187,159:17.952753)'N398':5.977435,((160:6.020607,161:6.020607)'N402':5.944871,162:11.965478)'N401':11.964709)'N397':5.989801)'N381':5.985758[%note = 'string:SIGMORE'])'N341':6.082958,(163:20.941570,164:20.941570)'N403':21.047134)'N340':5.881296,(((165:5.343186,166:5.343186)'N406':10.586606,167:15.929792)'N405':8.030487,168:23.960279)'N404':23.909721[%note = 'string:SIGMORE'])'N339':6.214458)'N240':1.915542,((((((((((169:8.564741,170:8.564741)'N416':4.272874,(171:6.452536,172:6.452536)'N417':6.385080)'N415':4.316765,173:17.154381)'N414':16.354958,(174:17.153440,175:17.153440)'N418':16.355898)'N413':2.677014,(((((176:4.693237,177:4.693237)'N423':1.998949,178:6.692186)'N422':2.300767,(179:4.404673,180:4.404673)'N424':4.588281)'N421':4.488116,181:13.481070)'N420':4.553914,182:18.034983)'N419':18.151369[%note = 'string:SIGMORE'])'N412':1.417344,((183:12.581883,184:12.581883)'N426':12.549829,(185:12.599731,186:12.599731)'N427':12.531981)'N425':12.471985)'N411':2.266609,(((187:5.097166,188:5.097166)'N430':4.759538,189:9.856704)'N429':9.841100,190:19.697803)'N428':20.172503)'N410':1.449806,191:41.320110)'N409':5.446568,((((((192:3.712632,193:3.712632)'N436':3.308274,(194:3.669905,195:3.669905)'N437':3.351000)'N435':3.575774,(196:5.340569,197:5.340569)'N438':5.256111)'N434':5.332590,(198:8.096447,199:8.096447)'N439':7.832822)'N433':5.326903,(200:10.613228,201:10.613228)'N440':10.642944)'N432':16.798338,((202:15.655497,203:15.655497)'N442':15.643042,204:31.298538)'N441':6.755971)'N431':8.712170[%note = 'string:SIGMORE'])'N408':7.387681,((((((((((((205:1.055534,206:1.055534)'N454':0.281183,207:1.336717)'N453':0.395765,208:1.732482)'N452':0.318133,((209:0.959295,210:0.959295)'N456':0.745605,211:1.704900)'N455':0.345715)'N451':0.428383,212:2.478997)'N450':0.892819,(213:1.774019,214:1.774019)'N457':1.597797)'N449':1.350673,215:4.722490)'N448':3.131562,(((216:1.350526,217:1.350526)'N460':1.251384,218:2.601910)'N459':2.986474,(219:2.901143,220:2.901143)'N461':2.687241)'N458':2.265668)'N447':4.241105,((((221:1.489366,222:1.489366)'N465':1.674700,223:3.164066)'N464':0.678129,224:3.842195)'N463':4.049419,(((225:2.521034,226:2.521034)'N468':0.660588,227:3.181622)'N467':3.707983,228:6.889605)'N466':1.002009)'N462':4.203544)'N446':4.004559[%note = 'string:SIGLESS'],229:16.099716)'N445':16.134417[%note = 'string:SIGLESS'],(230:16.111977,231:16.111977)'N469':16.122154)'N444':16.085867[%note = 'string:SIGLESS'],((((232:5.533971,233:5.533971)'N473':5.122393,(234:5.587350,235:5.587350)'N474':5.069013)'N472':5.452769,236:16.109133)'N471':16.124142,(237:16.116661,238:16.116661)'N475':16.116613)'N470':16.086725)'N443':5.834361[%note = 'string:SIGLESS'])'N407':1.845639)'N239':0.000000;
+	TREE NodeSig_nonhost = (((((((((((((((((1:1.782132,2:1.782132)'N255':0.468263,3:2.250395)'N254':0.431538,(4:2.213548,5:2.213548)'N256':0.468385)'N253':0.528156,(6:2.405256,7:2.405256)'N257':0.804833)'N252':0.779748,((8:1.923393,9:1.923393)'N259':0.639406,10:2.562799)'N258':1.427038)'N251':2.290648,(((((11:1.737453,12:1.737453)'N264':0.504871,13:2.242324)'N263':0.530471,14:2.772795)'N262':0.523209,(15:2.462961,16:2.462961)'N265':0.833043)'N261':1.153091,(17:3.127534,18:3.127534)'N266':1.321560)'N260':1.831389)'N250':1.756179,(((((19:1.445482,20:1.445482)'N271':0.739556,21:2.185038)'N270':0.514983,22:2.700021)'N269':0.587569,((23:0.924837,24:0.924837)'N273':1.814320,25:2.739157)'N272':0.548432)'N268':0.943141,26:4.230730)'N267':3.805933)'N249':3.919283,((((27:2.925145,28:2.925145)'N277':0.800486,(29:3.230637,30:3.230637)'N278':0.494994)'N276':2.259176,(31:3.247886,32:3.247886)'N279':2.736921)'N275':3.027047,33:9.011855)'N274':2.944091)'N248':4.058934,((((34:2.965374,35:2.965374)'N283':1.024185,36:3.989560)'N282':1.785039,(37:3.384822,38:3.384822)'N284':2.389776)'N281':2.271385,39:8.045983)'N280':7.968897)'N247':7.978289[%note = 'string:SIGMORE'],((((((40:2.332264,41:2.332264)'N290':0.352566,42:2.684831)'N289':0.431317,43:3.116147)'N288':0.673330,((44:2.435204,45:2.435204)'N292':0.597600,46:3.032804)'N291':0.756674)'N287':2.257346,47:6.046824)'N286':5.939868,48:11.986691)'N285':12.006477)'N246':12.013954[%note = 'string:SIGMORE'],(((((((((49:2.206585,50:2.206585)'N301':0.385330,(51:2.176871,52:2.176871)'N302':0.415045)'N300':0.433064,53:3.024980)'N299':1.591316,(54:2.996149,55:2.996149)'N303':1.620147)'N298':2.584635[%note = 'string:SIGLESS'],(((56:2.246738,57:2.246738)'N306':0.576704,58:2.823442)'N305':1.962612,59:4.786055)'N304':2.414877)'N297':2.158287[%note = 'string:SIGLESS'],((60:3.386899,61:3.386899)'N308':2.914366,62:6.301264)'N307':3.057954)'N296':2.751341[%note = 'string:SIGLESS'],(((((63:1.246368,64:1.246368)'N313':0.399737,65:1.646105)'N312':1.100165,66:2.746270)'N311':0.345551,67:3.091822)'N310':2.892616,68:5.984437)'N309':6.126122)'N295':5.964149[%note = 'string:SIGLESS'],((69:4.680302,70:4.680302)'N315':4.304718,71:8.985020)'N314':9.089688)'N294':8.918077[%note = 'string:SIGLESS'],(((72:4.490669,73:4.490669)'N318':4.551050,74:9.041718)'N317':8.967016[%note = 'string:SIGLESS'],(75:8.980288,76:8.980288)'N319':9.028448)'N316':8.984051[%note = 'string:SIGLESS'])'N293':9.014338[%note = 'string:SIGLESS'])'N245':8.992876,((((((77:3.413505,78:3.413505)'N325':2.407118,(79:3.445068,80:3.445068)'N326':2.375555)'N324':3.185740,81:9.006363)'N323':8.986108,(82:9.011610,83:9.011610)'N327':8.980860)'N322':9.007884,84:27.000355)'N321':9.008812,85:36.009167)'N320':8.990834)'N244':1.699246,((((86:7.896177,87:7.896177)'N331':7.832697,88:15.728874)'N330':7.895548,(89:11.784919,90:11.784919)'N332':11.839503)'N329':7.812593,(91:15.737842,92:15.737842)'N333':15.699174)'N328':15.262231)'N243':1.874298,(93:24.709427,94:24.709427)'N334':23.864117)'N242':2.728007,((((95:3.439976,96:3.439976)'N338':2.845381,97:6.285356)'N337':6.708996,98:12.994352)'N336':12.810320,99:25.804672)'N335':25.496880)'N241':2.782907,(((((((((((((100:1.831049,101:1.831049)'N351':0.494036,((102:1.662593,103:1.662593)'N353':0.304609,104:1.967202)'N352':0.357882)'N350':0.462055,(((105:1.737458,106:1.737458)'N356':0.359941,107:2.097399)'N355':0.377785,(108:2.118153,109:2.118153)'N357':0.357031)'N354':0.311956)'N349':0.504778,(((110:1.940554,111:1.940554)'N360':0.342166,112:2.282720)'N359':0.419925,113:2.702645)'N358':0.589273)'N348':1.197567,114:4.489484)'N347':4.483460,(((115:2.197636,116:2.197636)'N363':1.064225,117:3.261860)'N362':2.574812,(118:3.405201,119:3.405201)'N364':2.431471)'N361':3.136272)'N346':3.011769,(((((120:2.233490,121:2.233490)'N369':0.639438,122:2.872928)'N368':0.685240,(123:2.679896,124:2.679896)'N370':0.878271)'N367':2.471935,(125:3.186563,126:3.186563)'N371':2.843539)'N366':2.888170,(((((127:1.559384,128:1.559384)'N376':0.515691,129:2.075075)'N375':0.457947,130:2.533022)'N374':0.777843,131:3.310864)'N373':1.134227,132:4.445092)'N372':4.473181)'N365':3.066441)'N345':2.967105,((133:3.931427,134:3.931427)'N378':3.540551,135:7.471978)'N377':7.479841)'N344':3.000330[%note = 'string:SIGMORE'],(136:8.987960,137:8.987960)'N379':8.964189)'N343':8.972423[%note = 'string:SIGMORE'],(138:13.466778,139:13.466778)'N380':13.457794)'N342':8.981174[%note = 'string:SIGMORE'],(((((((((140:1.862539,141:1.862539)'N389':0.721318,(142:1.900188,143:1.900188)'N390':0.683670)'N388':0.386579,144:2.970437)'N387':0.698329,(145:2.776256,146:2.776256)'N391':0.892510)'N386':2.189731,(((147:2.807367,148:2.807367)'N394':0.738425,149:3.545792)'N393':0.375402,150:3.921194)'N392':1.937303)'N385':2.107447,151:7.965944)'N384':2.026483,152:9.992426)'N383':9.950112,((153:5.039766,154:5.039766)'N396':4.928947,155:9.968714)'N395':9.973825)'N382':9.977449,((((156:6.015038,157:6.015038)'N400':5.948527,158:11.963565)'N399':5.989187,159:17.952753)'N398':5.977435,((160:6.020607,161:6.020607)'N402':5.944871,162:11.965478)'N401':11.964709)'N397':5.989801)'N381':5.985758[%note = 'string:SIGLESS'])'N341':6.082958,(163:20.941570,164:20.941570)'N403':21.047134)'N340':5.881296,(((165:5.343186,166:5.343186)'N406':10.586606,167:15.929792)'N405':8.030487,168:23.960279)'N404':23.909721[%note = 'string:SIGLESS'])'N339':6.214458)'N240':1.915542,((((((((((169:8.564741,170:8.564741)'N416':4.272874,(171:6.452536,172:6.452536)'N417':6.385080)'N415':4.316765,173:17.154381)'N414':16.354958,(174:17.153440,175:17.153440)'N418':16.355898)'N413':2.677014,(((((176:4.693237,177:4.693237)'N423':1.998949,178:6.692186)'N422':2.300767,(179:4.404673,180:4.404673)'N424':4.588281)'N421':4.488116,181:13.481070)'N420':4.553914,182:18.034983)'N419':18.151369[%note = 'string:SIGLESS'])'N412':1.417344,((183:12.581883,184:12.581883)'N426':12.549829,(185:12.599731,186:12.599731)'N427':12.531981)'N425':12.471985)'N411':2.266609,(((187:5.097166,188:5.097166)'N430':4.759538,189:9.856704)'N429':9.841100,190:19.697803)'N428':20.172503)'N410':1.449806,191:41.320110)'N409':5.446568,((((((192:3.712632,193:3.712632)'N436':3.308274,(194:3.669905,195:3.669905)'N437':3.351000)'N435':3.575774,(196:5.340569,197:5.340569)'N438':5.256111)'N434':5.332590,(198:8.096447,199:8.096447)'N439':7.832822)'N433':5.326903,(200:10.613228,201:10.613228)'N440':10.642944)'N432':16.798338,((202:15.655497,203:15.655497)'N442':15.643042,204:31.298538)'N441':6.755971)'N431':8.712170[%note = 'string:SIGLESS'])'N408':7.387681,((((((((((((205:1.055534,206:1.055534)'N454':0.281183,207:1.336717)'N453':0.395765,208:1.732482)'N452':0.318133,((209:0.959295,210:0.959295)'N456':0.745605,211:1.704900)'N455':0.345715)'N451':0.428383,212:2.478997)'N450':0.892819,(213:1.774019,214:1.774019)'N457':1.597797)'N449':1.350673,215:4.722490)'N448':3.131562,(((216:1.350526,217:1.350526)'N460':1.251384,218:2.601910)'N459':2.986474,(219:2.901143,220:2.901143)'N461':2.687241)'N458':2.265668)'N447':4.241105,((((221:1.489366,222:1.489366)'N465':1.674700,223:3.164066)'N464':0.678129,224:3.842195)'N463':4.049419,(((225:2.521034,226:2.521034)'N468':0.660588,227:3.181622)'N467':3.707983,228:6.889605)'N466':1.002009)'N462':4.203544)'N446':4.004559[%note = 'string:SIGMORE'],229:16.099716)'N445':16.134417[%note = 'string:SIGMORE'],(230:16.111977,231:16.111977)'N469':16.122154)'N444':16.085867[%note = 'string:SIGMORE'],((((232:5.533971,233:5.533971)'N473':5.122393,(234:5.587350,235:5.587350)'N474':5.069013)'N472':5.452769,236:16.109133)'N471':16.124142,(237:16.116661,238:16.116661)'N475':16.116613)'N470':16.086725)'N443':5.834361[%note = 'string:SIGMORE'])'N407':1.845639)'N239':0.000000;
+END;
+
+BEGIN PHYLOCOM;
+	TITLE Phylocom_Main;
+	DATA
+host	1	Quercus_wislizeni
+host	1	Quercus_velutina
+host	1	Quercus_variabilis
+host	1	Quercus_suber
+host	1	Quercus_stellata
+host	1	Quercus_shumardii
+host	1	Quercus_serrata
+host	1	Quercus_rubra
+host	1	Quercus_robur
+host	1	Quercus_pyrenaica
+host	1	Quercus_pubescens
+host	1	Quercus_prinoides
+host	1	Quercus_phellos
+host	1	Quercus_petraea
+host	1	Quercus_peduncularis
+host	1	Quercus_muehlenbergii
+host	1	Quercus_mongolica
+host	1	Quercus_michauxii
+host	1	Quercus_marilandica
+host	1	Quercus_macrocarpa
+host	1	Quercus_macranthera
+host	1	Quercus_lyrata
+host	1	Quercus_kelloggii
+host	1	Quercus_ithaburensis
+host	1	Quercus_infectoria
+host	1	Quercus_imbricaria
+host	1	Quercus_ilicifolia
+host	1	Quercus_ilex
+host	1	Quercus_hypoleucoides
+host	1	Quercus_grisea
+host	1	Quercus_frainetto
+host	1	Quercus_floribunda
+host	1	Quercus_falcata
+host	1	Quercus_faginea
+host	1	Quercus_emoryi
+host	1	Quercus_durata
+host	1	Quercus_dentata
+host	1	Quercus_dalechampii
+host	1	Quercus_conzattii
+host	1	Quercus_coccinea
+host	1	Quercus_coccifera
+host	1	Quercus_chrysolepis
+host	1	Quercus_cerris
+host	1	Quercus_castaneifolia
+host	1	Quercus_bicolor
+host	1	Quercus_arizonica
+host	1	Quercus_alnifolia
+host	1	Quercus_alba
+host	1	Quercus_agrifolia
+host	1	Quercus_acutissima
+nonhost	1	Quercus_yiwuensis
+nonhost	1	Quercus_vulcanica
+nonhost	1	Quercus_virginiana
+nonhost	1	Quercus_viminea
+nonhost	1	Quercus_vaseyana
+nonhost	1	Quercus_vacciniifolia
+nonhost	1	Quercus_uxoris
+nonhost	1	Quercus_utilis
+nonhost	1	Quercus_urbani
+nonhost	1	Quercus_turbinella
+nonhost	1	Quercus_trojana
+nonhost	1	Quercus_toumeyi
+nonhost	1	Quercus_tomentella
+nonhost	1	Quercus_texana
+nonhost	1	Quercus_subspathulata
+nonhost	1	Quercus_striatula
+nonhost	1	Quercus_stewardiana
+nonhost	1	Quercus_sp.nov.
+nonhost	1	Quercus_sinuata
+nonhost	1	Quercus_similis
+nonhost	1	Quercus_sideroxyla
+nonhost	1	Quercus_setulosa
+nonhost	1	Quercus_sessilifolia
+nonhost	1	Quercus_senescens
+nonhost	1	Quercus_semecarpifolia
+nonhost	1	Quercus_segoviensis
+nonhost	1	Quercus_seemannii
+nonhost	1	Quercus_scytophylla
+nonhost	1	Quercus_schottkyana
+nonhost	1	Quercus_sartorii
+nonhost	1	Quercus_sapotifolia
+nonhost	1	Quercus_salicina
+nonhost	1	Quercus_sagrana
+nonhost	1	Quercus_sadleriana
+nonhost	1	Quercus_rugosa
+nonhost	1	Quercus_rotundifolia
+nonhost	1	Quercus_rex
+nonhost	1	Quercus_resinosa
+nonhost	1	Quercus_rehderiana
+nonhost	1	Quercus_radiata
+nonhost	1	Quercus_purulhana
+nonhost	1	Quercus_pungens
+nonhost	1	Quercus_pumila
+nonhost	1	Quercus_potosina
+nonhost	1	Quercus_pontica
+nonhost	1	Quercus_polymorpha
+nonhost	1	Quercus_poilanei
+nonhost	1	Quercus_planipocula
+nonhost	1	Quercus_pinnativenulosa
+nonhost	1	Quercus_phillyreoides
+nonhost	1	Quercus_phanera
+nonhost	1	Quercus_parvula
+nonhost	1	Quercus_palustris
+nonhost	1	Quercus_palmeri
+nonhost	1	Quercus_pagoda
+nonhost	1	Quercus_pacifica
+nonhost	1	Quercus_pachyloma
+nonhost	1	Quercus_oxyodon
+nonhost	1	Quercus_oleoides
+nonhost	1	Quercus_oglethorpensis
+nonhost	1	Quercus_obtusata
+nonhost	1	Quercus_oblongifolia
+nonhost	1	Quercus_nigra
+nonhost	1	Quercus_new_species
+nonhost	1	Quercus_myrtifolia
+nonhost	1	Quercus_myrsinifolia
+nonhost	1	Quercus_montana
+nonhost	1	Quercus_monimotricha
+nonhost	1	Quercus_mohriana
+nonhost	1	Quercus_minima
+nonhost	1	Quercus_mexicana
+nonhost	1	Quercus_mcvaughii
+nonhost	1	Quercus_martinezii
+nonhost	1	Quercus_margarettae
+nonhost	1	Quercus_magnoliifolia
+nonhost	1	Quercus_macrocalyx
+nonhost	1	Quercus_lusitanica
+nonhost	1	Quercus_look
+nonhost	1	Quercus_longispica
+nonhost	1	Quercus_lobata
+nonhost	1	Quercus_litoralis
+nonhost	1	Quercus_lineata
+nonhost	1	Quercus_liebmannii
+nonhost	1	Quercus_libani
+nonhost	1	Quercus_laurina
+nonhost	1	Quercus_laurifolia
+nonhost	1	Quercus_langbianensis
+nonhost	1	Quercus_lancifolia
+nonhost	1	Quercus_lamellosa
+nonhost	1	Quercus_laevis
+nonhost	1	Quercus_laeta
+nonhost	1	Quercus_laceyi
+nonhost	1	Quercus_kouangsiensis
+nonhost	1	Quercus_kotschyana
+nonhost	1	Quercus_kerrii
+nonhost	1	Quercus_jonesii
+nonhost	1	Quercus_johntuckeri
+nonhost	1	Quercus_jenseniana
+nonhost	1	Quercus_insignis
+nonhost	1	Quercus_inopina
+nonhost	1	Quercus_incana
+nonhost	1	Quercus_iltisii
+nonhost	1	Quercus_hypargyrea
+nonhost	1	Quercus_humboldtii
+nonhost	1	Quercus_hinckleyi
+nonhost	1	Quercus_hemisphaerica
+nonhost	1	Quercus_havardii
+nonhost	1	Quercus_hartwissiana
+nonhost	1	Quercus_guyavifolia
+nonhost	1	Quercus_griffithii
+nonhost	1	Quercus_greggii
+nonhost	1	Quercus_gravesii
+nonhost	1	Quercus_grahamii
+nonhost	1	Quercus_glaucoides
+nonhost	1	Quercus_glaucescens
+nonhost	1	Quercus_glabrescens
+nonhost	1	Quercus_gilva
+nonhost	1	Quercus_germana
+nonhost	1	Quercus_georgiana
+nonhost	1	Quercus_geminata
+nonhost	1	Quercus_garryana
+nonhost	1	Quercus_fusiformis
+nonhost	1	Quercus_fulva
+nonhost	1	Quercus_franchetii
+nonhost	1	Quercus_fabrei
+nonhost	1	Quercus_engleriana
+nonhost	1	Quercus_engelmannii
+nonhost	1	Quercus_elliptica
+nonhost	1	Quercus_ellipsoidalis
+nonhost	1	Quercus_eduardi
+nonhost	1	Quercus_durifolia
+nonhost	1	Quercus_dumosa
+nonhost	1	Quercus_douglasii
+nonhost	1	Quercus_dolicholepis
+nonhost	1	Quercus_diversifolia
+nonhost	1	Quercus_deserticola
+nonhost	1	Quercus_delgadoana
+nonhost	1	Quercus_delavayi
+nonhost	1	Quercus_daimingshanensis
+nonhost	1	Quercus_crispifolia
+nonhost	1	Quercus_crenata
+nonhost	1	Quercus_crassipes
+nonhost	1	Quercus_crassifolia
+nonhost	1	Quercus_costaricensis
+nonhost	1	Quercus_cortesii
+nonhost	1	Quercus_corrugata
+nonhost	1	Quercus_corneliusmulleri
+nonhost	1	Quercus_copeyensis
+nonhost	1	Quercus_confertifolia
+nonhost	1	Quercus_ciliaris
+nonhost	1	Quercus_chungii
+nonhost	1	Quercus_chrysocalyx
+nonhost	1	Quercus_chihuahuensis
+nonhost	1	Quercus_chenii
+nonhost	1	Quercus_chapmanii
+nonhost	1	Quercus_championii
+nonhost	1	Quercus_cedrosensis
+nonhost	1	Quercus_castanea
+nonhost	1	Quercus_canbyi
+nonhost	1	Quercus_canariensis
+nonhost	1	Quercus_calophylla
+nonhost	1	Quercus_buckleyi
+nonhost	1	Quercus_brantii
+nonhost	1	Quercus_brandegeei
+nonhost	1	Quercus_boyntonii
+nonhost	1	Quercus_blakei
+nonhost	1	Quercus_berberidifolia
+nonhost	1	Quercus_benthamii
+nonhost	1	Quercus_bella
+nonhost	1	Quercus_baronii
+nonhost	1	Quercus_baloot
+nonhost	1	Quercus_austrocochinchinensis
+nonhost	1	Quercus_austrina
+nonhost	1	Quercus_augustini
+nonhost	1	Quercus_aucheri
+nonhost	1	Quercus_asymmetrica
+nonhost	1	Quercus_arkansana
+nonhost	1	Quercus_aristata
+nonhost	1	Quercus_arbutifolia
+nonhost	1	Quercus_annulata
+nonhost	1	Quercus_aliena
+nonhost	1	Quercus_ajoensis
+nonhost	1	Quercus_affinis
+nonhost	1	Quercus_afares
+nonhost	1	Quercus_acutifolia
+nonhost	1	Quercus_acuta
+nonhost	1	Quercus_acrodonta
+nonhost	1	Quercus_acerifolia
+;
+END;

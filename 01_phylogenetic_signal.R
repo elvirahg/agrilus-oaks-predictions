@@ -246,7 +246,7 @@ entries[entries$oak.sp == "Q. new species", ]$no.entries <- 0
 
 # B) LOAD  REST OF DATA
 # Read nexus tree created with phylocom nodesig (first tree: host status info)
-oak_nodesig <- read.nexus("input/quercus_nodesig_result.nex")[[1]]
+oak_nodesig <- read.nexus("results/quercus_nodesig_result.nex")[[1]]
 
 # Repace "Quercus" for "Q." (tip labels) and "_" for " "
 oak_nodesig$tip.label <- gsub(pattern = "Quercus_", replacement = "Q. ",

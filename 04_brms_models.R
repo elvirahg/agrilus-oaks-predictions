@@ -112,7 +112,7 @@ agrilus_hosts <- agrilus_hosts[-(which((agrilus_hosts$plant.sp == "Corylus avell
 
 # iv) Create phylogenetic cov matrix
 # Read nexus tree created with phylocom nodesig (first tree: host status info)
-oak_phylo <- read.nexus("input/quercus_nodesig_result.nex")[[1]]
+oak_phylo <- read.nexus("results/quercus_nodesig_result.nex")[[1]]
 # plot(oak_phylo)
 
 # Edit node label information

@@ -322,9 +322,9 @@ plant_spp[!(plant_spp %in% unique(plant_geo_clean$species))]
 ## REMOVE NON-RELEVANT FIELDS AND SUBSAMPLE SPECIES WITH > 100K ENTRIES
 # Only keep species, latitude, and longitude colums
 plant_geo_clean <- plant_geo_clean[, c("species",
-                                       "decimalLatitude",
-                                       "decimalLongitude")]
-colnames(plant_geo_clean) <- c("plant.sp", "lat", "lon")
+                                       "decimalLongitude",
+                                       "decimalLatitude")]
+colnames(plant_geo_clean) <- c("plant.sp", "lon", "lat")
 
 # Subsample all spp. to =< 100k entries (so that downstream analyses can run)
 plant_geo_clean <- plant_geo_clean |>

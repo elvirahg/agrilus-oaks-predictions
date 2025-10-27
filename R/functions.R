@@ -481,8 +481,8 @@ add_species_centroid <- function(df,
                                  iso3,
                                  region = NULL,
                                  col_species = "species",
-                                 col_lat = "lat",
-                                 col_lon = "lon") {
+                                 col_lon = "lon",
+                                 col_lat = "lat") {
   # Subset country/region
   if (is.null(region)) {
     coords <- subset(CoordinateCleaner::countryref,
@@ -496,9 +496,9 @@ add_species_centroid <- function(df,
 
   # Combine into a data frame
   new_row <- data.frame(species_name,
-                        coords$centroid.lat,
-                        coords$centroid.lon)
-  colnames(new_row) <- c(col_species, col_lat, col_lon)
+                        coords$centroid.lon,
+                        coords$centroid.lat)
+  colnames(new_row) <- c(col_species, col_lon, col_lat)
 
   # Append to existing dataset
   rbind(df, new_row)

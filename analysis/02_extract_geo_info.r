@@ -1,6 +1,4 @@
 #### SET ENVIRONMENT ####
-.libPaths("/Users/eh21/Desktop/Work/phd/r-packages/r-4-4-3")
-
 # Custom functions
 source("R/functions.R")
 
@@ -271,7 +269,6 @@ plant_spp[!(plant_spp %in% unique(plant_geo_clean$species))]
 plant_geo_clean$countryCode <- countrycode::countrycode(plant_geo_clean$countryCode,
                                                         origin =  "iso2c",
                                                         destination = "iso3c")
-
 
 # Use CoordinateCleaner to flag problematic entries. Issues being flagged:
 # * CAPITALS: tests a radius around adm-0 capitals

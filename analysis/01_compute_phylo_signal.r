@@ -1,9 +1,14 @@
+#### SET ENVIRONMENT ####
 .libPaths("/Users/eh21/Desktop/Work/phd/r-packages/r-4-4-3")
+
+# Custom functions
 source("R/functions.R")
 
+# Libraries
 library(ggplot2)
 library(ggtree)
 library(dplyr)
+
 
 #### COMPUTE FRITZ AND PURVIS' D SINAL ####
 ## READ IN AND CLEAN PHYLOGENETIC TREE
@@ -62,7 +67,6 @@ axis(side = 1, lwd = 3, lab = FALSE)
 box(lwd = 3)
 
 
-
 #### EXTRACT GBIF OAK AND HOST DATA ####
 ## EXTRACT GBIF KEYS FOR OAK SPECIES IN THE PHYLOGENY
 # Get GBIF keys for oak species in phylogeny
@@ -116,6 +120,7 @@ oak_gbif_entries <- data.frame(species = oak_gbif_keys$species,
 
 nov_spp <- c("Quercus sp. nov. QUE000227", "Quercus sp. nov. QUE001568")
 oak_gbif_entries$no.entries[oak_gbif_entries$species %in% nov_spp] <- 0
+
 
 #### PLOT HOT CLADES ####
 ## PLOT HOT CLADES
@@ -197,6 +202,3 @@ oak_ggtree_gbif <- oak_ggtree_hosts %<+% oak_gbif_entries +
   theme(legend.position = c(0.9, 0.95))
 
 oak_ggtree_gbif
-
-
-#### XXXXXXX ####

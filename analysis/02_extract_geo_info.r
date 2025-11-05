@@ -40,7 +40,7 @@ oak_gbif_keys <- get_gbif_keys(oak_phylo$tip.label, higher_taxon = "220")
 # * Q. faginea, Q. petraea, Q. pyrenaica, Q. imbricaria, Q. rubra, Q. palustris,
 # and Q. acuta: function above recognises another spp. first instead
 # * Q. ×crenata: name does not match
-# * Q. litoralis: Atuna excelsa subsp. excelsa. in GBIF
+# * Q. litoralis: Atuna excelsa subsp. excelsa in GBIF
 manual_oak_keys <- c(
   "Quercus sp. nov. QUE000227"        = NA,
   "Quercus faginea"                   = 2881480,

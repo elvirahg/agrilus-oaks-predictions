@@ -1,6 +1,4 @@
 #### SET ENVIRONMENT ####
-.libPaths("/Users/eh21/Desktop/Work/phd/r-packages/r-4-4-3")
-
 # Custom functions
 source("R/functions.R")
 
@@ -42,7 +40,7 @@ oak_gbif_keys <- get_gbif_keys(oak_phylo$tip.label, higher_taxon = "220")
 # * Q. faginea, Q. petraea, Q. pyrenaica, Q. imbricaria, Q. rubra, Q. palustris,
 # and Q. acuta: function above recognises another spp. first instead
 # * Q. ×crenata: name does not match
-# * Q. litoralis: Atuna excelsa subsp. excelsa. in GBIF
+# * Q. litoralis: Atuna excelsa subsp. excelsa in GBIF
 manual_oak_keys <- c(
   "Quercus sp. nov. QUE000227"        = NA,
   "Quercus faginea"                   = 2881480,
@@ -272,7 +270,6 @@ plant_geo_clean$countryCode <- countrycode::countrycode(plant_geo_clean$countryC
                                                         origin =  "iso2c",
                                                         destination = "iso3c")
 
-
 # Use CoordinateCleaner to flag problematic entries. Issues being flagged:
 # * CAPITALS: tests a radius around adm-0 capitals
 # * CENTROIDS: tests a radius around country & province centroids
@@ -325,9 +322,9 @@ plant_spp[!(plant_spp %in% unique(plant_geo_clean$species))]
 ## REMOVE NON-RELEVANT FIELDS AND SUBSAMPLE SPECIES WITH > 100K ENTRIES
 # Only keep species, latitude, and longitude colums
 plant_geo_clean <- plant_geo_clean[, c("species",
-                                       "decimalLatitude",
-                                       "decimalLongitude")]
-colnames(plant_geo_clean) <- c("plant.sp", "lat", "lon")
+                                       "decimalLongitude",
+                                       "decimalLatitude")]
+colnames(plant_geo_clean) <- c("plant.sp", "lon", "lat")
 
 # Subsample all spp. to =< 100k entries (so that downstream analyses can run)
 plant_geo_clean <- plant_geo_clean |>

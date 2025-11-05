@@ -1,6 +1,4 @@
 #### SET ENVIRONMENT ####
-.libPaths("/Users/eh21/Desktop/Work/phd/r-packages/r-4-4-3")
-
 # Custom functions
 source("R/functions.R")
 

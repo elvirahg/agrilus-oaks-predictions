@@ -325,6 +325,7 @@ clean_taxon_name <- function(x) {
     trimws()
 }
 
+
 #' Filter GBIF occurrence data based on common quality criteria
 #'
 #' This function filters GBIF occurrence records retrieved via `rgbif`. All

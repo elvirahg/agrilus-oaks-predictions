@@ -2,7 +2,7 @@
 # Custom functions
 source("R/functions.R")
 
-# Libraries
+# Packages
 library(ggplot2)
 library(ggtree)
 library(dplyr)

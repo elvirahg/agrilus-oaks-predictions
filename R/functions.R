@@ -622,7 +622,7 @@ create_interaction_df <- function(known_interactions,
     stop("'hosted_taxa_include' must be a character vector, or NULL")
   }
 
-  # Determine host taxon species to include
+  # Determine host-taxon species to include
   if (is.null(host_taxa_include)) {
     host_taxa_include <- unique(known_interactions[[host_col]])
   } else {
@@ -792,11 +792,11 @@ generate_dist_metrics_df <- function(expanded_interaction_df,
                                      max_dist_km = 30000,
                                      verbose = TRUE,
                                      geodist_quiet = TRUE) {
-  # Type checking
+  # Checks
   if (!is.data.frame(expanded_interaction_df)
       || !is.data.frame(known_interactions_df)
       || !is.data.frame(coords_df)) {
-    stop(paste("'known_interactions_df', coords_df,",
+    stop(paste("'expanded_interaction_df', coords_df,",
                "and 'known_interactions_df' must be data frames"))
   }
   if (!(host_taxon_col %in% colnames(expanded_interaction_df))
@@ -808,7 +808,7 @@ generate_dist_metrics_df <- function(expanded_interaction_df,
   if (!(hosted_taxon_col %in% colnames(expanded_interaction_df))
       || !(hosted_taxon_col %in% colnames(known_interactions_df))) {
     stop(paste("'hosted_taxon_col' must indicate the host taxon column name",
-               "in both 'known_interactions_df' and 'expanded_interaction_df'"))
+               "in both 'expanded_interaction_df' and 'known_interactions_df'"))
   }
   valid_metrics <- c("mean", "median", "norm", "log")
   if (!is.character(metric_type) || !all(metric_type %in% valid_metrics)) {
@@ -984,7 +984,7 @@ precompute_geo_distances <- function(taxa,
                                      measure = "cheap",
                                      verbose = TRUE,
                                      geodist_quiet = TRUE) {
-  # Type checking
+  # Checks
   if (!is.data.frame(coords_df)) {
     stop("'coords_df' must be a data frame")
   }
@@ -1287,4 +1287,124 @@ make_dist_plot <- function(values,
     ) +
     ggplot2::xlab("Index") +
     ggplot2::ylab(ylab_text)
+}
+
+
+#' Calculate mean and minimum phylogenetic distance metrics
+#'
+#' This function calculates mean and minimum phylogenetic distances between each
+#' focal host-taxon species and the known hosts of its associated hosted
+#' species. The phylogenetic distances are derived from the inverse of a
+#' covariance matrix computed from a phylogeny. Distances are rescaled to the
+#' range [0, 1].
+#'
+#' @param expanded_interaction_df A data frame containing all possible
+#' host-taxon species – hosted combinations for which phylogenetic metrics
+#' should be calculated.
+#' @param known_interactions_df A data frame of known interactions, containing
+#' at least the columns specified by `host_taxon_col` and `hosted_taxon_col`.
+#' Used to identify known hosts for each hosted species.
+#' @param phylo A phylogenetic tree of class \code{"phylo"} (from the \pkg{ape}
+#' package). The tree should include all host taxa in its tip labels.
+#' @param host_taxon_col A character string giving the name of the column in
+#' both input data frames that contains the host taxon.
+#' @param hosted_taxon_col A character string giving the name of the column in
+#' both input data frames that contains the hosted taxon.
+#'
+#' @return A data frame identical to `expanded_interaction_df`, with two new
+#'   columns:
+#'   \describe{
+#'     \item{phylo.dist.mean}{Mean phylogenetic distance to known hosts.}
+#'     \item{phylo.dist.min}{Minimum phylogenetic distance to known hosts.}
+#'   }
+#'
+#' @examples
+#' \dontrun{
+#' # Example data
+#' phy <- ape::rtree(5, tip.label = c("A", "B", "C", "D", "E"))
+#' 
+#' known_df <- data.frame(
+#'   host = c("A", "B", "C"),
+#'   hosted = c("X", "X", "Y")
+#' )
+#' expanded_df <- expand.grid(host = c("A", "B", "C", "D", "E"),
+#'                            hosted = c("X", "Y"))
+#'
+#' # Compute phylo metrics
+#' generate_phylo_metrics_df(expanded_df, known_df, phy,
+#'                           host_taxon_col = "host",
+#'                           hosted_taxon_col = "hosted")
+#' }
+#'
+#' @importFrom ape vcv.phylo
+#' @importFrom scales rescale
+#' @export
+generate_phylo_metrics_df <- function(expanded_interaction_df,
+                                      known_interactions_df,
+                                      tree,
+                                      host_taxon_col,
+                                      hosted_taxon_col) {
+  # Checks
+  if (!is.data.frame(expanded_interaction_df)
+      || !is.data.frame(known_interactions_df)) {
+    stop(paste("'expanded_interaction_df', and",
+               "'known_interactions_df' must be data frames"))
+  }
+  if (!(host_taxon_col %in% colnames(expanded_interaction_df))
+      || !(host_taxon_col %in% colnames(known_interactions_df))) {
+    stop(paste("'host_taxon_col' must indicate the host taxon column name in",
+               "both data frames"))
+  }
+  if (!(hosted_taxon_col %in% colnames(expanded_interaction_df))
+      || !(hosted_taxon_col %in% colnames(known_interactions_df))) {
+    stop(paste("'hosted_taxon_col' must indicate the host taxon column name",
+               "in both 'expanded_interaction_df' and 'known_interactions_df'"))
+  }
+  if (!inherits(tree, "phylo") || !("tip.label" %in% names(tree))) {
+    stop("Input tree must be of class 'phylo' and contain a 'tip.label' field")
+  }
+
+  # Create a phylo cov distance matrix (Hadfield & Nakagawa, 2010)
+  phylo_cov <- ape::vcv.phylo(tree)
+  phylo_cov <- max(phylo_cov) - phylo_cov
+
+  results <- expanded_interaction_df
+  results$phylo.dist.mean <- NA
+  results$phylo.dist.min <- NA
+
+  # For every row in the df, calculate the mean phylogenetic distance of
+  # the focal species (taxon) to the hosts of the hosted species
+  for (i in seq_len(nrow(expanded_interaction_df))) {
+    # Extract current host-taxon species and hosted species
+    taxon <- expanded_interaction_df[[host_taxon_col]][i]
+    hosted_sp <- expanded_interaction_df[[hosted_taxon_col]][i]
+
+    # Extract hosts of the given hosted species (excluded focus_sp if host)
+    host_spp <- subset(known_interactions_df,
+                       get(hosted_taxon_col) == hosted_sp
+                       & get(host_taxon_col) != taxon,
+                       select = host_taxon_col)
+    host_spp <- as.character(host_spp[[1]])
+
+    # If the current taxon is the only known host, set the distance to max
+    if (length(host_spp) == 0) {
+      mean_dist <- max(phylo_cov)
+      min_dist <- max(phylo_cov)
+    } else {
+      # Calculate mean/min phylo distance for host-taxon species to the hosts
+      # of the given hosted species
+      cov_rows <- which(rownames(phylo_cov) == taxon)
+      cov_cols <- which(colnames(phylo_cov) %in% host_spp)
+      if (length(cov_rows) != 0 && length(cov_cols) != 0) {
+        mean_dist <- mean(phylo_cov[cov_rows, cov_cols])
+        min_dist <- min(phylo_cov[cov_rows, cov_cols])
+      }
+    }
+    results$phylo.dist.mean[i] <- mean_dist
+    results$phylo.dist.min[i] <- min_dist
+  }
+  # Normalise distances
+  results$phylo.dist.mean <- scales::rescale(results$phylo.dist.mean)
+  results$phylo.dist.min <- scales::rescale(results$phylo.dist.min)
+  results
 }

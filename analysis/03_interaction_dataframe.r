@@ -17,13 +17,13 @@ plant_geo <- read.table("data/tmp/gbif_plants_clean.tsv",
                         sep = "\t")
 
 # Extract info on Agrilus species that use oaks, and their hosts
-agrilus_hosts <- read.table("data/input/agrilus_quercus_hosts.txt",
+agrilus_hosts <- read.table("data/input/quercus_hosts.txt",
                             header = FALSE,
                             sep = "\t")
 colnames(agrilus_hosts) <- c("agrilus", "hosts")
 
 agrilus_hosts <- rbind(agrilus_hosts,
-                       read.table("data/input/non_oak_hosts.tsv",
+                       read.table("data/input/non_quercus_hosts.tsv",
                                   header = TRUE,
                                   sep = "\t"))
 
@@ -32,7 +32,7 @@ agrilus_hosts <- agrilus_hosts[, c("hosts", "agrilus")]
 colnames(agrilus_hosts) <- c("plant.sp", "agrilus.sp")
 
 # Remove hosts not in the phylogeny (Q. gambelii)
-agrilus_hosts <- agrilus_hosts[!grepl("gambelii", agrilus_hosts$plant.sp), ]
+agrilus_hosts <- agrilus_hosts[agrilus_hosts$plant.sp != "Quercus gambelii", ]
 
 # Remove non-native hosts for Agrilus species introduced into new areas
 agrilus_hosts <- agrilus_hosts |>
@@ -77,20 +77,7 @@ interaction_data <- generate_dist_metrics_df(
   max_dist_km = 30000,
 )
 
-# write.table(x = interaction_data,
-#             file = "data/tmp/interaction_data.tsv",
-#             row.names = FALSE,
-#             col.names = TRUE,
-#             sep = "\t",
-#             quote = FALSE)
-
-
-#### EXPLORE RESULTS ####
-# interaction_data <- read.table("data/tmp/interaction_data.tsv",
-#                                header = TRUE,
-#                                sep = "\t")
-
-# Preliminary plots
+# Explore results using preliminary plots
 par(mfrow = c(1, 2))
 hist(interaction_data$min.dist.mean[interaction_data$interaction == 1],
      seq(0, 3e04, length.out = 30),
@@ -110,3 +97,53 @@ plot_geo_dists(interaction_data,
                dist_cols = c("min.dist.mean",
                              "min.dist.mean.norm",
                              "min.dist.mean.log"))
+
+
+#### ADD OAK OCCURRENCE INFO TO INTERACTION DATAFRAME ####
+# Extract no. oak occurrences
+oak_occurrences <- data.frame(table(plant_geo$plant.sp))
+colnames(oak_occurrences) <- c("quercus.sp", "gbif.entries")
+oak_occurrences$quercus.sp <- as.character(oak_occurrences$quercus.sp)
+
+# Append to interaction_data
+interaction_data$gbif.entries <- oak_occurrences$gbif.entries[match(interaction_data$plant.sp,
+                                                                    oak_occurrences$quercus.sp)]
+
+
+#### ADD OAK PHYLO INFO TO INTERACTION DATAFRAME ####
+# Read nexus tree
+oak_phylo <- ape::read.tree("data/input/tr.singletons.correlated.1.taxaGrepCrown_accepted_names.tre")
+
+old_names <- c("Quercus litoralis",
+               "Quercus new",
+               "Quercus sp")
+new_names <- c("Quercus litoralis (Atuna excelsa)",
+               "Quercus sp. nov. QUE000227",
+               "Quercus sp. nov. QUE001568")
+
+oak_phylo <- standardise_phylo(oak_phylo,
+                               old_labels = old_names,
+                               new_labels = new_names,
+                               remove_duplicates = TRUE,
+                               clean_labels = TRUE,
+                               pattern = "^([A-Z][a-z]+)_([×|x]*)_*([a-z-]+).*",
+                               replacement = "\\1 \\2\\3")
+
+
+interaction_data <- generate_phylo_metrics_df(
+  expanded_interaction_df = interaction_data,
+  known_interactions_df = agrilus_hosts,
+  tree = oak_phylo,
+  host_taxon_col = "plant.sp",
+  hosted_taxon_col = "agrilus.sp"
+)
+
+# Compare metrics
+plot(phylo.dist.mean ~ phylo.dist.min, data = interaction_data)
+
+# write.table(x = interaction_data,
+#             file = "data/tmp/interaction_data.tsv",
+#             row.names = FALSE,
+#             col.names = TRUE,
+#             sep = "\t",
+#             quote = FALSE)

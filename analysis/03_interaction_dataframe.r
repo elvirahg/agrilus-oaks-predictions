@@ -111,7 +111,7 @@ interaction_data$gbif.entries <- oak_occurrences$gbif.entries[match(interaction_
 
 
 #### ADD OAK PHYLO INFO TO INTERACTION DATAFRAME ####
-# Read nexus tree
+# Read and clean oak phylogenetic tree
 oak_phylo <- ape::read.tree("data/input/tr.singletons.correlated.1.taxaGrepCrown_accepted_names.tre")
 
 old_names <- c("Quercus litoralis",
@@ -129,7 +129,7 @@ oak_phylo <- standardise_phylo(oak_phylo,
                                pattern = "^([A-Z][a-z]+)_([×|x]*)_*([a-z-]+).*",
                                replacement = "\\1 \\2\\3")
 
-
+# Generate phylogenetic metrics
 interaction_data <- generate_phylo_metrics_df(
   expanded_interaction_df = interaction_data,
   known_interactions_df = agrilus_hosts,

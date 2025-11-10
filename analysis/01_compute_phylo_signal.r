@@ -29,11 +29,11 @@ oak_phylo <- standardise_phylo(oak_phylo,
                                replacement = "\\1 \\2\\3")
 
 ## READ IN HOST DATA AND GENERATE PRESENCE-ABSENCE HOST STATUS DATAFRAME
-oak_host_observations <- read.table("data/input/no_agrilus_quercus_hosts.txt",
+oak_host_observations <- read.table("data/input/quercus_hosts_number_agrilus_hosted.txt",
                                     sep = "\t")
-colnames(oak_host_observations) <- c("quercus.sp", "no.agrilus.spp")
+colnames(oak_host_observations) <- c("quercus_sp", "no_agrilus_spp")
 
-oak_hosts_df <- generate_pres_abs_df(oak_host_observations$quercus.sp,
+oak_hosts_df <- generate_pres_abs_df(oak_host_observations$quercus_sp,
                                      oak_phylo$tip.label)
 
 ## COMPUTE SINGAL
@@ -176,8 +176,8 @@ oak_ggtree <- ggtree::ggtree(oak_nodesig,
 oak_ggtree_hosts <- oak_ggtree + ggnewscale::new_scale_fill() +
   ggtreeExtra::geom_fruit(data = oak_host_observations,
                           geom = geom_bar,
-                          mapping = aes(y = quercus.sp,
-                                        x =  no.agrilus.spp),
+                          mapping = aes(y = quercus_sp,
+                                        x =  no_agrilus_spp),
                           offset = 0.15,
                           pwidth = 0.1,
                           # skip aggregation

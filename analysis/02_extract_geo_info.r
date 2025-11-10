@@ -130,7 +130,7 @@ oak_geo <- do.call(rbind, c(list(oak_geo_initial), manual_oak_geo))
 #### EXTRACT GBIF NON-OAK HOST DATA ####
 ## EXTRACT GBIF KEYS FOR NON-OAK HOSTS
 # Non-oak host species for Agrilus spp. in DS
-plant_hosts <- read.table("data/input/non_oak_hosts.tsv",
+plant_hosts <- read.table("data/input/non_quercus_hosts.tsv",
                           header = TRUE, sep = "\t")
 
 plant_gbif_keys <- get_gbif_keys(unique(plant_hosts$hosts),
@@ -324,11 +324,11 @@ plant_spp[!(plant_spp %in% unique(plant_geo_clean$species))]
 plant_geo_clean <- plant_geo_clean[, c("species",
                                        "decimalLongitude",
                                        "decimalLatitude")]
-colnames(plant_geo_clean) <- c("plant.sp", "lon", "lat")
+colnames(plant_geo_clean) <- c("plant_sp", "lon", "lat")
 
 # Subsample all spp. to =< 100k entries (so that downstream analyses can run)
 plant_geo_clean <- plant_geo_clean |>
-  group_by(plant.sp) |>
+  group_by(plant_sp) |>
   slice_sample(n = 100000) |>
   ungroup()
 
@@ -337,17 +337,17 @@ plant_geo_clean <- plant_geo_clean |>
 plant_geo_clean <- add_species_centroid(df = plant_geo_clean,
                                         species_name = "Quercus sagrana",
                                         iso3 = "CUB",
-                                        col_species = "plant.sp")
+                                        col_species = "plant_sp")
 
 # Q. yiwuensis (SC China: powo.science.kew.org/taxon/urn:lsid:ipni.org:names:360253-1)
 plant_geo_clean <- add_species_centroid(df = plant_geo_clean,
                                         species_name = "Quercus yiwuensis",
                                         iso3 = "CHN",
                                         region = "Hunan",
-                                        col_species = "plant.sp")
+                                        col_species = "plant_sp")
 
 # No missing species
-plant_spp[!(plant_spp %in% unique(plant_geo_clean$plant.sp))]
+plant_spp[!(plant_spp %in% unique(plant_geo_clean$plant_sp))]
 
 # Write table
 # write.table(plant_geo_clean,

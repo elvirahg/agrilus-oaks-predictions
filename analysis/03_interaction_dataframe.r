@@ -29,33 +29,33 @@ agrilus_hosts <- rbind(agrilus_hosts,
 
 # Swap order and rename columns
 agrilus_hosts <- agrilus_hosts[, c("hosts", "agrilus")]
-colnames(agrilus_hosts) <- c("plant.sp", "agrilus.sp")
+colnames(agrilus_hosts) <- c("plant_sp", "agrilus_sp")
 
 # Remove hosts not in the phylogeny (Q. gambelii)
-agrilus_hosts <- agrilus_hosts[agrilus_hosts$plant.sp != "Quercus gambelii", ]
+agrilus_hosts <- agrilus_hosts[agrilus_hosts$plant_sp != "Quercus gambelii", ]
 
 # Remove non-native hosts for Agrilus species introduced into new areas
 agrilus_hosts <- agrilus_hosts |>
-  filter(!(plant.sp == "Quercus agrifolia"
-           & agrilus.sp == "Agrilus auroguttatus"),
-         !(plant.sp == "Quercus macrocarpa"
-           & agrilus.sp == "Agrilus sulcicollis"))
+  filter(!(plant_sp == "Quercus agrifolia"
+           & agrilus_sp == "Agrilus auroguttatus"),
+         !(plant_sp == "Quercus macrocarpa"
+           & agrilus_sp == "Agrilus sulcicollis"))
 
 # Remove larval hosts with a confidence index < 3 in Jendek & Polakova (2014)
 agrilus_hosts <- agrilus_hosts |>
-  filter(!(plant.sp == "Ficus carica" & agrilus.sp == "Agrius obscuricollis"),
-         !(plant.sp == "Quercus robur" & agrilus.sp == "Agrilus relegatus"),
-         !(plant.sp %in% c("Corylus avellana", "Ostrya carpinifolia",
+  filter(!(plant_sp == "Ficus carica" & agrilus_sp == "Agrius obscuricollis"),
+         !(plant_sp == "Quercus robur" & agrilus_sp == "Agrilus relegatus"),
+         !(plant_sp %in% c("Corylus avellana", "Ostrya carpinifolia",
                            "Euonymus europaeus", "Castanea sativa")
-           & agrilus.sp == "Agrilus graminis"))
+           & agrilus_sp == "Agrilus graminis"))
 
 
 #### ADD OAK GEO INFO TO INTERACTION DATAFRAME ####
 # Initialise interaction datafame
-oak_spp <- grep("Quercus", unique(plant_geo$plant.sp), value = TRUE)
+oak_spp <- grep("Quercus", unique(plant_geo$plant_sp), value = TRUE)
 interaction_data <- create_interaction_df(known_interactions = agrilus_hosts,
-                                          host_col = "plant.sp",
-                                          hosted_col = "agrilus.sp",
+                                          host_col = "plant_sp",
+                                          hosted_col = "agrilus_sp",
                                           host_taxa_include = oak_spp,
                                           verbose = TRUE)
 
@@ -69,8 +69,8 @@ interaction_data <- generate_dist_metrics_df(
   expanded_interaction_df = interaction_data,
   coords_df = plant_geo,
   known_interactions_df = agrilus_hosts,
-  host_taxon_col = "plant.sp",
-  hosted_taxon_col = "agrilus.sp",
+  host_taxon_col = "plant_sp",
+  hosted_taxon_col = "agrilus_sp",
   subsample_coords = 10000,
   measure = "cheap",
   metric_type = c("mean", "median", "norm", "log"),
@@ -79,13 +79,13 @@ interaction_data <- generate_dist_metrics_df(
 
 # Explore results using preliminary plots
 par(mfrow = c(1, 2))
-hist(interaction_data$min.dist.mean[interaction_data$interaction == 1],
+hist(interaction_data$geo_min_dist_mean[interaction_data$interaction == 1],
      seq(0, 3e04, length.out = 30),
      col = hcl.colors(1, "Warm"),
      main = "Values for hosts - other hosts of a given species",
      xlab = "mean(min distance to any host of the given species)")
 
-hist(interaction_data$min.dist.mean[interaction_data$interaction == 0],
+hist(interaction_data$geo_min_dist_mean[interaction_data$interaction == 0],
      seq(0, 3e04, length.out = 30),
      col = hcl.colors(1, "Dynamic"),
      main = "Values for non-hosts – hosts of a given species",
@@ -94,20 +94,22 @@ par(mfrow = c(1, 1))
 
 # Plot all thre geo distance metrics to compare them (mean)
 plot_geo_dists(interaction_data,
-               dist_cols = c("min.dist.mean",
-                             "min.dist.mean.norm",
-                             "min.dist.mean.log"))
+               dist_cols = c("geo_min_dist_mean",
+                             "geo_min_dist_mean_norm",
+                             "geo_min_dist_mean_log"))
 
 
 #### ADD OAK OCCURRENCE INFO TO INTERACTION DATAFRAME ####
 # Extract no. oak occurrences
-oak_occurrences <- data.frame(table(plant_geo$plant.sp))
-colnames(oak_occurrences) <- c("quercus.sp", "gbif.entries")
-oak_occurrences$quercus.sp <- as.character(oak_occurrences$quercus.sp)
+oak_occurrences <- data.frame(table(plant_geo$plant_sp))
+colnames(oak_occurrences) <- c("plant_sp", "gbif_entries")
+oak_occurrences$plant_sp <- as.character(oak_occurrences$plant_sp)
 
 # Append to interaction_data
-interaction_data$gbif.entries <- oak_occurrences$gbif.entries[match(interaction_data$plant.sp,
-                                                                    oak_occurrences$quercus.sp)]
+interaction_data <- merge(interaction_data,
+                          oak_occurrences[, c("plant_sp", "gbif_entries")],
+                          by = "plant_sp",
+                          all.x = TRUE)
 
 
 #### ADD OAK PHYLO INFO TO INTERACTION DATAFRAME ####
@@ -134,12 +136,15 @@ interaction_data <- generate_phylo_metrics_df(
   expanded_interaction_df = interaction_data,
   known_interactions_df = agrilus_hosts,
   tree = oak_phylo,
-  host_taxon_col = "plant.sp",
-  hosted_taxon_col = "agrilus.sp"
+  host_taxon_col = "plant_sp",
+  hosted_taxon_col = "agrilus_sp"
 )
 
 # Compare metrics
-plot(phylo.dist.mean ~ phylo.dist.min, data = interaction_data)
+plot(phylo_dist_mean ~ phylo_dist_min, data = interaction_data)
+
+# Rename plant species column, and save tsv
+names(interaction_data)[names(interaction_data) == 'plant_sp'] <- 'quercus_sp'
 
 # write.table(x = interaction_data,
 #             file = "data/tmp/interaction_data.tsv",

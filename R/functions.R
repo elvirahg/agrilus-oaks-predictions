@@ -25,8 +25,8 @@
 #'                           pattern = "^([A-Z])[a-z]+_*([a-z]+).*",
 #'                           replacement = "\\1. \\2",
 #'                           remove_duplicates = TRUE,
-#'                           old_labels = c"Q. maxima",
-#'                           new_labels = "Q. rubra"))
+#'                           old_labels = c"Quercus maxima",
+#'                           new_labels = "Quercus rubra"))
 #' plot(tree)
 #' }
 #'
@@ -43,7 +43,7 @@ standardise_phylo <- function(tree,
     stop("Input tree must be of class 'phylo' and contain a 'tip.label' field")
   }
   if (!is.logical(clean_labels) || length(clean_labels) != 1) {
-    stop("'clean_labels' must be a single boolean")
+    stop("'clean_labels' must be logical")
   }
   if (!is.character(pattern) || length(pattern) != 1) {
     stop("'pattern' must be a single string (regex)")
@@ -52,7 +52,7 @@ standardise_phylo <- function(tree,
     stop("'replacement' must be a single string")
   }
   if (!is.logical(remove_duplicates) || length(remove_duplicates) != 1) {
-    stop("'remove_duplicates' must be a single boolean")
+    stop("'remove_duplicates' must be logical")
   }
 
   # Clean tip labels (for plotting purposes)
@@ -470,7 +470,7 @@ filter_gbif_data <- function(data,
     result <- subset(result,
                      !grepl(pattern = paste(issues, collapse = "|"), issue))
   }
-  return(result)
+  result
 }
 
 
@@ -596,8 +596,8 @@ if (!is.character(col_lon) || !is.character(col_lat)) {
 #' \dontrun{
 #' interaction_df <- create_interaction_df(
 #'   known_interactions = agrilus_hosts,
-#'   host_col = "plant.sp",
-#'   hosted_col = "agrilus.sp"
+#'   host_col = "plant_sp",
+#'   hosted_col = "agrilus_sp"
 #' )
 #' }
 #'
@@ -663,6 +663,8 @@ create_interaction_df <- function(known_interactions,
                                         hosted_taxa_include),
                                    c(host_col, hosted_col)),
                           stringsAsFactors = FALSE)
+  expanded <- as.data.frame(expanded, stringsAsFactors = FALSE)
+  attr(expanded, "out.attrs") <- NULL
 
   # Mark which combinations are known interactions
   expanded$interaction <- as.integer(
@@ -727,13 +729,13 @@ create_interaction_df <- function(known_interactions,
 #'
 #' @return A data frame identical to `expanded_interaction_df` with additional
 #' columns depending on the options specified in `metric_type`:
-#' - `min.dist.mean`: Mean of the minimum distances (km), included if `"mean"`
+#' - `geo_min_dist_mean`: Mean of the minimum distances (km), included if `"mean"`
 #' is selected.
-#' - `min.dist.median`: Median of the minimum distances (km), included if
+#' - `geo_min_dist_median`: Median of the minimum distances (km), included if
 #' `"median"` is selected.
-#' - `min.dist.mean.norm`, `min.dist.median.norm`: Normalised versions,
+#' - `geo_min_dist_mean_norm`, `geo_min_dist_median_norm`: Normalised versions,
 #' included if `"norm"` (and `mean` or `median`, respectively) is selected.
-#' - `min.dist.mean.log`, `min.dist.median.log`: Log-transformed versions,
+#' - `geo_min_dist_mean_log`, `geo_min_dist_median_log`: Log-transformed versions,
 #' included if `"log"` (and `mean` or `median`, respectively) is selected.
 #'
 #' @details
@@ -749,8 +751,8 @@ create_interaction_df <- function(known_interactions,
 #' host_spp <- paste0("Quercus_", LETTERS[1:5])
 #' hosted_spp <- paste0("Agrilus_", LETTERS[1:3])
 #'
-#' interaction_df <- expand.grid(plant.sp = host_spp,
-#'                               agrilus.sp = hosted_spp)
+#' interaction_df <- expand.grid(plant_sp = host_spp,
+#'                               agrilus_sp = hosted_spp)
 #'
 #' interaction_df$interaction <- c(1, 0, 0, 1, 0,
 #'                                 1, 0, 1, 0, 0,
@@ -758,21 +760,21 @@ create_interaction_df <- function(known_interactions,
 #'
 #' coords_df <- do.call(rbind, lapply(host_spp, function(sp) {
 #'   n_ind <- sample(3:5, 1)
-#'   data.frame(plant.sp = sp,
+#'   data.frame(plant_sp = sp,
 #'              lon = runif(n_ind, -10, 10),
 #'              lat = runif(n_ind, 45, 55))
 #' }))
 #'
 #' hosts_df <- subset(interaction_df,
 #'                    interaction == 1,
-#'                    select = c("plant.sp", "agrilus.sp"))
+#'                    select = c("plant_sp", "agrilus_sp"))
 #'
 #' # Calculate distance metrics for an example dataset
 #' results <- generate_dist_metrics_df(expanded_interaction_df = interaction_df,
 #'                                     coords_df = coords_df,
 #'                                     known_interactions_df = hosts_df,
-#'                                     host_taxon_col = "plant.sp",
-#'                                     hosted_taxon_col = "agrilus.sp")
+#'                                     host_taxon_col = "plant_sp",
+#'                                     hosted_taxon_col = "agrilus_sp")
 #' head(results)
 #'
 #' @import dplyr
@@ -847,8 +849,8 @@ generate_dist_metrics_df <- function(expanded_interaction_df,
 
   # Initialise results df
   results <- expanded_interaction_df
-  if ("mean" %in% metric_type) results$min.dist.mean <- NA
-  if ("median" %in% metric_type) results$min.dist.median <- NA
+  if ("mean" %in% metric_type) results$geo_min_dist_mean <- NA
+  if ("median" %in% metric_type) results$geo_min_dist_median <- NA
 
   # subsample geo data frame
   if (!is.null(subsample_coords)) {
@@ -893,8 +895,8 @@ generate_dist_metrics_df <- function(expanded_interaction_df,
         # No hosts other than the current taxon, so set distance to max
         if (verbose) message(taxon, ": no other hosts of ", hosted_sp,
                              "; setting distance to ", max_dist_km)
-        if ("mean" %in% metric_type) results$min.dist.mean[i] <- max_dist_km
-        if ("median" %in% metric_type) results$min.dist.median[i] <- max_dist_km
+        if ("mean" %in% metric_type) results$geo_min_dist_mean[i] <- max_dist_km
+        if ("median" %in% metric_type) results$geo_min_dist_median[i] <- max_dist_km
       } else {
         # Extract all minimum distances for given taxon
         taxon_dists <- dist_lookup[[taxon]]
@@ -922,12 +924,12 @@ generate_dist_metrics_df <- function(expanded_interaction_df,
 
         # Compute metrics
         if ("mean" %in% metric_type) {
-          results$min.dist.mean[i] <- round(mean(min_dists, na.rm = TRUE),
+          results$geo_min_dist_mean[i] <- round(mean(min_dists, na.rm = TRUE),
                                             round_val)
-          if (is.nan(results$min.dist.mean[i])) results$min.dist.mean[i] <- NA
+          if (is.nan(results$geo_min_dist_mean[i])) results$geo_min_dist_mean[i] <- NA
         }
         if ("median" %in% metric_type) {
-          results$min.dist.median[i] <- round(median(min_dists, na.rm = TRUE),
+          results$geo_min_dist_median[i] <- round(median(min_dists, na.rm = TRUE),
                                               round_val)
         }
       }
@@ -1058,7 +1060,7 @@ precompute_geo_distances <- function(taxa,
 #' bounds of the weighting curve.
 #'
 #' @param dist_df Data frame containing at least one of the columns
-#' `min.dist.mean` and/or `min.dist.median`, as generated by
+#' `geo_min_dist_mean` and/or `geo_min_dist_median`, as generated by
 #' [generate_dist_metrics_df()].
 #' @param metric_type Character vector specifying which distance metrics and
 #' transformations to apply. Supports `"mean"`, `"median"`, `"norm"`, and
@@ -1080,10 +1082,10 @@ precompute_geo_distances <- function(taxa,
 #' @return
 #' A data frame identical to `dist_df` with additional columns corresponding to
 #' the transformations requested:
-#'   - `min.dist.mean.norm` if `"mean"` and `"norm"` are included.
-#'   - `min.dist.median.norm` if `"median"` `"norm"` are included.
-#'   - `min.dist.mean.log` if `"mean"` and `"log"` are included.
-#'   - `min.dist.median.log` if `"median"` and `"log"` are included.
+#'   - `geo_min_dist_mean_norm` if `"mean"` and `"norm"` are included.
+#'   - `geo_min_dist_median_norm` if `"median"` `"norm"` are included.
+#'   - `geo_min_dist_mean_log` if `"mean"` and `"log"` are included.
+#'   - `geo_min_dist_median_log` if `"median"` and `"log"` are included.
 #'
 #' @importFrom scales rescale
 #' @keywords internal
@@ -1096,9 +1098,9 @@ transform_distances <- function(dist_df,
   if (!is.data.frame(dist_df)) {
     stop("'dist_df' must be data frames")
   }
-  if (!any(c("min.dist.mean", "min.dist.median") %in% colnames(dist_df))) {
+  if (!any(c("geo_min_dist_mean", "geo_min_dist_median") %in% colnames(dist_df))) {
     stop(paste("'dist_df' must contain at least one of the columns",
-               "'min.dist.mean' or 'min.dist.median'"))
+               "'geo_min_dist_mean' or 'geo_min_dist_median'"))
   }
   valid_metrics <- c("mean", "median", "norm", "log")
   if (!is.character(metric_type) || !all(metric_type %in% valid_metrics)) {
@@ -1135,31 +1137,31 @@ transform_distances <- function(dist_df,
     from_vals <- range(-dnorm(dnorm_from, mean = mu, sd = sigma))
 
     if ("mean" %in% metric_type) {
-      min_dist_mean_norm <- scales::rescale(-dnorm(dist_tf$min.dist.mean,
+      min_dist_mean_norm <- scales::rescale(-dnorm(dist_tf$geo_min_dist_mean,
                                                    mean = mu, sd = sigma),
                                             from = from_vals)
       min_dist_mean_norm <- round(min_dist_mean_norm, round_val)
-      dist_tf$min.dist.mean.norm <- min_dist_mean_norm
+      dist_tf$geo_min_dist_mean_norm <- min_dist_mean_norm
     }
     if ("median" %in% metric_type) {
-      min_dist_median_norm <- scales::rescale(-dnorm(dist_tf$min.dist.median,
+      min_dist_median_norm <- scales::rescale(-dnorm(dist_tf$geo_min_dist_median,
                                                      mean = mu, sd = sigma),
                                               from = from_vals)
       min_dist_median_norm <- round(min_dist_median_norm, round_val)
-      dist_tf$min.dist.median.norm <- min_dist_median_norm
+      dist_tf$geo_min_dist_median_norm <- min_dist_median_norm
     }
   }
   # Log-transform distances (with small offset to deal with 0s)
   if ("log" %in% metric_type) {
     if ("mean" %in% metric_type) {
-      min_dist_mean_log <- scales::rescale(log(dist_tf$min.dist.mean + 0.1))
+      min_dist_mean_log <- scales::rescale(log(dist_tf$geo_min_dist_mean + 0.1))
       min_dist_mean_log <- round(min_dist_mean_log, round_val)
-      dist_tf$min.dist.mean.log <- min_dist_mean_log
+      dist_tf$geo_min_dist_mean_log <- min_dist_mean_log
     }
     if ("median" %in% metric_type) {
-      min_dist_median_log <- scales::rescale(log(dist_tf$min.dist.median + 0.1))
+      min_dist_median_log <- scales::rescale(log(dist_tf$geo_min_dist_median + 0.1))
       min_dist_median_log <- round(min_dist_median_log, round_val)
-      dist_tf$min.dist.median.log <- min_dist_median_log
+      dist_tf$geo_min_dist_median_log <- min_dist_median_log
     }
   }
   dist_tf
@@ -1178,7 +1180,7 @@ transform_distances <- function(dist_df,
 #' @param dist_data A data frame containing the distance metrics to be plotted.
 #' @param dist_cols A character vector specifying the column names within
 #' `dist_data` to plot. Columns should correspond to distance metrics such as
-#'`min.dist.mean`, `min.dist.mean.norm`, or `min.dist.mean.log`.
+#'`geo_min_dist_mean`, `geo_min_dist_mean_norm`, or `geo_min_dist_mean_log`.
 #'
 #' @return
 #' A composite grid of \pkg{ggplot2} scatter plots.
@@ -1187,7 +1189,7 @@ transform_distances <- function(dist_df,
 #' \dontrun{
 #' plot_geo_dists(
 #'   interaction_data,
-#'   dist_cols = c("min.dist.mean", "min.dist.mean.norm", "min.dist.mean.log")
+#'   dist_cols = c("geo_min_dist_mean", "geo_min_dist_mean_norm", "geo_min_dist_mean_log")
 #' )
 #' }
 #'
@@ -1216,21 +1218,21 @@ plot_geo_dists <- function(dist_data, dist_cols) {
 
     # Plot text
     title_text <- paste0("Distance (", colname, ")")
-    if (colname %in% c("min.dist.mean", "min.dist.median")) {
+    if (colname %in% c("geo_min_dist_mean", "geo_min_dist_median")) {
       y_text <- paste0("Distance (km)")
-    } else if (colname %in% c("min.dist.mean.norm", "min.dist.median.norm")) {
+    } else if (colname %in% c("geo_min_dist_mean_norm", "geo_min_dist_median_norm")) {
       y_text <- paste0("Normalised distance")
     } else {
       y_text <- paste0("Log distance")
     }
 
     # Sort and plot distances
-    if (colname %in% c("min.dist.mean", "min.dist.median",
-                       "min.dist.mean.log", "min.dist.median.log")) {
+    if (colname %in% c("geo_min_dist_mean", "geo_min_dist_median",
+                       "geo_min_dist_mean_log", "geo_min_dist_median_log")) {
       dist_sorted <- sort(dist_data[[colname]], decreasing = FALSE)
       dist_plots[[i]] <- make_dist_plot(dist_sorted, cols[i],
                                         title_text, y_text)
-    } else if (colname %in% c("min.dist.mean.norm", "min.dist.median.norm")) {
+    } else if (colname %in% c("geo_min_dist_mean_norm", "geo_min_dist_median_norm")) {
       dist_sorted <- sort(dist_data[[colname]], decreasing = TRUE)
       dist_plots[[i]] <- make_dist_plot(-dist_sorted, cols[i],
                                         title_text, y_text)
@@ -1314,8 +1316,8 @@ make_dist_plot <- function(values,
 #' @return A data frame identical to `expanded_interaction_df`, with two new
 #'   columns:
 #'   \describe{
-#'     \item{phylo.dist.mean}{Mean phylogenetic distance to known hosts.}
-#'     \item{phylo.dist.min}{Minimum phylogenetic distance to known hosts.}
+#'     \item{phylo_dist_mean}{Mean phylogenetic distance to known hosts.}
+#'     \item{phylo_dist_min}{Minimum phylogenetic distance to known hosts.}
 #'   }
 #'
 #' @examples
@@ -1369,8 +1371,8 @@ generate_phylo_metrics_df <- function(expanded_interaction_df,
   phylo_cov <- max(phylo_cov) - phylo_cov
 
   results <- expanded_interaction_df
-  results$phylo.dist.mean <- NA
-  results$phylo.dist.min <- NA
+  results$phylo_dist_mean <- NA
+  results$phylo_dist_min <- NA
 
   # For every row in the df, calculate the mean phylogenetic distance of
   # the focal species (taxon) to the hosts of the hosted species
@@ -1400,11 +1402,241 @@ generate_phylo_metrics_df <- function(expanded_interaction_df,
         min_dist <- min(phylo_cov[cov_rows, cov_cols])
       }
     }
-    results$phylo.dist.mean[i] <- mean_dist
-    results$phylo.dist.min[i] <- min_dist
+    results$phylo_dist_mean[i] <- mean_dist
+    results$phylo_dist_min[i] <- min_dist
   }
   # Normalise distances
-  results$phylo.dist.mean <- scales::rescale(results$phylo.dist.mean)
-  results$phylo.dist.min <- scales::rescale(results$phylo.dist.min)
+  results$phylo_dist_mean <- scales::rescale(results$phylo_dist_mean)
+  results$phylo_dist_min <- scales::rescale(results$phylo_dist_min)
   results
+}
+
+
+#' Generate all possible model formulas from a set of variables
+#'
+#' This function creates all possible combinations of predictor variables
+#' for use in model formulae, optionally including a null (intercept-only)
+#' model. The resulting list of formula objects can be used directly in
+#' modelling functions.
+#'
+#' @param variables A character vector of predictor variables (right-hand
+#' side terms).
+#' @param response A single character string specifying the response variable
+#' (left-hand side term).
+#' @param include_null Logical; if `TRUE`, a null model (\code{response ~ 1})
+#' is included as the first formula.
+#'
+#' @return A list of \code{formula} objects representing all model combinations.
+#'
+#' @examples
+#' vars <- c("geo.dist",
+#'           "phylo.dist",
+#'           "(1 | gr(plant_sp, cov = phylo_cov))")
+#'
+#' models <- generate_formulas(
+#'   variables = vars,
+#'   response = "interaction",
+#'   include_null = TRUE
+#' )
+#'
+#' @export
+generate_formulas <- function(variables,
+                              response,
+                              include_null = TRUE) {
+  # Checks
+  if (!is.character(variables)) {
+    stop("'variables' must be a character vector")
+  }
+  if (!is.character(response)) {
+    stop("'response' must be a character vector")
+  }
+  if (!is.logical(include_null)) {
+    stop("'inlude_null' must be logical")
+  }
+
+  # Generate all combinations of variables
+  formulas <- do.call(
+    "c",
+    lapply(seq_along(variables), function(i) combn(variables, i, FUN = list))
+  )
+
+  # Collapse each combination into a single string
+  formulas <- lapply(formulas, paste, collapse = " + ")
+
+  # Add response variable
+  formulas <- paste(response, "~", formulas)
+
+  # Add a null model (intercept-only)
+  if (include_null) {
+    formulas <- c(paste(response, "~ 1"), formulas)
+  }
+
+  # Convert to formula objects
+  formulas <- lapply(formulas, as.formula)
+
+  formulas
+}
+
+
+#' Add variations of formula strings by pattern replacement
+#'
+#' Given a list of \code{formula} objects, this function generates additional
+#' variations by substituting a specified `pattern` with one or more
+#' `replacements`. The original formulas are preserved, and duplicates are
+#' removed.
+#'
+#' @param formulas A list of \code{formula} objects.
+#' @param pattern Character string specifying the exact text to replace.
+#' Matching is done using fixed string matching (not regular expressions).
+#' @param replacements Character vector of one or more replacement strings.
+#'
+#' @return A list of \code{formula} objects containing the original formulae and
+#' any newly generated variants, with duplicates removed.
+#'
+#' @examples
+#' formulas <- c("y ~ x + (1 | group)")
+#' pattern <- "(1 | group)"
+#' replacements <- c("(x | group)", "(x + z | group)")
+#' add_formula_variations(formulas, pattern, replacements)
+#' # [1] "y ~ x + (1 | group)"
+#' # [2] "y ~ x + (x | group)"
+#' # [3] "y ~ x + (x + z | group)"
+#'
+#' @export
+add_formula_variations <- function(formulas,
+                                   pattern,
+                                   replacements) {
+  # Checks
+  if (!is.list(formulas) || !all(sapply(formulas, inherits, "formula"))) {
+    stop("'formulas' must be a list of formula objects")
+  }
+  if (!is.character(pattern)
+      || !is.character(replacements)) {
+    stop("'formulas', 'pattern', and 'replacements' must be characters")
+  }
+
+  # Convert formulas to character for substitution
+  formula_strings <- vapply(formulas,
+                            function(f) paste(deparse(f), collapse = ""),
+                            character(1))
+
+  out <- formula_strings
+  for (rep in replacements) {
+    out <- c(out, gsub(pattern, rep, formula_strings, fixed = TRUE))
+  }
+
+  # Remove duplicates and convert back to formula objects
+  out <- unique(out)
+  out <- lapply(out, as.formula)
+
+  out
+}
+
+
+#' Sort a list of model formula objects
+#'
+#' This function sorts a list of model formula objects according to one or more
+#' criteria applied to the right-hand side of each formula, ignoring the
+#' response variable. It is useful for organising programmatically generated
+#' sets of candidate models in a consistent order.
+#'
+#' The available sorting criteria are:
+#' \itemize{
+#'   \item \code{"number_variables"}: Number of fixed and random effects in the
+#'          model.
+#'   \item \code{"has_random"}: Presence of random-effect terms.
+#'   \item \code{"alphabetic"}: Alphabetical order of the RHS formula string.
+#' }
+#'
+#' @param formulas A list of \code{formula} objects to be sorted.
+#' @param order_by A character vector specifying the sorting priority. Allowed
+#'   values are \code{"number_variables"}, \code{"has_random"}, and
+#'   \code{"alphabetic"}. Defaults to
+#'   \code{c("number_variables", "has_random", "alphabetic")}.
+#' @param random_regex Optional character vector of regular expressions used to
+#'   identify random-effect terms when counting variables when `order_by`
+#'   contains "number_variables". If not provided, random-effect terms may be
+#'   miscounted.
+#' @param f_names Optional character prefix for naming the sorted formulas. If
+#'   not \code{NULL}, each formula in the output list will be named sequentially
+#'   using this prefix and a zero-padded index (e.g. \code{"mod_001"},
+#'   \code{"mod_002"}, ...).
+#'
+#' @return A named list of \code{formula} objects, sorted and optionally renamed
+#'   according to the specified criteria.
+#'
+#' @examples
+#' formulas <- list(
+#'   as.formula("resp ~ b"),
+#'   as.formula("resp ~ a + (1 | e)"),
+#'   as.formula("resp ~ a"),
+#'   as.formula("resp ~ b + a"),
+#'   as.formula("resp ~ b + a + (d | e)"),
+#'   as.formula("resp ~ 1")
+#' )
+#'
+#' sort_formulas(formulas)
+#'
+#' @export
+sort_formulas <- function(formulas,
+                          order_by = c("number_variables",
+                                       "has_random",
+                                       "alphabetic"),
+                          random_regex = NULL,
+                          f_names = "mod_") {
+  # Checks
+  if (!is.list(formulas) || !all(sapply(formulas, inherits, "formula"))) {
+    stop("'formulas' must be a list of formula objects")
+  }
+  if (!is.character(order_by)) {
+    stop("'order_by' must be a character vector")
+  }
+  if (!is.character(random_regex) && !is.null(random_regex)) {
+    stop("'order_by' must be a character vector")
+  }
+  if (!is.character(f_names) && !is.null(f_names)) {
+    stop("'f_names' must be NULL or a character vector")
+  }
+
+  # Convert formulas to character and isolate the right-hand side
+  formula_strings <- vapply(formulas, function(f) {
+    f_str <- paste(deparse(f), collapse = "")
+    sub(".*~", "", f_str) |> trimws()
+  }, character(1))
+
+  # Initialise keys list
+  keys <- list()
+
+  # Split by '+' outside parentheses
+  if ("number_variables" %in% order_by) {
+    formula_rd <- Reduce(function(x, pattern) gsub(pattern, "random", x, perl = TRUE),
+                         random_regex,
+                         init = formula_strings)
+    n_vars <- sapply(formula_rd, function(f) {
+      length(strsplit(f,
+                      " \\+ ",
+                      perl = TRUE)[[1]])
+    })
+    keys$number_variables <- n_vars
+  }
+
+  # Alphabetical ordering
+  if ("alphabetic" %in% order_by) {
+    keys$alphabetic <- unlist(formula_strings)
+  }
+
+  # Does formula contain randon effects
+  if ("has_random" %in% order_by) {
+    keys$has_random <- grepl("\\(", formula_strings)
+  }
+
+  # Order formulas
+  sort_args <- lapply(order_by, function(k) keys[[k]])
+  out_formulas <- formulas[do.call(order, sort_args)]
+
+  # Name and return fomulas
+  if (!is.null(f_names)) {
+    names(out_formulas) <- sprintf("%s%03d", f_names, seq_along(out_formulas))
+  }
+  out_formulas
 }

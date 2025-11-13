@@ -144,7 +144,7 @@ interaction_data <- generate_phylo_metrics_df(
 plot(phylo_dist_mean ~ phylo_dist_min, data = interaction_data)
 
 # Rename plant species column, and save tsv
-names(interaction_data)[names(interaction_data) == 'plant_sp'] <- 'quercus_sp'
+names(interaction_data)[names(interaction_data) == "plant_sp"] <- "quercus_sp"
 
 # write.table(x = interaction_data,
 #             file = "data/tmp/interaction_data.tsv",

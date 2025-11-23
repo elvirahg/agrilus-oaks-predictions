@@ -2,17 +2,18 @@
 # Custom functions
 source("R/functions.R")
 
-# Libraries
+# Packages
 library(ggplot2)
 library(ggtree)
 library(dplyr)
 
 
 #### COMPUTE FRITZ AND PURVIS' D SINAL ####
-## READ IN AND CLEAN PHYLOGENETIC TREE
+# Read in tree
 # See Hipp et al., 2020; https://github.com/andrew-hipp/global-oaks-2019
 oak_phylo <- ape::read.tree("data/input/tr.singletons.correlated.1.taxaGrepCrown_accepted_names.tre")
 
+# Clean tree
 old_names <- c("Quercus litoralis",
                "Quercus new",
                "Quercus sp")
@@ -28,15 +29,14 @@ oak_phylo <- standardise_phylo(oak_phylo,
                                pattern = "^([A-Z][a-z]+)_([×|x]*)_*([a-z-]+).*",
                                replacement = "\\1 \\2\\3")
 
-## READ IN HOST DATA AND GENERATE PRESENCE-ABSENCE HOST STATUS DATAFRAME
-oak_host_observations <- read.table("data/input/no_agrilus_quercus_hosts.txt",
+# Read in host data and generate presence-absence hosts status dataframe
+oak_host_observations <- read.table("data/input/quercus_hosts_number_agrilus_hosted.txt",
                                     sep = "\t")
-colnames(oak_host_observations) <- c("quercus.sp", "no.agrilus.spp")
+colnames(oak_host_observations) <- c("quercus_sp", "no_agrilus_spp")
 
-oak_hosts_df <- generate_pres_abs_df(oak_host_observations$quercus.sp,
+oak_hosts_df <- generate_pres_abs_df(oak_host_observations$quercus_sp,
                                      oak_phylo$tip.label)
 
-## COMPUTE SINGAL
 # Prepare comparative object
 oak_phylo$node.label <- NULL
 oak_comparative <- caper::comparative.data(phy = oak_phylo,
@@ -66,7 +66,6 @@ box(lwd = 3)
 
 
 #### EXTRACT GBIF OAK AND HOST DATA ####
-## EXTRACT GBIF KEYS FOR OAK SPECIES IN THE PHYLOGENY
 # Get GBIF keys for oak species in phylogeny
 oak_gbif_keys <- get_gbif_keys(oak_phylo$tip.label, higher_taxon = "220")
 
@@ -99,7 +98,6 @@ oak_gbif_keys$key <- ifelse(
   oak_gbif_keys$key
 )
 
-## EXTRACT NUMBER OF GBIF ENTRIES
 # Extract number of GBIF entries (takes a couple minutes)
 oak_gbif_counts <- vapply(
   oak_gbif_keys$key,
@@ -121,7 +119,6 @@ oak_gbif_entries$no.entries[oak_gbif_entries$species %in% nov_spp] <- 0
 
 
 #### PLOT HOT CLADES ####
-## PLOT HOT CLADES
 # Load nexus tree created with phylocom nodesig (first tree: host status info)
 oak_nodesig <- ape::read.nexus("data/input/quercus_nodesig_result.nex")[[1]]
 oak_nodesig$tip.label <- gsub(pattern = "_",
@@ -171,13 +168,12 @@ oak_ggtree <- ggtree::ggtree(oak_nodesig,
   ggtree::geom_point2(ggplot2::aes(subset = (label %in% nodes)),
                       shape = 20, size = 5)
 
-## PLOT HOT CLADES WITH INFO ON NO. AGRILUS SPP. HOSTED
 # Add info on no. Agrilus spp. hosted
 oak_ggtree_hosts <- oak_ggtree + ggnewscale::new_scale_fill() +
   ggtreeExtra::geom_fruit(data = oak_host_observations,
                           geom = geom_bar,
-                          mapping = aes(y = quercus.sp,
-                                        x =  no.agrilus.spp),
+                          mapping = aes(y = quercus_sp,
+                                        x =  no_agrilus_spp),
                           offset = 0.15,
                           pwidth = 0.1,
                           # skip aggregation
@@ -185,7 +181,6 @@ oak_ggtree_hosts <- oak_ggtree + ggnewscale::new_scale_fill() +
                           # axis orientation
                           orientation = "y")
 
-## PLOT HOT CLADES WITH INFO ON NO. AGRILUS SPP. HOSTED AND NO. GBIF ENTRIES
 # Add no. GBIF entries
 oak_ggtree_gbif <- oak_ggtree_hosts %<+% oak_gbif_entries +
   ggnewscale::new_scale_fill() +

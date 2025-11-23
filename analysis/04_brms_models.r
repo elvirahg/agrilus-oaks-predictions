@@ -5,6 +5,7 @@ source("R/functions.R")
 # Seed
 set.seed(24601)
 
+
 #### PREPARE DATA ####
 interaction_data <- read.table("data/tmp/interaction_data.tsv",
                                header = TRUE,
@@ -145,12 +146,7 @@ formulas <- sort_formulas(formulas = formulas,
 formulas
 
 # Fit models
-which(as.character(unlist(formulas)) == "interaction ~ geo_min_dist_mean_norm + phylo_dist_min + (1 | gr(quercus_sp, cov = phylo_cov))")
-
-test_formulas <- list(oak_mod_047 = formulas$oak_mod_047)
-test_formulas <- c(test_formulas, sample(formulas[c(1:46, 48:70)], 8))
-test_formulas <- test_formulas[sort(names(test_formulas))]
-
+# Could be parallelised
 oak_models <- lapply(test_formulas, function(f) {
   brms::brm(
     formula = f,
@@ -165,4 +161,4 @@ oak_models <- lapply(test_formulas, function(f) {
 })
 names(oak_models) <- names(formulas)
 
-# save.image("data/results/oak_models.RData")
+# save.image("data/results/models.RData")

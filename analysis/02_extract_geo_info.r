@@ -10,10 +10,11 @@ set.seed(24601)
 
 
 #### EXTRACT GBIF OAK DATA ####
-## READ IN AND CLEAN PHYLOGENETIC TREE
+# Read in tree
 # See Hipp et al., 2020; https://github.com/andrew-hipp/global-oaks-2019
 oak_phylo <- ape::read.tree("data/input/tr.singletons.correlated.1.taxaGrepCrown_accepted_names.tre")
 
+# Clean tree
 old_names <- c("Quercus litoralis",
                "Quercus new",
                "Quercus sp")
@@ -29,7 +30,6 @@ oak_phylo <- standardise_phylo(oak_phylo,
                                pattern = "^([A-Z][a-z]+)_([×|x]*)_*([a-z-]+).*",
                                replacement = "\\1 \\2\\3")
 
-## EXTRACT GBIF KEYS FOR OAK SPECIES IN THE PHYLOGENY
 # Get GBIF keys
 oak_gbif_keys <- get_gbif_keys(oak_phylo$tip.label, higher_taxon = "220")
 
@@ -62,7 +62,6 @@ oak_gbif_keys$key <- ifelse(
   oak_gbif_keys$key
 )
 
-## EXTRACT OCCURRENCE DATA FOR OAK SPECIES IN THE PHYLOGENY
 # Request GBIF data
 # rgbif::occ_download(rgbif::pred("taxonKey", 2877951),
 #                     format = "SIMPLE_CSV",
@@ -96,7 +95,7 @@ manual_keys <- c(
   "Quercus palustris"        = missing_keys[9]
 )
 
-# Request GBIF data
+# Request GBIF data for oak species in phylogeny
 # selected_keys <- c(4, 5, 7, 8, 9)
 # oak_requests <- lapply(
 #   manual_keys[selected_keys],
@@ -128,7 +127,6 @@ oak_geo <- do.call(rbind, c(list(oak_geo_initial), manual_oak_geo))
 
 
 #### EXTRACT GBIF NON-OAK HOST DATA ####
-## EXTRACT GBIF KEYS FOR NON-OAK HOSTS
 # Non-oak host species for Agrilus spp. in DS
 plant_hosts <- read.table("data/input/non_quercus_hosts.tsv",
                           header = TRUE, sep = "\t")
@@ -141,8 +139,7 @@ plant_gbif_keys <- get_gbif_keys(unique(plant_hosts$hosts),
 # Species names: plant_gbif_keys$species[which(is.na(plant_gbif_keys[, 2]))]
 plant_gbif_keys$key[plant_gbif_keys$species == "Betula pendula"] <- 5331916
 
-## EXTRACT OCCURENCE DATA FOR NON-OAK HOSTS
-# Request GBIF data
+# Request GBIF data for non-oak hosts
 # plant_requests <- lapply(
 #   plant_gbif_keys$key,
 #   function(tk) {
@@ -194,7 +191,6 @@ plant_geo <- do.call(rbind, c(list(oak_geo), manual_plant_geo))
 #### CLEAN GBIF GEO DATASET ####
 plant_geo_clean <- plant_geo
 
-## RE-NAME SPECIES REPORTED AS SYNONYMS
 # Check missing species
 plant_spp <- c(oak_gbif_keys$species, plant_gbif_keys$species)
 plant_spp[!(plant_spp %in% unique(plant_geo$species))]
@@ -224,7 +220,6 @@ for (original_name in names(replacements)) {
                                   plant_geo_clean$species)
 }
 
-## REPLACE INVALID SYNONYMS
 # Drop for which the "scientificName" is not a synonym of the accepted species
 # according to WCVP. This is a conservative yet imperfect approach, but errors
 # are unlikely to have a significant impact
@@ -242,7 +237,7 @@ plant_geo_clean <- plant_geo_clean |>
 # Missing spp: Q. sagrana (no records)
 plant_spp[!(plant_spp %in% unique(plant_geo_clean$species))]
 
-## FILDER DATA BASED ON COORDS, COUNTS, YEAR, PRESENCE, AND COMMON ISSUES
+# Filter data based on coords, counts, year, presence, and common issues
 plant_geo_clean <- filter_gbif_data(plant_geo_clean,
                                     remove_no_coords = TRUE,
                                     coord_uncertainty_thr = 5000,
@@ -264,7 +259,6 @@ plant_geo_clean <- filter_gbif_data(plant_geo_clean,
 # Missing spp: Q. sagrana (no records) and Q. yiwuensis (no coordinate info)
 plant_spp[!(plant_spp %in% unique(plant_geo_clean$species))]
 
-## FILTER DATA USING COORDINATE CLEANER
 # Prepare data for coordinate cleaner by converting country code to ISO3c
 plant_geo_clean$countryCode <- countrycode::countrycode(plant_geo_clean$countryCode,
                                                         origin =  "iso2c",
@@ -332,14 +326,14 @@ plant_geo_clean <- plant_geo_clean |>
   slice_sample(n = 100000) |>
   ungroup()
 
-## ADD MANUAL ENTRY (COUNTRY CENTROID) FOR MISSING SPECIES
-# Q. sagrana (Cuba: powo.science.kew.org/taxon/urn:lsid:ipni.org:names:216368-2)
+# Add a manual entry (country centroid) for missing species
+# * Q. sagrana (Cuba: powo.science.kew.org/taxon/urn:lsid:ipni.org:names:216368-2)
 plant_geo_clean <- add_species_centroid(df = plant_geo_clean,
                                         species_name = "Quercus sagrana",
                                         iso3 = "CUB",
                                         col_species = "plant_sp")
 
-# Q. yiwuensis (SC China: powo.science.kew.org/taxon/urn:lsid:ipni.org:names:360253-1)
+# * Q. yiwuensis (SC China: powo.science.kew.org/taxon/urn:lsid:ipni.org:names:360253-1)
 plant_geo_clean <- add_species_centroid(df = plant_geo_clean,
                                         species_name = "Quercus yiwuensis",
                                         iso3 = "CHN",

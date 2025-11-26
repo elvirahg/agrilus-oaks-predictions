@@ -1609,14 +1609,23 @@ sort_formulas <- function(formulas,
 
   # Split by '+' outside parentheses
   if ("number_variables" %in% order_by) {
-    formula_rd <- Reduce(function(x, pattern) gsub(pattern, "random", x, perl = TRUE),
-                         random_regex,
-                         init = formula_strings)
+    formula_rd <- Reduce(
+      function(x, pattern) {
+        gsub(pattern,
+             "random",
+             x,
+             perl = TRUE)
+      },
+      random_regex,
+      init = formula_strings
+    )
     n_vars <- sapply(formula_rd, function(f) {
       length(strsplit(f,
                       " \\+ ",
                       perl = TRUE)[[1]])
     })
+
+    # Add to list
     keys$number_variables <- n_vars
   }
 
@@ -1639,4 +1648,224 @@ sort_formulas <- function(formulas,
     names(out_formulas) <- sprintf("%s%03d", f_names, seq_along(out_formulas))
   }
   out_formulas
+}
+
+
+#' Run grouped LOO model comparison with optional parallelisation
+#'
+#' Performs leave-one-out cross-validation (LOO) for a list of `brmsfit` models.
+#' Models can be split into groups, processed in parallel, and optionally saved.
+#'
+#' @param models_list Named list of `brmsfit` objects to compare.
+#' @param n_groups Integer specifying number of groups to split the models into.
+#' Optional if `model_groups` is supplied. Defaults to `NULL`. If used, the
+#' number of parallel cores spawned equals `n_groups`.
+#' @param model_groups Optional named list of character vectors, each containing
+#' model names to define custom groups. If provided, `n_groups` must be set to
+#' NULL.
+#' @param save Logical; if `TRUE`, each group's `loo_compare` result is saved as
+#' an `.RData` file in `save_path`. Defaults to `FALSE`.
+#' @param save_path Character scalar specifying the directory in which to save
+#' results if `save = TRUE`. Will be created if it does not exist. Defaults to
+#' the current working directory.
+#' @param verbose Logical; if `TRUE`, prints group assignment. Defaults to
+#' `TRUE`.
+#' @param ... Additional arguments passed directly to `brms::loo()`. For
+#' example, `moment_match`, or `reloo` can be overridden.
+#'
+#' @return A named list of length `n_groups`, where each element contains the
+#' corresponding `loo_compare` object for that group of models.
+#'
+#' @details
+#' Models can be divided into groups in one of two ways:
+#' 1. By specifying `n_groups`, in which case models are split automatically.
+#' 2. By providing a named list `model_groups` specifying the exact models in
+#' each group. This allows custom groupings. When `model_groups` is provided,
+#' `n_groups` is ignored.
+#'
+#' The number of parallel cores used internally is equal to the number of
+#' groups. Each group is processed sequentially, computing `brms::loo()` for
+#' each model and then comparing with `brms::loo_compare()`. If `save = TRUE`,
+#' the `loo_compare` result for each group is saved as
+#' `loo_comp_<group_name>.RData` in `save_path`.
+#'
+#' This function has so far been tested only with relatively small datasets.
+#' Behaviour and performance with very large `brmsfit` objects, or many models
+#' per group have not yet been evaluated.
+#'
+#' @examples
+#' \dontrun{
+#' results <- run_grouped_loo(
+#'   models_list = models,
+#'   n_groups = 2
+#' )
+#'
+#' @import parallel
+#' @import doParallel
+#' @import foreach
+#' @export
+loo_compare_parallel_groups <- function(models_list,
+                                        n_groups = NULL,
+                                        model_groups = NULL,
+                                        save = FALSE,
+                                        save_path = getwd(),
+                                        verbose = TRUE,
+                                        ...) {
+  # Checks
+  if (!is.list(models_list)
+      || !all(vapply(models_list, inherits, logical(1), "brmsfit"))) {
+    stop("'models_list' must be a list of brmsfit objects")
+  }
+  if (!is.null(n_groups)) {
+    if (!is.numeric(n_groups)
+        || n_groups != as.integer(n_groups)
+        || length(n_groups) != 1
+        || n_groups > length(models_list)) {
+      stop(paste("'n_groups' must be a single integer"))
+    }
+    if (n_groups > length(models_list)) {
+      stop(paste("'n_groups' must be => length(models_list)"))
+    }
+  }
+  if (!is.null(model_groups)) {
+    if (!is.list(model_groups) || !all(sapply(model_groups, is.character))) {
+      stop("'model_groups' must be a named list of character vectors")
+    }
+    if (!setequal(unlist(model_groups), names(models_list))) {
+      stop("All models in 'models_list' must appear once in 'model_groups'")
+    }
+  }
+  if ((!is.null(model_groups) && !is.null(n_groups))
+      || (is.null(model_groups) && is.null(n_groups))) {
+    stop("Either 'n_groups' or 'model_groups' must be provided")
+  }
+  if (!is.character(save_path) || length(save_path) > 1) {
+    stop("'save_path' must be a single character")
+  }
+
+  # Check directories if saving
+  if (save && !dir.exists(save_path)) {
+    dir.create(save_path, recursive = TRUE)
+  }
+
+  # Determine groups (useful if too many models to compare at once)
+  if (is.null(model_groups)) {
+    model_groups <- split_vector_into_lists(
+      x = names(models_list),
+      n_groups = n_groups
+    )
+    if (verbose) cat("Models divided into", length(model_groups), "group(s):\n")
+    if (verbose) print(model_groups)
+  }
+
+  # I think it may be == ceiling(length(model_list)/n_groups) %% length(model_list)
+  if (any(sapply(model_groups, length) == 1)) {
+    stop("Cannot have groups of length 1, please use a lower 'n_groups' value")
+  }
+
+  results <- list()
+
+  # Prepare per-group model lists to avoid huge exports
+  group_model_lists <- lapply(model_groups, function(names) models_list[names])
+
+  # Set up parallel environment
+  cl <- parallel::makeCluster(n_groups)
+  doParallel:::registerDoParallel(cl)
+
+  # Export brms
+  my_libs <- .libPaths()
+  parallel::clusterExport(cl, "my_libs", envir = environment())
+  parallel::clusterEvalQ(cl, .libPaths(my_libs))
+  parallel::clusterEvalQ(cl, library(brms))
+
+  # Loop over groups
+  results <- foreach::foreach(grp = names(group_model_lists),
+                              .packages = "brms",
+                              .verbose = verbose,
+                              .export = c("group_model_lists",
+                                          "save",
+                                          "save_path")) %dopar% {
+
+    group_models <- group_model_lists[[grp]]
+
+    # Compute LOO sequentially within this group
+    loo_objs <- lapply(names(group_models), function(nm) {
+      brms::loo(group_models[[nm]],
+                moment_match = TRUE,
+                reloo = TRUE,
+                ...)
+    })
+    names(loo_objs) <- names(group_models)
+
+    # Compare LOO objects
+    loo_comp <- brms::loo_compare(loo_objs)
+
+    # Optional save
+    if (save) {
+      save_file <- file.path(save_path, paste0("loo_comp_", grp, ".RData"))
+      save(loo_comp, file = save_file)
+    }
+
+    # # Return LOO comparison
+    loo_comp
+  }
+
+  # Name the list
+  names(results) <- names(model_groups)
+
+  # Stop cluster
+  parallel::stopCluster(cl)
+
+  results
+}
+
+
+#' Split character vector into evenly sized groups
+#'
+#' Divides a character vector into a specified number of approximately
+#' equal-sized groups. If the total number of models is not divisible by
+#' the number of groups,
+#' group sizes will differ by at most one.
+#'
+#' @param x A character vector containing the items to be split.
+#' @param n_groups An integer giving the number of groups to create.
+#'
+#' @return A named list of length \code{n_groups}, where each element contains
+#' the subset of \code{x} belonging to that group. Group names are assigned as
+#' \code{"grp1"}, \code{"grp2"}, and so on.
+#'
+#' @examples
+#' models <- paste0("oak_mod", sprintf("%03d", 1:10))
+#' split_models(models, 3)
+split_vector_into_lists <- function(x,
+                                    n_groups) {
+
+  # Checks
+  if (!is.character(x)) {
+    stop("'x' must be a character vector")
+  }
+  if (!is.numeric(n_groups)
+      || n_groups != as.integer(n_groups)
+      || length(n_groups) != 1) {
+    stop("'n_groups' must be a single integer")
+  }
+  if (length(x) < n_groups) {
+    stop("Error: length(x) < n_groups")
+  }
+
+  # Calculate number of models
+  n_x <- length(x)
+
+  # Group membership
+  if (n_groups == 1) {
+    groups <- rep(1, n_x)
+  } else {
+    groups <- cut(seq_len(n_x), breaks = n_groups, labels = FALSE)
+  }
+
+  # Split into a named list
+  x_groups <- split(x, groups)
+  names(x_groups) <- paste0("grp", seq_len(n_groups))
+
+  x_groups
 }

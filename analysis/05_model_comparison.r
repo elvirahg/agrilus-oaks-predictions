@@ -77,4 +77,4 @@ loo_oak_mods <- brms::loo(oak_models_best_sig,
                           compare = TRUE)
 
 # Save image
-# save.image("data/results/models.RData")
+# save.image("data/results/models_loo_comp.RData")

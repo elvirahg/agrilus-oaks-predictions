@@ -36,12 +36,12 @@ phylo_cov <- ape::vcv.phylo(oak_phylo)
 #### FIT PRELIMINARY GEO DISTANCE MODELS ####
 # Prepare model formulas
 formulas_geodist <- list(
-  oak_mod_geodist01 = as.formula("interaction ~ geo_min_dist_mean"),
-  oak_mod_geodist02 = as.formula("interaction ~ geo_min_dist_median"),
-  oak_mod_geodist03 = as.formula("interaction ~ geo_min_dist_mean_norm"),
-  oak_mod_geodist04 = as.formula("interaction ~ geo_min_dist_median_norm"),
-  oak_mod_geodist05 = as.formula("interaction ~ geo_min_dist_mean_log"),
-  oak_mod_geodist06 = as.formula("interaction ~ geo_min_dist_median_log")
+  mod_gd01 = as.formula("interaction ~ geo_min_dist_mean"),
+  mod_gd02 = as.formula("interaction ~ geo_min_dist_median"),
+  mod_gd03 = as.formula("interaction ~ geo_min_dist_mean_norm"),
+  mod_gd04 = as.formula("interaction ~ geo_min_dist_median_norm"),
+  mod_gd05 = as.formula("interaction ~ geo_min_dist_mean_log"),
+  mod_gd06 = as.formula("interaction ~ geo_min_dist_median_log")
 )
 
 # Fit models
@@ -67,13 +67,13 @@ loo_list_compared <- brms::loo_compare(loo_list)
 # "geo_min_dist_median_norm" and "geo_min_dist_mean_norm" are the best fitting geo vars,
 # and thus to be used in models below
 loo_list_compared
-#                   elpd_diff se_diff
-# oak_mod_geodist04    0.0       0.0
-# oak_mod_geodist03  -21.3       9.4
-# oak_mod_geodist06  -29.0       6.9
-# oak_mod_geodist05  -40.7       8.7
-# oak_mod_geodist01 -152.6      17.0
-# oak_mod_geodist02 -153.8      16.9
+#          elpd_diff se_diff
+# mod_gd04    0.0       0.0
+# mod_gd03  -21.3       9.4
+# mod_gd06  -29.0       6.9
+# mod_gd05  -40.7       8.7
+# mod_gd01 -152.6      17.0
+# mod_gd02 -153.8      16.9
 
 
 #### FIT FULL MODELS ####
@@ -143,7 +143,7 @@ formulas <- sort_formulas(formulas = formulas,
                                        "alphabetic"),
                           random_regex = c("\\([0-9a-zA-Z\\+ ]*\\| gr\\(quercus_sp, cov = phylo_cov\\)\\)",
                                            "\\([0-9a-zA-Z\\+ ]*\\| agrilus_sp\\)"),
-                          f_names = "oak_mod_")
+                          f_names = "mod")
 formulas
 
 # Fit models

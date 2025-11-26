@@ -112,6 +112,7 @@ new_formulas <- list()
 for (formula in formulas) {
   # Turn to string
   formula_str <- paste(deparse(formula), collapse = "")
+  formula_str <- gsub("\\s+", " ", formula_str)
 
   # Pattern to catch
   pattern <- "phylo_dist_min( \\+ phylo_dist_mean)?|phylo_dist_mean"
@@ -147,7 +148,7 @@ formulas
 
 # Fit models
 # Could be parallelised
-oak_models <- lapply(test_formulas, function(f) {
+oak_models <- lapply(formulas, function(f) {
   brms::brm(
     formula = f,
     data = interaction_data,

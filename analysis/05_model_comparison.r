@@ -12,6 +12,7 @@ library(foreach)
 # Load data from previous script (brms models)
 load("data/results/models.RData")
 
+
 #### GENERATE LOOIC COMPARISONS DIVIDING MODELS INTO 3 GROUPS ####
 # See https://discourse.mc-stan.org/t/understanding-looic/13409
 # and https://mc-stan.org/loo/reference/loo-glossary.html#se-diff

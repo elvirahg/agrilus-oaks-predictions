@@ -1,6 +1,7 @@
 #### SET ENVIRONMENT ####
 # Custom functions
-source("R/functions.R")
+source("R/phylo_functions.r")
+source("R/geo_functions.r")
 
 # Packages
 library(dplyr)

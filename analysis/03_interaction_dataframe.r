@@ -1,6 +1,8 @@
 #### SET ENVIRONMENT ####
 # Custom functions
-source("R/functions.R")
+source("R/phylo_functions.r")
+source("R/distance_functions.r")
+source("R/plot_functions.r")
 
 # Packages
 library(dplyr)
@@ -65,7 +67,7 @@ interaction_data <- create_interaction_df(known_interactions = agrilus_hosts,
 # 'cheap' metric (vs., e.g., 'harvestine'). Also note that, with 'cheap', the
 # distance values depend on the number of location points used. Still, as we're
 # transforming these distances, it's not something to worry about with our data.
-interaction_data <- generate_dist_metrics_df(
+interaction_data <- generate_geo_metrics_df(
   expanded_interaction_df = interaction_data,
   coords_df = plant_geo,
   known_interactions_df = agrilus_hosts,

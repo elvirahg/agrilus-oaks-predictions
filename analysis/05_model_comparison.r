@@ -1,6 +1,6 @@
 #### SET ENVIRONMENT ####
 # Custom functions
-source("R/functions.R")
+source("R/model_functions.r")
 
 # Seed
 set.seed(24601)

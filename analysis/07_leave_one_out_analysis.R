@@ -1,6 +1,8 @@
 #### SET ENVIRONMENT ####
 # Custom functions
-source("R/functions.R")
+source("R/model_functions.r")
+source("R/analysis_functions.r")
+source("R/plot_functions.r")
 
 # Libraries
 library(brms)

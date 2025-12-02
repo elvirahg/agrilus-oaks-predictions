@@ -1700,6 +1700,7 @@ sort_formulas <- function(formulas,
 #'   n_groups = 2
 #' )
 #'
+#' @import brms
 #' @import parallel
 #' @import doParallel
 #' @import foreach
@@ -1739,8 +1740,8 @@ loo_compare_parallel_groups <- function(models_list,
       || (is.null(model_groups) && is.null(n_groups))) {
     stop("Either 'n_groups' or 'model_groups' must be provided")
   }
-  if (!is.character(save_path) || length(save_path) > 1) {
-    stop("'save_path' must be a single character")
+  if (!is.character(save_path) || length(save_path) != 1) {
+    stop("'save_path' must be a single character string")
   }
 
   # Check directories if saving
@@ -2300,8 +2301,8 @@ plot_fourfold <- function(observations,
     tn_rate <- round(true_neg / (true_neg + false_pos) * 100, 2)
 
     # Print results
-    print(paste("True positive rate (%):", tp_rate))
-    print(paste("True negative rate (%):", tn_rate))
+    cat(paste("True positive rate (%):", tp_rate, "\n"))
+    cat(paste("True negative rate (%):", tn_rate, "\n"))
   }
 
   # Fourfold plot
@@ -2375,7 +2376,7 @@ plot_predictions_by_species <- function(data,
     stop(paste("'data' must contain host_status and", species_col))
   }
   if (!is.character(species_col) || length(species_col) != 1) {
-    stop("'species_col' must be a single character value")
+    stop("'species_col' must be a single character string")
   }
   if (!is.null(threshold)
       && (!is.numeric(threshold) || length(threshold) != 1)) {
@@ -2520,4 +2521,345 @@ plot_highlighted_predictions <- function(data,
       max.overlaps = 100,
       size = label_size
     )
+}
+
+
+#' "Leave-one-observation-out" prediction by zeroing each positive case in a
+#' brms model
+#'
+#' This function performs the follow: for every row in the model data where
+#' `interaction_col == 1`, the value of that row is temporarily set to 0, and
+#' the model is re-updated. It then computes the predictor (on the specified
+#' `scale`) for the modified observation. This can be used to quantify how
+#' individual positive observations contribute to the fitted model.
+#'
+#' Computation is parallelised across the number of workers specified by
+#' `cores`.
+#'
+#' @param model A `brmsfit` object containing an attached data list
+#' (i.e., `model$data` must exist).
+#' @param interaction_col A single character string giving the name of the
+#' binary column to perturb when generating 1-to-0 predictions. Defaults to
+#' 'interaction'.
+#' @param cores Integer. Number of parallel workers to use. Defaults to 2.
+#' @param iter Integer. Total number of sampling iterations for each refitted
+#' model. Defaults to 1000.
+#' @param warmup Integer. Number of warmup iterations for each refitted model.
+#' Defaults to 500.
+#' @param chains Integer. Number of chains to run for each refitted model.
+#' Defaults to 1.
+#' @param recompile Logical. Passed to `brms::update()` to control whether
+#' the underlying Stan model is recompiled on each iteration.
+#' @param scale A single character string passed to `brms::fitted()`,
+#' indicating the scale of the response variable. Defaults to 'linear'.
+#'
+#' @return A data frame with one row per positive observation. Columns:
+#'   * `row_no`: the index of the row modified,
+#'   * `pred`: the predicted estimate for the modified row.
+#'
+#' @details
+#' This approach is similar in spirit to leave-one-out cross-validation,
+#' except that the row is not removed; instead, its value in `interaction_col`
+#' is set to 0 and the model is refit to estimate the corresponding
+#' counterfactual prediction.
+#'
+#' @examples
+#' \dontrun{
+#' results <- predict_as_zero_loo(
+#'   model = my_brms_model,
+#'   interaction_col = "interaction",
+#'   cores = 4
+#' )
+#' }
+#'
+#' @import brms
+#' @import foreach
+#' @import parallel
+#' @import doParallel
+#' @export
+predict_as_zero_loo <- function(model,
+                                interaction_col = "interaction",
+                                cores = 2,
+                                iter = 1000,
+                                warmup = 500,
+                                chains = 1,
+                                recompile = FALSE,
+                                scale = "linear") {
+  # Checks
+  if (!inherits(model, "brmsfit") || is.null(model$data)) {
+    stop("'model' must be a 'brmsfit' object with a data slot (model$data)")
+  }
+  if (!is.character(interaction_col) || length(interaction_col) != 1) {
+    stop("'interaction_col' must be a single character string")
+  }
+  if (!(interaction_col %in% names(model$data))) {
+    stop(paste0("'", interaction_col, "' is not a column in model$data"))
+  }
+  if (!is.numeric(cores) || length(cores) != 1 || cores != as.integer(cores)
+      || cores < 1) {
+    stop("'cores' must be a single integer >= 1")
+  }
+  if (!is.numeric(iter) || length(iter) != 1 || iter != as.integer(iter)
+      || iter < 1) {
+    stop("'iter' must be a single integer >= 1")
+  }
+  if (!is.numeric(warmup) || length(warmup) != 1 || warmup != as.integer(warmup)
+      || iter < 0) {
+    stop("'warmup' must be a single non-negative integer")
+  }
+  if (!is.numeric(chains) || length(chains) != 1 || chains != as.integer(chains)
+      || iter < 0) {
+    stop("'chains' must be a single integer >= 1.")
+  }
+  if (!is.logical(recompile) || length(recompile) != 1) {
+    stop("'recompile' must be a single logical value")
+  }
+  if (!is.character(scale) || length(scale) != 1) {
+    stop("'scale' must be a single character string")
+  }
+
+  # Identify positive observations
+  pos_int <- which(model$data[[interaction_col]] == 1)
+  cat(paste("Number of positive interactions to be tested:",
+            length(pos_int), , "\n"))
+
+  # Set up parallel workers
+  cl <- parallel::makeCluster(cores)
+  doParallel:::registerDoParallel(cl)
+
+  # Make sure workers know where packages are
+  libs <- .libPaths()
+  parallel::clusterExport(cl, "libs", envir = environment())
+  parallel::clusterEvalQ(cl, .libPaths(libs))
+  parallel::clusterEvalQ(cl, library(brms))
+
+  # Run loop
+  results <- foreach::foreach(obs = pos_int,
+                              .combine = rbind,
+                              .packages = "brms") %dopar% {
+
+    # Modify data row
+    new_data <- model$data
+    new_data[[interaction_col]][obs] <- 0
+
+    # Refit
+    mod_obs <- update(model,
+                      newdata = new_data,
+                      iter = iter,
+                      chains = chains,
+                      warmup = warmup,
+                      recompile = recompile,
+                      refresh = 0)
+
+    # Predict linear predictor for that row
+    pred <- fitted(mod_obs,
+                   newdata = new_data[obs, ],
+                   scale = scale)[, "Estimate"]
+
+    data.frame(row_no = obs,
+               pred = pred,
+               row.names = NULL)
+  }
+
+  parallel::stopCluster(cl)
+
+  return(results)
+}
+
+
+#' Plot changes in predicted values relative to a threshold
+#'
+#' Produces a scatter plot comparing original and updated prediction values,
+#' with colour highlighting based either on whether predictions cross a
+#' threshold or on supplied observation values. A prediction is considered to
+#' have changed if it is greater than or equal to \code{threshold} in
+#' \code{pred_original} and below \code{threshold} in \code{pred_new}.
+#' Optionally prints the rows corresponding to such changes.
+#'
+#' @param pred_original Numeric vector of original prediction values.
+#' @param pred_new Numeric vector of updated prediction values.
+#' @param threshold Single numeric threshold used to identify prediction
+#' changes.
+#' @param obs_vals Optional numeric vector of observation values used for
+#' colouring when \code{col_by = "obs_vals"}. Must be the same length as
+#' \code{pred_original}.
+#' @param print_change Logical; if \code{TRUE}, prints rows where predictions
+#' cross the threshold from above to below. Defaults to \code{TRUE}.
+#' @param col_by Character string indicating the variable used for colour:
+#' \code{"pred_change"} (default) colours points by threshold crossing,
+#' whereas \code{"obs_vals"} colours points using \code{obs_vals}.
+#' @param x_lab Character string for the x-axis label. Defaults to
+#' \code{"Original predictions"}.
+#' @param y_lab Character string for the y-axis label. Defaults to
+#' \code{"New predictions"}.
+#' @param title Character string for the plot title. Defaults to
+#' \code{"Prediction change"}.
+#'
+#' @return A \pkg{ggplot2} object showing original vs. new predictions.
+#'
+#' @details
+#' When \code{col_by = "pred_change"}, points are coloured according to whether
+#' they cross the threshold. When \code{col_by = "obs_vals"}, the supplied
+#' observation values determine the colouring instead. The diagonal reference
+#' line is added to help visualise deviations between original and new
+#' predictions.
+#'
+#' @examples
+#' \dontrun{
+#' plot_prediction_change(
+#'   pred_original = c(-3, -1, 0, 2),
+#'   pred_new = c(-4, -2, -0.5, 1.5),
+#'   threshold = 0,
+#'   col_by = "pred_change"
+#' )
+#' }
+#'
+#' @import ggplot2
+#' @export
+plot_prediction_change <- function(pred_original,
+                                   pred_new,
+                                   threshold,
+                                   obs_vals = NULL,
+                                   print_change = TRUE,
+                                   col_by = "pred_change",
+                                   x_lab = "Original predictions",
+                                   y_lab = "New predictions",
+                                   title = "Prediction change") {
+  # Checks
+  if (!is.numeric(pred_original)) {
+    stop("'pred_original' must be a numeric vector")
+  }
+  if (!is.numeric(pred_new)) {
+    stop("'pred_new' must be a numeric vector")
+  }
+  if (length(pred_original) != length(pred_new)) {
+    stop("'pred_original' and 'pred_new' must be of equal length")
+  }
+  if (!is.numeric(threshold) || length(threshold) != 1) {
+    stop("'threshold' must be a single numeric value")
+  }
+  if (!is.logical(print_change) || length(print_change) != 1) {
+    stop("'print_change' must be a single logical value")
+  }
+  if (col_by != "pred_change" && col_by != "obs_vals") {
+    stop("'col_by' must be one of 'pred_change' or 'obs_vals'")
+  }
+  if (col_by == "obs_vals" && is.null(obs_vals)) {
+    stop("if 'col_by = 'obs_vals'', obs_val must be a numeric vector")
+  }
+  if (!(is.null(obs_vals))) {
+    if (col_by != "obs_vals") {
+      warning("'obs_vals' object will not be used, as col_by != 'obs_vals'")
+    }
+    if (!(is.numeric(obs_vals)) || length(obs_vals) != length(pred_original)) {
+      stop("'obs_vals' must be a numeric vector of equal length to pred_original")
+    }
+  }
+  if (!is.character(x_lab) || length(x_lab) != 1) {
+    stop("'x_lab' must be a single character string")
+  }
+  if (!is.character(y_lab) || length(y_lab) != 1) {
+    stop("'y_lab' must be a single character string")
+  }
+  if (!is.character(title) || length(title) != 1) {
+    stop("'title' must be a single character string")
+  }
+
+  # Construct a data frame for plotting and printing
+  # pred_change: TRUE if original prediction > threshold but new < threshold
+  preds_df <- data.frame(
+    pred_original = pred_original,
+    pred_new = pred_new,
+    pred_change = pred_original >= threshold & pred_new < threshold
+  )
+  if (col_by == "obs_vals") {
+    preds_df$obs_vals <- as.logical(obs_vals)
+  }
+
+  # Print change
+  if (print_change) {
+    if (any(preds_df$pred_change)) {
+      print(preds_df[preds_df$pred_change, ])
+    } else {
+      cat("No predictions moved across threshold\n")
+    }
+  }
+
+  # Plot
+  if (col_by == "pred_change") {
+    p <- ggplot2::ggplot(preds_df,
+                         ggplot2::aes(x = pred_original,
+                                      y = pred_new,
+                                      col = pred_change))
+  } else if (col_by == "obs_vals") {
+    p <- ggplot2::ggplot(preds_df,
+                         ggplot2::aes(x = pred_original,
+                                      y = pred_new,
+                                      col = obs_vals))
+  }
+  p <- p +
+    ggplot2::geom_abline(linetype = "dashed",
+                         col = "darkgrey",
+                         linewidth = 1.5) +
+    ggplot2::geom_point() +
+    ggplot2::scale_color_manual(values = c("black", "coral")) +
+    ggplot2::xlab(x_lab) +
+    ggplot2::ylab(y_lab) +
+    ggplot2::ggtitle(title) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
+                   legend.position = "none")
+
+  p
+}
+
+
+#' Compute the true positive rate (TPR)
+#'
+#' Calculates the true positive rate from a vector of binary predictions and a
+#' corresponding vector of binary observations. The true positive rate is
+#' defined as the proportion of observed positives correctly predicted.
+#'
+#' @param predictions Numeric vector of predicted classes, expected to contain
+#' only \code{0} and \code{1}.
+#' @param observations Numeric vector of observed classes, expected to contain
+#' only \code{0} and \code{1}. If not supplied, all observations default to
+#' \code{1}. Defaults to \code{rep(1, length(predictions))}.
+#'
+#' @return A numeric value giving the true positive rate as a percentage,
+#' rounded to two decimal places.
+#'
+#' @details
+#' The function assumes that both input vectors contain only binary values,  abd
+#' calculates the true positive rate as:
+#'
+#' \deqn{TPR = \frac{TP}{TP + FN} \times 100}
+#'
+#' The function assumes that both input vectors contain only binary values.
+#'
+#' @examples
+#' tpr(c(1, 0, 1, 1), c(1, 1, 1, 0))
+#'
+#' @export
+tpr <- function(predictions,
+                observations = rep(1, length(predictions))) {
+  # Checks
+  if (!is.numeric(predictions)) {
+    stop("'predictions' must be a numeric vector")
+  }
+  if (!is.numeric(observations)) {
+    stop("'obversations' must be a numeric vector")
+  }
+
+  # Confidence matrix
+  conf_matrix <- table(
+    pred = predictions,
+    obs = observations
+  )
+
+  # TPR
+  true_positives <- conf_matrix["1", "1"]
+  false_negatives <- conf_matrix["0", "1"]
+
+  round(true_positives / (true_positives + false_negatives) * 100, 2)
 }

@@ -7,6 +7,7 @@ set.seed(24601)
 
 
 #### PREPARE DATA ####
+# Read interaction data frame
 interaction_data <- read.table("data/tmp/interaction_data.tsv",
                                header = TRUE,
                                sep = "\t")
@@ -160,6 +161,5 @@ oak_models <- lapply(formulas, function(f) {
     save_pars = brms::save_pars(all = TRUE)
   )
 })
-names(oak_models) <- names(formulas)
 
-# save.image("data/results/models.RData")
+# saveRDS(oak_models, file = "data/results/oak_models.rds")

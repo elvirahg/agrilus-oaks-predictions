@@ -9,8 +9,8 @@ set.seed(24601)
 library(brms)
 library(foreach)
 
-# Load data from previous script (brms models)
-load("data/results/models.RData")
+# Load brms models from previous script
+oak_models <- readRDS("data/results/oak_models.rds")
 
 
 #### GENERATE LOOIC COMPARISONS DIVIDING MODELS INTO 3 GROUPS ####
@@ -38,7 +38,7 @@ loo_comp_results$grp2
 loo_comp_results$grp3
 
 # Save image
-# save.image("data/results/models_loo_comp.RData")
+# saveRDS(loo_comp_results, file = "data/results/loo_comp_results.rds")
 
 
 #### GENERATE LOOIC COMPARISONS FOR BEST-PERFORMING MODELS ACROSS GROUPS ####
@@ -60,10 +60,12 @@ keys <- paste0("mod",
                  107, 108, 109, 112, 116, 124, 125, 127, 131, 132))
 oak_models_best <- oak_models[keys]
 
-loo_oak_mods <- brms::loo(oak_models_best,
-                          moment_match = TRUE,
-                          reloo = TRUE,
-                          compare = TRUE)
+loo_oak_mods_best <- brms::loo(oak_models_best,
+                               moment_match = TRUE,
+                               reloo = TRUE,
+                               compare = TRUE)
+
+# saveRDS(loo_oak_mods_best, file = "data/results/loo_oak_mods_best.rds")
 
 # Compare best-performing models from all groups which only contain variables
 # with significant effects
@@ -72,10 +74,10 @@ loo_oak_mods <- brms::loo(oak_models_best,
 keys <- paste0("mod",
                c(39, 41, 43, 46, 71, 72, 75, 77, 80, 91, 105, 108, 116))
 oak_models_best_sig <- oak_models[keys]
-loo_oak_mods <- brms::loo(oak_models_best_sig,
-                          moment_match = TRUE,
-                          reloo = TRUE,
-                          compare = TRUE)
+loo_oak_mods_best_sig <- brms::loo(oak_models_best_sig,
+                                   moment_match = TRUE,
+                                   reloo = TRUE,
+                                   compare = TRUE)
 
 # Save image
-# save.image("data/results/models_loo_comp.RData")
+# saveRDS(loo_oak_mods_best_sig, file = "data/results/loo_oak_mods_best_sig.rds")

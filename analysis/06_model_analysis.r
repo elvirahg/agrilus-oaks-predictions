@@ -6,11 +6,16 @@ source("R/functions.R")
 library(brms)
 library(ggplot2)
 
-# Load data from previous script (brms models)
-load("data/results/models.RData")
+# Load brms models from previous script
+oak_models <- readRDS("data/results/oak_models.rds")
 
 
 #### BASIC EXPLORATION OF SELECTED MODEL ####
+# Read interaction data frame
+interaction_data <- read.table("data/tmp/interaction_data.tsv",
+                               header = TRUE,
+                               sep = "\t")
+
 # This is model 46 which is the same model that was selected in the original
 # analyses (model 43 there)
 
@@ -32,10 +37,10 @@ plot(oak_models$mod046, N = 2, ask = FALSE)
 
 #### PREDICT INTERACTION STATUS ####
 predictions <- data.frame(
-  quercus_sp          = interaction_data$quercus_sp,
-  agrilus_sp          = interaction_data$agrilus_sp,
-  host_status         = factor(interaction_data$interaction),
-  prediction_prob     = fitted(oak_models$mod046, scale = "response")[, "Estimate"],
+  quercus_sp = interaction_data$quercus_sp,
+  agrilus_sp = interaction_data$agrilus_sp,
+  host_status = factor(interaction_data$interaction),
+  prediction_prob = fitted(oak_models$mod046, scale = "response")[, "Estimate"],
   prediction_lodds  = fitted(oak_models$mod046, scale = "linear")[, "Estimate"]
 )
 
@@ -49,24 +54,32 @@ plot(prediction_lodds ~ host_status, data = predictions,
      col = c("steelblue", "coral"))
 par(mfrow = c(1, 1))
 
+# Write predictions to file
+# write.table(predictions,
+#             "data/results/predictions.tsv",
+#             row.names = FALSE,
+#             col.names = TRUE,
+#             sep = "\t",
+#             quote = FALSE)
+
 
 #### CHECK EFFECT OF DIFFERENT VARIABLES ####
 comparisons <- data.frame(
   host_status = factor(interaction_data$interaction),
-  oak          = factor(interaction_data$quercus_sp),
-  mod046       = predictions$prediction_lodds,
-  mod003       = fitted(oak_models$mod003,
-                        scale = "linear")[, "Estimate"],  # geo dist
-  mod005       = fitted(oak_models$mod005,
-                        scale = "linear")[, "Estimate"],  # phy dist
-  mod008       = fitted(oak_models$mod008,
-                        scale = "linear")[, "Estimate"],  # (quercus | phylo)
-  mod010       = fitted(oak_models$mod010,
-                        scale = "linear")[, "Estimate"],  # geo dist + phy dist
-  mod022       = fitted(oak_models$mod022,
-                        scale = "linear")[, "Estimate"],  # geo dist + (quercus | phylo)
-  mod029       = fitted(oak_models$mod029,
-                        scale = "linear")[, "Estimate"]   # phy dist + (quercus | phylo)
+  oak = factor(interaction_data$quercus_sp),
+  mod046 = predictions$prediction_lodds,
+  mod003 = fitted(oak_models$mod003,
+                  scale = "linear")[, "Estimate"],  # geo dist
+  mod005 = fitted(oak_models$mod005,
+                  scale = "linear")[, "Estimate"],  # phy dist
+  mod008 = fitted(oak_odel$mod008,
+                  scale = "linear")[, "Estimate"],  # (quercus | phylo)
+  mod010 = fitted(oak_models$mod010,
+                  scale = "linear")[, "Estimate"],  # geo dist + phy dist
+  mod022 = fitted(oak_models$mod022,
+                  scale = "linear")[, "Estimate"],  # geo dist + (quercus | phylo)
+  mod029 = fitted(oak_models$mod029,
+                  scale = "linear")[, "Estimate"]   # phy dist + (quercus | phylo)
 )
 
 # Plot comparisons of predictions for the full model vs the other models

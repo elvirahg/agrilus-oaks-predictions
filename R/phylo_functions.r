@@ -33,7 +33,7 @@
 #' @export
 standardise_phylo <- function(tree,
                               clean_labels = TRUE,
-                              pattern = "^([A-Z])[a-z]+_[×|x]*_*([a-z]+).*",
+                              pattern,
                               replacement = "\\1. \\2",
                               remove_duplicates = TRUE,
                               old_labels = NULL,

@@ -173,7 +173,8 @@ clean_taxon_name <- function(x) {
 #' filtered_geo <- filter_gbif_data(geo_data)
 #'
 #' # Allow higher coordinate uncertainty
-#' filtered_geo <- filter_gbif_data(or `tibble`, coord_uncertainty_thr = 10000)
+#' filtered_geo <- filter_gbif_data(data, coord_uncertainty_thr = 10000)
+#' }
 #'
 #' @export
 filter_gbif_data <- function(data,

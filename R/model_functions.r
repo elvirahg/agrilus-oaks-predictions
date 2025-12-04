@@ -285,6 +285,7 @@ sort_formulas <- function(formulas,
 #'   models_list = models,
 #'   n_groups = 2
 #' )
+#' }
 #'
 #' @import brms
 #' @import parallel

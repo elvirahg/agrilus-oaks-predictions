@@ -9,7 +9,7 @@ set.seed(24601)
 
 #### PREPARE DATA ####
 # Read interaction data frame
-interaction_data <- read.table("data/tmp/interaction_data.tsv",
+interaction_data <- read.table("data/results/interaction_data.tsv",
                                header = TRUE,
                                sep = "\t")
 

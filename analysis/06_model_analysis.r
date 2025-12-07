@@ -13,7 +13,7 @@ oak_models <- readRDS("data/results/oak_models.rds")
 
 #### BASIC EXPLORATION OF SELECTED MODEL ####
 # Read interaction data frame
-interaction_data <- read.table("data/tmp/interaction_data.tsv",
+interaction_data <- read.table("data/results/interaction_data.tsv",
                                header = TRUE,
                                sep = "\t")
 

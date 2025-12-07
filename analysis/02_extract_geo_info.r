@@ -132,7 +132,7 @@ oak_geo <- do.call(rbind, c(list(oak_geo_initial), manual_oak_geo))
 plant_hosts <- read.table("data/input/non_quercus_hosts.tsv",
                           header = TRUE, sep = "\t")
 
-plant_gbif_keys <- get_gbif_keys(unique(plant_hosts$hosts),
+plant_gbif_keys <- get_gbif_keys(unique(plant_hosts$plant_sp),
                                  higher_taxon = "220")
 
 # Add keys manually for spp. with missing keys (Betula pendula, function above
@@ -184,12 +184,18 @@ manual_plant_geo <- lapply(manual_plant_downloads, function(download_key) {
 plant_geo <- do.call(rbind, c(list(oak_geo), manual_plant_geo))
 
 # Write table
-# write.table(plant_geo, "data/tmp/gbif_geo_plants.tsv",
+# write.table(plant_geo, "data/results/gbif_geo_plants.tsv",
 #             quote = FALSE, row.names = FALSE,
 #             col.names = TRUE, sep = "\t")
 
 
 #### CLEAN GBIF GEO DATASET ####
+# plant_geo <- read.table("data/results/gbif_geo_plants.tsv",
+#                         header = TRUE,
+#                         sep = "\t",
+#                         quote = "",
+#                         comment.char = "")
+
 plant_geo_clean <- plant_geo
 
 # Check missing species
@@ -346,7 +352,7 @@ plant_spp[!(plant_spp %in% unique(plant_geo_clean$plant_sp))]
 
 # Write table
 # write.table(plant_geo_clean,
-#             "data/tmp/gbif_plants_clean.tsv",
+#             "data/results/gbif_plants_clean.tsv",
 #             quote = FALSE,
 #             sep = "\t",
 #             col.names = TRUE,

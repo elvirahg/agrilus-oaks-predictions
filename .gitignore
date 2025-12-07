@@ -1,0 +1,7 @@
+data/data/
+renv/
+notes.r
+*.RData
+.DS_Store
+.Rprofile
+.lintr

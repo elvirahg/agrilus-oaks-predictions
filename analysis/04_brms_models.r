@@ -1,6 +1,7 @@
 #### SET ENVIRONMENT ####
 # Custom functions
-source("R/functions.R")
+source("R/phylo_functions.r")
+source("R/model_functions.r")
 
 # Seed
 set.seed(24601)
@@ -8,7 +9,7 @@ set.seed(24601)
 
 #### PREPARE DATA ####
 # Read interaction data frame
-interaction_data <- read.table("data/tmp/interaction_data.tsv",
+interaction_data <- read.table("data/results/interaction_data.tsv",
                                header = TRUE,
                                sep = "\t")
 

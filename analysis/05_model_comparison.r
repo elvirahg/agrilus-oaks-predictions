@@ -1,13 +1,12 @@
 #### SET ENVIRONMENT ####
 # Custom functions
-source("R/functions.R")
+source("R/model_functions.r")
 
 # Seed
 set.seed(24601)
 
 # Libraries
 library(brms)
-library(foreach)
 
 # Load brms models from previous script
 oak_models <- readRDS("data/results/oak_models.rds")

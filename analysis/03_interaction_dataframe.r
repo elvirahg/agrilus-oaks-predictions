@@ -1,6 +1,8 @@
 #### SET ENVIRONMENT ####
 # Custom functions
-source("R/functions.R")
+source("R/phylo_functions.r")
+source("R/distance_functions.r")
+source("R/plot_functions.r")
 
 # Packages
 library(dplyr)
@@ -12,24 +14,20 @@ set.seed(24601)
 
 #### INITIALISE DATAFRAME TO STORE INFO ON AGRILUS - OAK INTERACTIONS ####
 # Read in cleaned-up and filtered GBIF plant geo data
-plant_geo <- read.table("data/tmp/gbif_plants_clean.tsv",
+plant_geo <- read.table("data/results/gbif_plants_clean.tsv",
                         header = TRUE,
                         sep = "\t")
 
 # Extract info on Agrilus species that use oaks, and their hosts
-agrilus_hosts <- read.table("data/input/quercus_hosts.txt",
-                            header = FALSE,
+agrilus_hosts <- read.table("data/input/quercus_hosts.tsv",
+                            header = TRUE,
                             sep = "\t")
-colnames(agrilus_hosts) <- c("agrilus", "hosts")
+colnames(agrilus_hosts) <- c("plant_sp", "agrilus_sp")
 
 agrilus_hosts <- rbind(agrilus_hosts,
                        read.table("data/input/non_quercus_hosts.tsv",
                                   header = TRUE,
                                   sep = "\t"))
-
-# Swap order and rename columns
-agrilus_hosts <- agrilus_hosts[, c("hosts", "agrilus")]
-colnames(agrilus_hosts) <- c("plant_sp", "agrilus_sp")
 
 # Remove hosts not in the phylogeny (Q. gambelii)
 agrilus_hosts <- agrilus_hosts[agrilus_hosts$plant_sp != "Quercus gambelii", ]
@@ -65,7 +63,7 @@ interaction_data <- create_interaction_df(known_interactions = agrilus_hosts,
 # 'cheap' metric (vs., e.g., 'harvestine'). Also note that, with 'cheap', the
 # distance values depend on the number of location points used. Still, as we're
 # transforming these distances, it's not something to worry about with our data.
-interaction_data <- generate_dist_metrics_df(
+interaction_data <- generate_geo_metrics_df(
   expanded_interaction_df = interaction_data,
   coords_df = plant_geo,
   known_interactions_df = agrilus_hosts,
@@ -147,7 +145,7 @@ plot(phylo_dist_mean ~ phylo_dist_min, data = interaction_data)
 names(interaction_data)[names(interaction_data) == "plant_sp"] <- "quercus_sp"
 
 # write.table(x = interaction_data,
-#             file = "data/tmp/interaction_data.tsv",
+#             file = "data/results/interaction_data.tsv",
 #             row.names = FALSE,
 #             col.names = TRUE,
 #             sep = "\t",

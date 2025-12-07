@@ -1,6 +1,7 @@
 #### SET ENVIRONMENT ####
 # Custom functions
-source("R/functions.R")
+source("R/analysis_functions.r")
+source("R/plot_functions.r")
 
 # Libraries
 library(brms)
@@ -12,7 +13,7 @@ oak_models <- readRDS("data/results/oak_models.rds")
 
 #### BASIC EXPLORATION OF SELECTED MODEL ####
 # Read interaction data frame
-interaction_data <- read.table("data/tmp/interaction_data.tsv",
+interaction_data <- read.table("data/results/interaction_data.tsv",
                                header = TRUE,
                                sep = "\t")
 
@@ -83,42 +84,42 @@ comparisons <- data.frame(
 )
 
 # Plot comparisons of predictions for the full model vs the other models
-compare_models_plot(
+plot_model_comparison(
   df = comparisons,
   full = "mod046",
   other = "mod003",
   xlab_text = "Geographic distance effect (model 3)"
 )
 
-compare_models_plot(
+plot_model_comparison(
   df = comparisons,
   full = "mod046",
   other = "mod005",
   xlab_text = "Phylogenetic distance fixed effect (model 5)"
 )
 
-compare_models_plot(
+plot_model_comparison(
   df = comparisons,
   full = "mod046",
   other = "mod008",
   xlab_text = "Phylogenetic random effect (model 8)"
 )
 
-compare_models_plot(
+plot_model_comparison(
   df = comparisons,
   full = "mod046",
   other = "mod010",
   xlab_text = "Geographic and fixed phylogenetic effect (model 10)"
 )
 
-compare_models_plot(
+plot_model_comparison(
   df = comparisons,
   full = "mod046",
   other = "mod022",
   xlab_text = "Geographic and random phylogenetic effect (model 22)"
 )
 
-compare_models_plot(
+plot_model_comparison(
   df = comparisons,
   full = "mod046",
   other = "mod029",

@@ -1,6 +1,7 @@
 #### SET ENVIRONMENT ####
 # Custom functions
-source("R/functions.R")
+source("R/phylo_functions.r")
+source("R/geo_functions.r")
 
 # Packages
 library(ggplot2)
@@ -30,8 +31,10 @@ oak_phylo <- standardise_phylo(oak_phylo,
                                replacement = "\\1 \\2\\3")
 
 # Read in host data and generate presence-absence hosts status dataframe
-oak_host_observations <- read.table("data/input/quercus_hosts_number_agrilus_hosted.txt",
-                                    sep = "\t")
+oak_host_observations <- read.table("data/input/quercus_hosts.tsv",
+                                    sep = "\t",
+                                    header = TRUE)
+oak_host_observations <- as.data.frame(table(oak_host_observations$quercus_sp))
 colnames(oak_host_observations) <- c("quercus_sp", "no_agrilus_spp")
 
 oak_hosts_df <- generate_pres_abs_df(oak_host_observations$quercus_sp,

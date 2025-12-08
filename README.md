@@ -5,7 +5,7 @@ This repository contains code and analyses associated with Hernandez-Gutierrez e
 
 ## Repository structure and contents
 
-Please note that the original code used to generate the data in the paper is under the `original-analyses` branch. The current branch mirrors these same analyses, but with refactored code for better readability, reusability, and efficiency.
+Please note that the original code used to generate the data in the paper is under the `original-analyses` branch. The `main` branch mirrors these same analyses, but with refactored code for better readability, reusability, and efficiency.
 
 * `analysis/`: R scripts implementing the analysis workflow. The scripts are numbered to indicate execution order (e.g. `02_*` follows `01_*`). These can be used to reproduce the published analyses or adapted for related work.
 * `R/`: helper functions used across the analyses.

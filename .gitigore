@@ -1,0 +1,12 @@
+data/data/
+renv*
+docs/
+man/
+tests/
+R/
+notes.r
+*.RData
+.DS_Store
+.Rprofile
+.Rbuildignore
+.lintr

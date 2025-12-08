@@ -44,7 +44,7 @@ geo_info <- occ_download_get('0361079-210914110416597',
 
 # Read the phylogenetic tree of oaks and extract spp. names
 # This tree also comes from from Hipp et al. (2019)
-oak_tree <- read.tree("input/quercus_hipp19_singleton_crown_sp_level.tre")
+oak_tree <- read.tree("analysis/input/quercus_hipp19_singleton_crown_sp_level.tre")
 plants <- gsub(oak_tree$tip.label, pattern = "\\|.*", replacement = "")
 plants <- gsub(plants, pattern = "_", replacement = " ", fixed = TRUE)
 
@@ -193,7 +193,7 @@ geo_info <- rbind(geo_info, add_plant)
 # B) DOWNLOAD PLANT SPP. INFO FOR ALL NON-OAK SPP. THAT HOST AGRILUS THAT USE OAKS
 # Read in file with info on other plants that plant Agrilus spp. used by oaks
 # NB, I have only retained info for those plants for which there is info to sp. level
-plants <- read.table("input/non_oak_hosts.tsv", header = T, sep = "\t")
+plants <- read.table("analysis/input/non_oak_hosts.tsv", header = T, sep = "\t")
 
 # Check no. of non-oak plant spp. used by Agrilus spp. that exploit oaks (19).
 length(unique(plants$hosts))
@@ -393,11 +393,11 @@ add_plant <- occ_download_get('0361677-210914110416597', path = "tmp/gbif") %>%
 geo_info <- rbind(geo_info, add_plant)
 
 # Write table
-# write.table(geo_info, "tmp/gbif_plants.csv", quote = F, row.names = F,
+# write.table(geo_info, "analysis/results/gbif_plants.csv", quote = F, row.names = F,
 #             col.names = T, sep = "\t")
 
 # NB, check for absolute duplicates on commandline with:
-# sort tmp/gbif_plants.csv | uniq -c | sort -nr | grep '^\t* *2' | cut -f2
+# sort analysis/results/gbif_plants.csv | uniq -c | sort -nr | grep '^\t* *2' | cut -f2
 
 
 
@@ -408,7 +408,7 @@ geo_info <- rbind(geo_info, add_plant)
 
 # A) EXTRACT PLANT GEO DATA AND REMOVE ENTRIES IN DISCORDANCE WITH WCVP
 # Extract data (created above)
-geo_info <- read.table("tmp/gbif_plants.csv", header = T, sep = "\t",
+geo_info <- read.table("analysis/results/gbif_plants.csv", header = T, sep = "\t",
                        quote = "", comment.char = '')
 
 # Remove any entries that are in gbif_notwcvp_entries.txt, i.e., those for which the
@@ -417,7 +417,7 @@ geo_info <- read.table("tmp/gbif_plants.csv", header = T, sep = "\t",
 
 # NB, conservative approach, some of these species might actually be synonyms... (but
 # then they all have very few occurrence records so not likely to make much of an impact)
-gbif_notwcvp <- read.table("input/gbif_notwcvp_auth.txt", header = F, sep = "\t")
+gbif_notwcvp <- read.table("analysis/input/gbif_notwcvp_auth.txt", header = F, sep = "\t")
 head(gbif_notwcvp)
 for (i in 1:nrow(geo_info)) {
   if (i%%250000 == 0) {print(i)}
@@ -437,11 +437,11 @@ geo_info <- geo_info[!is.na(geo_info$scientificName),]
 # B) CLEAN GEO_INFO
 # i) Rename spp. reported under a synonym (i.e., the sp. is a syn. of sth
 # else acc. to GBIF, but it's actually an accepted name acc. to WCVP)*
-# * I removed these spp. from input/gbif_notwcvp_auth.txt intentionally so
-# that they wouldn't get removed in the previous step
+# * I removed these spp. from analysis/input/gbif_notwcvp_auth.txt
+# intentionally so that they wouldn't get removed in the previous step
 
 # Get name of all plants_all that should be in my dataset
-plants_all <- read.tree("input/quercus_hipp19_singleton_crown_sp_level.tre")
+plants_all <- read.tree("analysis/input/quercus_hipp19_singleton_crown_sp_level.tre")
 plants_all <- gsub(plants_all$tip.label, pattern = "Q.", replacement = "Quercus",
                    fixed = T)
 plants_all <- gsub(plants_all, pattern = "_", replacement = " ",
@@ -450,7 +450,7 @@ plants_all <- gsub(plants_all, pattern = " -Atuna excelsa", replacement = "",
                    fixed = T)
 
 plants_all <- gsub(plants_all, pattern = "?? ", replacement = "", fixed = T)
-plants_all <- c(plants_all, unique(read.table("tmp/non_oak_hosts.tsv",
+plants_all <- c(plants_all, unique(read.table("analysis/input/non_oak_hosts.tsv",
                                               header = T, sep = "\t")$hosts))
 length(plants_all) == (238 + 19)  # 238 Quercus spp. + 19 extra hosts
 
@@ -523,7 +523,7 @@ nrow(geo_info)
 
 # Remove any entries where the coordinate info is unreliable
 # To see all issues in data, run (bash):
-# cut -f18 tmp/gbif_plants.csv | sort | uniq | sed -'s/;/\n/g' | sort | uniq
+# cut -f18 analysis/results/gbif_plants.csv | sort | uniq | sed -'s/;/\n/g' | sort | uniq
 # NB, for issues see https://data-blog.gbif.org/post/issues-and-flags/
 issues <- c("COORDINATE_INVALID", "COORDINATE_OUT_OF_RANGE",
             "COORDINATE_REPROJECTION_SUSPICIOUS",
@@ -672,7 +672,7 @@ plants_all[!(plants_all %in% unique(geo_info_clean$plant.sp))]
 nrow(geo_info_clean)
 
 # Write table
-# write.table(geo_info_clean, "tmp/gbif_plants_clean.tsv", quote = F, sep = "\t",
+# write.table(geo_info_clean, "analysis/results/gbif_plants_clean.tsv", quote = F, sep = "\t",
 #             col.names = T, row.names = F)
 
 

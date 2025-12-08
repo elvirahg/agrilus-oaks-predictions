@@ -31,7 +31,7 @@ library(ggplot2)
 
 #
 #####      EXPLORE MODEL 43                                                         #####
-load("results/oak_models.RData")
+load("analysis/results/oak_models.RData")
 
 # This is a binary logistic regression (link: mu = logit), i.e., the response ==
 # log-odds of something being a host. To convert it to probability: exp(y)/(1+exp(y))
@@ -456,7 +456,7 @@ ggplot(subset(predictions, agrilus.sp == "A. angustulus"),
                                                as.character(quercus.sp), ''),),
                             hjust = 0, vjust = 0, max.overlaps = 100, size = 4)
 
-# save.image("results/oak_models.RData")
+# save.image("analysis/results/oak_models.RData")
 
 
 

@@ -34,9 +34,9 @@ library(ggplot2)
 # A) READ IN AND PREPARE PHYLOGENETIC TREE OF OAKS
 # Source: doi.org/10.1111/nph.16162, github.com/andrew-hipp/global-oaks-2019
 
-# Read tree (NB, with tmp/tr.*Stem_accepted*.tre results are very similar)
+# Read tree (NB, with tr.*Stem_accepted*.tre results are very similar)
 # NB, synonmyms have been substituted to align with WCVP accepted names
-oak_tree <- read.tree("input/tr.singletons.correlated.1.taxaGrepCrown_accepted_names.tre")
+oak_tree <- read.tree("analysis/input/tr.singletons.correlated.1.taxaGrepCrown_accepted_names.tre")
 
 # Remove duplicated tips that form a sister clade
 # oak_tree$tip.label[duplicated(oak_tree$tip.label)]
@@ -98,7 +98,7 @@ oak_tree$tip.label[166] <- "Q. parvula"
 
 # B) READ IN HOST DATA
 # Read in host data for oak trees
-oak_hosts <- read.table("input/no_agrilus_quercus_hosts.txt", sep = "\t")
+oak_hosts <- read.table("analysis/input/no_agrilus_quercus_hosts.txt", sep = "\t")
 colnames(oak_hosts) <- c("quercus.sp", "no.agrilus.sp")
 oak_hosts <- as.data.frame(lapply(oak_hosts, gsub, pattern = "Quercus",
                                   replacement = "Q.", fixed = TRUE))
@@ -157,7 +157,7 @@ box(lwd=3)
 # A) EXTRACT NO. ENTRIES IN GBIF FOR OAK SPP. IN PHYLOGENY
 # i) Use no. of entries according to GBIF
 # Read the phylogenetic tree of oaks and extract spp. names (also from Hipp et al., 2019)
-oaks <- read.tree("input/quercus_hipp19_singleton_crown_sp_level.tre")
+oaks <- read.tree("analysis/input/quercus_hipp19_singleton_crown_sp_level.tre")
 oaks <- gsub(oaks$tip.label, pattern = "Q.", replacement = "Quercus", fixed = T)
 oaks <- gsub(oaks, pattern = "_", replacement = " ", fixed = T)
 oaks <- gsub(oaks, pattern = " -Atuna excelsa", replacement = "", fixed = T)
@@ -246,7 +246,7 @@ entries[entries$oak.sp == "Q. new species", ]$no.entries <- 0
 
 # B) LOAD  REST OF DATA
 # Read nexus tree created with phylocom nodesig (first tree: host status info)
-oak_nodesig <- read.nexus("input/quercus_nodesig_result.nex")[[1]]
+oak_nodesig <- read.nexus("analysis/input/quercus_nodesig_result.nex")[[1]]
 
 # Repace "Quercus" for "Q." (tip labels) and "_" for " "
 oak_nodesig$tip.label <- gsub(pattern = "Quercus_", replacement = "Q. ",
@@ -255,7 +255,7 @@ oak_nodesig$tip.label <- gsub(pattern = "_", replacement = " ",
                               oak_nodesig$tip.label)
 
 # Read file with info on number of Agrilus species hosted per Quercus species
-hosts <- read.table("input/agrilus_quercus_hosts.txt", sep = "\t", header = F)
+hosts <- read.table("analysis/input/agrilus_quercus_hosts.txt", sep = "\t", header = F)
 hosts <- data.frame(cbind(hosts$V2, hosts$V1))
 colnames(hosts) <- c("quercus.sp", "no.agrilus")
 

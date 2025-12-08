@@ -33,12 +33,12 @@ library(ggplot2)
 ####       CREATE A DF WITH INFO ON OAK - INTERACTION DATA                          #####
 # A) READ PLANT GEO DATA FROM GBIF
 # Read in file
-geo_info <- read.table("/tmp/gbif_plants_clean.tsv", header = T, sep = "\t")
+geo_info <- read.table("analysis/results/gbif_plants_clean.tsv", header = T, sep = "\t")
 geo_info <- geo_info[, c("plant.sp", "lon", "lat")]
 str(geo_info)
 
 # Check that all plant species that should be there are present
-plants <- read.tree("/input/quercus_hipp19_singleton_crown_sp_level.tre")
+plants <- read.tree("analysis/input/quercus_hipp19_singleton_crown_sp_level.tre")
 
 plants <- gsub(plants$tip.label, pattern = "Q.", replacement = "Quercus",
                    fixed = T)
@@ -49,19 +49,19 @@ plants <- gsub(plants, pattern = " -Atuna excelsa", replacement = "",
 
 plants <- gsub(plants, pattern = "?? ", replacement = "", fixed = T)
 plants <- c(plants,
-                unique(read.table("input/non_oak_hosts.tsv",
+                unique(read.table("analysis/input/non_oak_hosts.tsv",
                                   header = T, sep = "\t")$hosts))
 length(plants) == (238 + 19)  # 238 Quercus spp. + 19 extra hosts
 
 
 
 # B) EXTRACT INFO ON AGRILUS SPP. THAT EXPLOIT OAKS AND THEIR HOSTS
-agrilus_hosts <- read.table("input/agrilus_quercus_hosts.txt",
+agrilus_hosts <- read.table("analysis/input/agrilus_quercus_hosts.txt",
                             header = F, sep = "\t")
 colnames(agrilus_hosts) <- c("agrilus", "hosts")
 
 agrilus_hosts <- rbind(agrilus_hosts,
-                       read.table("input/non_oak_hosts.tsv",
+                       read.table("analysis/input/non_oak_hosts.tsv",
                                   header = T, sep = "\t"))
 agrilus_hosts <- agrilus_hosts[,c(2,1)]
 colnames(agrilus_hosts) <- c("plant.sp", "agrilus.sp")
@@ -265,9 +265,9 @@ interaction_data <- interaction_data[first:(first+31), ]
 nrow(interaction_data)
 
 # write.table(x = interaction_data,
-#             file = "tmp/interaction_data_oak_hosts.txt",
+#             file = "analysis/results/interaction_data_oak_hosts.txt",
 #             row.names = FALSE,
-#             col.names = !file.exists("tmp/interaction_data_oak_hosts.txt"),
+#             col.names = !file.exists("analysis/results/interaction_data_oak_hosts.txt"),
 #             sep = "\t", quote = FALSE, append = TRUE)
 print("done")                                                       # END OF JOBSCRIPT
 
@@ -309,7 +309,7 @@ print("done")                                                       # END OF JOB
 
 
 # B) EXPLORE THE DATA
-interaction_data <- read.table("tmp/interaction_data_oak_hosts.txt",
+interaction_data <- read.table("analysis/results/interaction_data_oak_hosts.txt",
                                header = T, sep = "\t")
 
 # i) Have a look at min.dist.mean and min.dist.mean

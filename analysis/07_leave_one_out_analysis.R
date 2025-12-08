@@ -31,7 +31,7 @@ library(ggplot2)
 
 #
 ##### XI)   LEAVE-ONE-OUT CHECKS                                                     #####
-load("results/oak_models.RData", sep = "")
+load("analysis/results/oak_models.RData", sep = "")
 
 # A) FIRST WAY - CODE ONE INTERACTION AS A '0' AT A TIME
 # This modified (using 'fitted' instead of 'predict') piece of code comes from:
@@ -59,23 +59,24 @@ loo_fitted <- function(mod, obs, n) {
 predictions_loo0 <- loo_fitted(oak_mod043, obs, n)
 
 # write.table(predictions_loo0,
-#             paste("results/loo/predictions_loo0", n, ".tsv", sep = ""),
+#             paste("analysis/results/loo/predictions_loo0", n, ".tsv", sep = ""),
 #             row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
 
 # END OF JOBSCRIPT
 
 # ii) Merge files
-loo0_pred_loods <- lapply(paste0("results/loo/", list.files(path = "results/loo")),
+loo0_pred_loods <- lapply(paste0("analysis/results/loo/",
+                                 list.files(path = "analysis/results/loo")),
                           read.table, header = TRUE, sep = "\t")
 loo0_pred_loods <- do.call(rbind.data.frame, loo0_pred_loods)
 loo0_pred_loods <- loo0_pred_loods[order(loo0_pred_loods$row.no),]
 
-# write.table(loo0_pred_loods, "results/predictions_loo0.tsv",
+# write.table(loo0_pred_loods, "analysis/results/predictions_loo0.tsv",
 #             row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
 
 
 # ii) Compare results against original predictions
-loo0_pred_loods <- read.table("results/predictions_loo0.tsv",
+loo0_pred_loods <- read.table("analysis/results/predictions_loo0.tsv",
                               sep = "\t", header = T)$prediction.logodds.loo
 predictions1 <- subset(predictions, host.status == 1)
 interaction_data1 <- subset(interaction_data, interaction == 1)
@@ -224,7 +225,7 @@ round(conf_matrix[2]/(conf_matrix[1] + conf_matrix[2])*100, 2)
 
 rm(conf_matrix, i)
 
-# save.image("results/oak_models.RData")
+# save.image("analysis/results/oak_models.RData")
 
 
 

@@ -32,15 +32,15 @@ library(ggplot2)
 #
 #####      PREPARE DATA                                                             #####
 # i) Read in interaction data
-interaction_data <- read.table("tmp/interaction_data_oak_hosts.txt",
-                               header = T, sep = "\t")
+interaction_data <- read.table("analysis/results/interaction_data_oak_hosts.txt",
+                               header = TRUE, sep = "\t")
 nrow(interaction_data) == 236*32  # 236 oak spp.*32 Agrilus spp.
 interaction_data$quercus.sp <- gsub("-", "", interaction_data$quercus.sp, fixed = T)
 
 
 # ii) Add info on total no. of total GBIF entries for each oak species
 # First, read (cleaned) GBIF geo info DF and only retain info for oaks
-geo_info <- read.table("tmp/gbif_plants_clean.tsv",
+geo_info <- read.table("analysis/results/gbif_plants_clean.tsv",
                        header = T, sep = "\t")
 geo_info <- geo_info[, c("plant.sp", "lon", "lat")]
 geo_info <- geo_info[grepl("Quercus", geo_info$plant.sp),]
@@ -64,11 +64,11 @@ interaction_data$ID <- NULL
 rm(geo_info, oak_occurrences)
 
 # iii) Retrieve info on Agrilus hosts
-agrilus_hosts <- read.table("input/agrilus_quercus_hosts.txt",
+agrilus_hosts <- read.table("analysis/input/agrilus_quercus_hosts.txt",
                             header = F, sep = "\t")
 colnames(agrilus_hosts) <- c("agrilus", "hosts")
 agrilus_hosts <- rbind(agrilus_hosts,
-                       read.table("tmp/non_oak_hosts.tsv",
+                       read.table("analysis/results/non_oak_hosts.tsv",
                                   header = T, sep = "\t"))
 agrilus_hosts <- agrilus_hosts[,c(2,1)]
 colnames(agrilus_hosts) <- c("plant.sp", "agrilus.sp")
@@ -112,7 +112,7 @@ agrilus_hosts <- agrilus_hosts[-(which((agrilus_hosts$plant.sp == "Corylus avell
 
 # iv) Create phylogenetic cov matrix
 # Read nexus tree created with phylocom nodesig (first tree: host status info)
-oak_phylo <- read.nexus("input/quercus_nodesig_result.nex")[[1]]
+oak_phylo <- read.nexus("analysis/input/quercus_nodesig_result.nex")[[1]]
 # plot(oak_phylo)
 
 # Edit node label information
@@ -223,13 +223,13 @@ loo_geo_dist$diff
 # oak_modA1   -146.0      17.1
 # oak_modB1   -147.7      17.1
 
-# save.image("/results/oak_models.RData")
+# save.image("analysis/results/oak_models.RData")
 
 
 
 #
 #####      RUN MODELS - ALL COMBINATIONS                                            #####
-load("/results/oak_models.RData")
+load("analysis/results/oak_models.RData")
 
 # A) PREPARE FORMULAS
 # Vector with all variables that we're going to use (minus ""variations"")
@@ -334,17 +334,22 @@ oak_mod <- brm(formulas[[i]],
 
 assign(names(formulas[i]), oak_mod)
 
-# save.image(paste("/results/oak_models", names(formulas[i]), ".RData", sep = ""))
+# save.image(paste("analysis/results/oak_models",
+#                  names(formulas[i]),
+#                  ".RData",
+#                  sep = ""))
 # END OF JOBSCRIPT
 
 # ii) Save all models in one .RData file
-files <- paste("results/", list.files(path = "results/"), sep = "")
+files <- paste("analysis/results/",
+               list.files(path = "analysis/results/"),
+               sep = "")
 files <- grep("[0-9].RData", files, value = TRUE)
 
 lapply(files, load, .GlobalEnv)
 
-load("/results/oak_models.RData")
-# save.image("/results/oak_models.RData")
+load("analysis/results/oak_models.RData")
+# save.image("analysis/results/oak_models.RData")
 
 
 

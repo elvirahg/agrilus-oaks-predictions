@@ -34,7 +34,7 @@ library(ggplot2)
 # See https://discourse.mc-stan.org/t/understanding-looic/13409
 # and https://mc-stan.org/loo/reference/loo-glossary.html#se-diff
 # Lower LOOIC values indicate a better fit
-load("results/oak_models.RData")
+load("analysis/results/oak_models.RData")
 
 # NB, wtih WAIC (waic())), I get a message suggesting to use loo instead:
 # "p_waic estimates greater than 0.4. We recommend trying loo instead."
@@ -122,7 +122,7 @@ if (i == 1) {
 }
 
 # Save image
-# save.image(paste0("results/oak_models_looic", i, ".RData"))
+# save.image(paste0("analysis/results/oak_models_looic", i, ".RData"))
 # print("saved")
 
 # END OF JOBSCRIPT
@@ -131,7 +131,7 @@ if (i == 1) {
 # B) EXPLORE RESULTS
 # i) Group 1
 # Load data
-load("results/oak_models_looic1.RData")
+load("analysis/results/oak_models_looic1.RData")
 
 # Explore results
 # loo_oak_mods1
@@ -145,7 +145,7 @@ load("results/oak_models_looic1.RData")
 
 # ii) Group 2
 # Load data
-load("results/oak_models_looic2.RData")
+load("analysis/results/oak_models_looic2.RData")
 
 # Explore results
 # loo_oak_mods2
@@ -163,7 +163,7 @@ load("results/oak_models_looic2.RData")
 
 # iii) Group 3
 # Load data
-load("results/oak_models_looic3.RData")
+load("analysis/results/oak_models_looic3.RData")
 
 # Explore results
 # loo_oak_mods3
@@ -196,7 +196,7 @@ load("results/oak_models_looic3.RData")
 # Ask for 100 GB, takes ca 1 day to run
 
 # i) Using all best performing models from all 3 groups
-load("results/oak_models.RData")
+load("analysis/results/oak_models.RData")
 
 # The "best-performing" models I selected are models for which, in each group:
 # *Their value overlaps with that of the lowest with the lowest LOOIC in their group,
@@ -250,7 +250,7 @@ loo_oak_mods_sig <- loo(oak_mod018, # out of curiosity
 loo_oak_mods$diffs
 
 # Save image
-# save.image("results/oak_models.RData")
+# save.image("analysis/results/oak_models.RData")
 
 
 

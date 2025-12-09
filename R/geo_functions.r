@@ -326,7 +326,7 @@ add_species_centroid <- function(df,
   if (!is.character(iso3)) {
     stop("'iso3' must be a character indicating iso3 country code")
   }
-  if (!is.character(region)) {
+  if (!is.null(region) && !is.character(region)) {
     stop("'region' must be a character")
   }
   if (!is.character(col_species)) {

@@ -703,7 +703,7 @@ plot_prediction_change <- function(pred_original,
       warning("'obs_vals' object will not be used, as col_by != 'obs_vals'")
     }
     if (!(is.numeric(obs_vals)) || length(obs_vals) != length(pred_original)) {
-      stop("'obs_vals' must be a numeric vector of equal length to pred_original")
+      stop("'obs_vals' must be a numeric vector of equal length to 'pred_original'")
     }
   }
   if (!is.character(x_lab) || length(x_lab) != 1) {

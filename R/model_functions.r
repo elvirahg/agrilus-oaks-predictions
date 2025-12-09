@@ -250,7 +250,7 @@ sort_formulas <- function(formulas,
 #' model names to define custom groups. If provided, `n_groups` must be set to
 #' NULL.
 #' @param save Logical; if `TRUE`, each group's `loo_compare` result is saved as
-#' an `.RData` file in `save_path`. Defaults to `FALSE`.
+#' an `.rds` file in `save_path`. Defaults to `FALSE`.
 #' @param save_path Character scalar specifying the directory in which to save
 #' results if `save = TRUE`. Will be created if it does not exist. Defaults to
 #' the current working directory.
@@ -390,8 +390,8 @@ loo_compare_parallel_groups <- function(models_list,
 
     # Optional save
     if (save) {
-      save_file <- file.path(save_path, paste0("loo_comp_", grp, ".RData"))
-      save(loo_comp, file = save_file)
+      save_file <- file.path(save_path, paste0("loo_comp_", grp, ".rds"))
+      saveRDS(loo_comp, file = save_file)
     }
 
     # # Return LOO comparison
@@ -460,8 +460,8 @@ split_vector_into_lists <- function(x,
 }
 
 
-#' "Leave-one-observation-out" prediction by zeroing each positive case in a
-#' brms model
+#' "Leave-one-observation-out"-like predictions by zeroing each positive case in
+#' a brms model
 #'
 #' This function performs the follow: for every row in the model data where
 #' `interaction_col == 1`, the value of that row is temporarily set to 0, and

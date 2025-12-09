@@ -9,6 +9,9 @@ library(brms)
 library(foreach)
 library(ggplot2)
 
+# Seed
+set.seed(24601)
+
 # Load brms models from previous script
 oak_models <- readRDS("data/results/oak_models.rds")
 

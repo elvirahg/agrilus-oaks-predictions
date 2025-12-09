@@ -71,8 +71,8 @@ oak_gbif_keys$key <- ifelse(
 #                     pwd = "<password>")
 # rgbif::occ_download_wait('0361079-210914110416597')
 oak_geo_initial <- rgbif::occ_download_get("0361079-210914110416597",
-                                           path = "tmp") |>
-  rgbif::occ_download_import(path = "tmp") |>
+                                           path = "data/tmp") |>
+  rgbif::occ_download_import(path = "data/tmp") |>
   dplyr::filter(speciesKey %in% oak_gbif_keys$key & !is.na(speciesKey)) |>
   dplyr::mutate(eventDate = as.character(eventDate))
 
@@ -84,7 +84,8 @@ oak_geo_initial <- rgbif::occ_download_get("0361079-210914110416597",
 # * Q. calophylla: synonym in GBIF (need to use taxonKey)
 # * Q. sartorii:synonym in GBIF (need to use taxonKey)
 # * Q. litoralis: Atuna excelsa subsp. excelsa in GBIF
-missing_keys <- setdiff(unique(oak_gbif_keys$key), unique(oak_geo_initial$speciesKey))
+missing_keys <- setdiff(unique(oak_gbif_keys$key),
+                        unique(oak_geo_initial$speciesKey))
 manual_keys <- c(
   "Quercus corrugata"        = missing_keys[2],
   "Quercus sagrana"          = missing_keys[3],
@@ -119,8 +120,8 @@ manual_oak_downloads <- list(
 
 # Retrieve and combine all manually downloaded species
 manual_oak_geo <- lapply(manual_oak_downloads, function(download_key) {
-  rgbif::occ_download_get(download_key, path = "tmp") |>
-    rgbif::occ_download_import(path = "tmp")
+  rgbif::occ_download_get(download_key, path = "data/tmp") |>
+    rgbif::occ_download_import(path = "data/tmp")
 })
 
 # Combine with existing data
@@ -176,31 +177,35 @@ manual_plant_downloads <- c(
 
 # Retrieve and combine all manually downloaded species
 manual_plant_geo <- lapply(manual_plant_downloads, function(download_key) {
-  rgbif::occ_download_get(download_key, path = "tmp") |>
-    rgbif::occ_download_import(path = "tmp")
+  rgbif::occ_download_get(download_key, path = "data/tmp") |>
+    rgbif::occ_download_import(path = "data/tmp")
 })
 
 # Combine with existing data
 plant_geo <- do.call(rbind, c(list(oak_geo), manual_plant_geo))
 
 # Write table
+# Note, file not included in data/ due to size (4 GB)
 # write.table(plant_geo, "data/results/gbif_geo_plants.tsv",
-#             quote = FALSE, row.names = FALSE,
-#             col.names = TRUE, sep = "\t")
+#             quote = FALSE,
+#             row.names = FALSE,
+#             col.names = TRUE,
+#             sep = "\t")
 
 
 #### CLEAN GBIF GEO DATASET ####
+# Note, file not included in data/ due to size (4 GB)
 # plant_geo <- read.table("data/results/gbif_geo_plants.tsv",
 #                         header = TRUE,
 #                         sep = "\t",
 #                         quote = "",
 #                         comment.char = "")
 
-plant_geo_clean <- plant_geo
+plant_geo_clean <- as.data.frame(plant_geo)
 
 # Check missing species
 plant_spp <- c(oak_gbif_keys$species, plant_gbif_keys$species)
-plant_spp[!(plant_spp %in% unique(plant_geo$species))]
+plant_spp[!(plant_spp %in% unique(plant_geo_clean$species))]
 
 # Re-name species that are reported as scientificName under a different species
 # * Q. sagrana has no entries in GBIF
@@ -311,7 +316,7 @@ flags_list <- lapply(flag_species, function(df) {
 })
 
 # Combine results back into a single data frame
-flags <- rbind(flags_list)
+flags <- do.call("rbind", flags_list)
 
 # Remove any flagged entries
 # ~ half of data flagged (most are duplicates): summary(flags)
@@ -320,8 +325,7 @@ plant_geo_clean <- flags[flags$.summary, ]
 # Missing spp: Q. sagrana (no records) and Q. yiwuensis (no coordinate info)
 plant_spp[!(plant_spp %in% unique(plant_geo_clean$species))]
 
-## REMOVE NON-RELEVANT FIELDS AND SUBSAMPLE SPECIES WITH > 100K ENTRIES
-# Only keep species, latitude, and longitude colums
+# Remove non-relevant fields, only retaining species, latitude, and longitude colums
 plant_geo_clean <- plant_geo_clean[, c("species",
                                        "decimalLongitude",
                                        "decimalLatitude")]
@@ -347,7 +351,7 @@ plant_geo_clean <- add_species_centroid(df = plant_geo_clean,
                                         region = "Hunan",
                                         col_species = "plant_sp")
 
-# No missing species
+# Check missing species
 plant_spp[!(plant_spp %in% unique(plant_geo_clean$plant_sp))]
 
 # Write table

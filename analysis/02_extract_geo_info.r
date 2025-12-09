@@ -185,6 +185,7 @@ manual_plant_geo <- lapply(manual_plant_downloads, function(download_key) {
 plant_geo <- do.call(rbind, c(list(oak_geo), manual_plant_geo))
 
 # Write table
+# Note, file not included in data/ due to size (4 GB)
 # write.table(plant_geo, "data/results/gbif_geo_plants.tsv",
 #             quote = FALSE,
 #             row.names = FALSE,
@@ -193,6 +194,7 @@ plant_geo <- do.call(rbind, c(list(oak_geo), manual_plant_geo))
 
 
 #### CLEAN GBIF GEO DATASET ####
+# Note, file not included in data/ due to size (4 GB)
 # plant_geo <- read.table("data/results/gbif_geo_plants.tsv",
 #                         header = TRUE,
 #                         sep = "\t",

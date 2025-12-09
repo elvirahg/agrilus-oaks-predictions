@@ -1,7 +1,9 @@
 data/data/
+data/tmp/
 renv/
 notes.r
 *.RData
 .DS_Store
 .Rprofile
+.Rbuildignore
 .lintr

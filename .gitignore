@@ -1,4 +1,4 @@
-data/data/
+data/data*/
 data/tmp/
 renv/
 notes.r

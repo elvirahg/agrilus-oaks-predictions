@@ -78,7 +78,7 @@ preds_loo_pos <- preds_loo[which(predictions$host_status == 1)]
 
 # Compare against the previous method
 plot_prediction_change(pred_original = preds_one_as_zero$pred,
-                       pred_new = preds_loo_pos[1:5],
+                       pred_new = preds_loo_pos,
                        threshold = thr_intercepts["threshold"],
                        print_change = TRUE,
                        col_by = "pred_change",
@@ -90,7 +90,7 @@ plot_prediction_change(pred_original = preds_one_as_zero$pred,
 plot_prediction_change(pred_original = predictions$prediction_lodds,
                        pred_new = preds_loo,
                        threshold = thr_intercepts["threshold"],
-                       obs_vals = predictions$host_status,
+                       obs_vals = as.numeric(predictions$host_status),
                        print_change = TRUE,
                        col_by = "obs_vals",
                        x_lab = "Original predictions (log-odds)",

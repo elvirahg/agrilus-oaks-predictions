@@ -2,8 +2,8 @@
 % Please edit documentation in R/model_functions.r
 \name{predict_as_zero_loo}
 \alias{predict_as_zero_loo}
-\title{"Leave-one-observation-out" prediction by zeroing each positive case in a
-brms model}
+\title{"Leave-one-observation-out"-like predictions by zeroing each positive case in
+a brms model}
 \usage{
 predict_as_zero_loo(
   model,

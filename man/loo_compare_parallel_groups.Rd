@@ -26,7 +26,7 @@ model names to define custom groups. If provided, `n_groups` must be set to
 NULL.}
 
 \item{save}{Logical; if `TRUE`, each group's `loo_compare` result is saved as
-an `.RData` file in `save_path`. Defaults to `FALSE`.}
+an `.rds` file in `save_path`. Defaults to `FALSE`.}
 
 \item{save_path}{Character scalar specifying the directory in which to save
 results if `save = TRUE`. Will be created if it does not exist. Defaults to

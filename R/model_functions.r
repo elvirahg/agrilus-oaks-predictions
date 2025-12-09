@@ -557,7 +557,7 @@ predict_as_zero_loo <- function(model,
   # Identify positive observations
   pos_int <- which(model$data[[interaction_col]] == 1)
   cat(paste("Number of positive interactions to be tested:",
-            length(pos_int), , "\n"))
+            length(pos_int), "\n"))
 
   # Set up parallel workers
   cl <- parallel::makeCluster(cores)

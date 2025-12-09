@@ -45,6 +45,14 @@ predictions <- data.frame(
   prediction_lodds  = fitted(oak_models$mod046, scale = "linear")[, "Estimate"]
 )
 
+# Write predictions to file
+# write.table(predictions,
+#             "data/results/predictions.tsv",
+#             row.names = FALSE,
+#             col.names = TRUE,
+#             sep = "\t",
+#             quote = FALSE)
+
 # Simple initial plot
 par(mfrow = c(1, 2))
 plot(prediction_prob ~ host_status, data = predictions,
@@ -54,14 +62,6 @@ plot(prediction_lodds ~ host_status, data = predictions,
      xlab = "Host status", ylab = "Predicted log-odds",
      col = c("steelblue", "coral"))
 par(mfrow = c(1, 1))
-
-# Write predictions to file
-# write.table(predictions,
-#             "data/results/predictions.tsv",
-#             row.names = FALSE,
-#             col.names = TRUE,
-#             sep = "\t",
-#             quote = FALSE)
 
 
 #### CHECK EFFECT OF DIFFERENT VARIABLES ####

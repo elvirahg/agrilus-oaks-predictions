@@ -36,7 +36,8 @@ loo_comp_results$grp1
 loo_comp_results$grp2
 loo_comp_results$grp3
 
-# Save image
+# Save data
+# Note, object not included in data/ due to size
 # saveRDS(loo_comp_results, file = "data/results/loo_comp_results.rds")
 
 
@@ -64,6 +65,8 @@ loo_oak_mods_best <- brms::loo(oak_models_best,
                                reloo = TRUE,
                                compare = TRUE)
 
+# Save data
+# Note, object not included in data/ due to size
 # saveRDS(loo_oak_mods_best, file = "data/results/loo_oak_mods_best.rds")
 
 # Compare best-performing models from all groups which only contain variables
@@ -78,5 +81,6 @@ loo_oak_mods_best_sig <- brms::loo(oak_models_best_sig,
                                    reloo = TRUE,
                                    compare = TRUE)
 
-# Save image
+# Save data
+# Note, object not included in data/ due to size
 # saveRDS(loo_oak_mods_best_sig, file = "data/results/loo_oak_mods_best_sig.rds")

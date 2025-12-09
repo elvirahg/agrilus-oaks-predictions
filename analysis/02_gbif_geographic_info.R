@@ -39,8 +39,8 @@ library(ggplot2)
 # occ_download_wait('0361079-210914110416597')
 
 geo_info <- occ_download_get('0361079-210914110416597',
-                             path = "tmp/gbif") %>%
-            occ_download_import(quote = "", path = "tmp/")
+                             path = "data/tmp/gbif") %>%
+            occ_download_import(quote = "", path = "data/tmp/")
 
 # Read the phylogenetic tree of oaks and extract spp. names
 # This tree also comes from from Hipp et al. (2019)
@@ -135,8 +135,8 @@ missing_keys[1]
 # # occ_download(pred("taxonKey", missing_keys[2]), format = "SIMPLE_CSV",
 # #              user = "", email = "", pwd = "")
 # # occ_download_wait('0361453-210914110416597')
-# add_plant <- occ_download_get('0361453-210914110416597', path = "tmp/gbif") %>%
-#              occ_download_import(quote = "", path = "tmp/")
+# add_plant <- occ_download_get('0361453-210914110416597', path = "data/tmp/gbif") %>%
+#              occ_download_import(quote = "", path = "data/tmp/")
 # geo_info <- rbind(geo_info, add_plant)
 
 # Quercus sagrana: no occurrences in GBIF
@@ -149,8 +149,8 @@ missing_sp[4]
 # occ_download(pred("taxonKey", missing_keys[4]), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361458-210914110416597')
-add_plant <- occ_download_get('0361458-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361458-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Quercus confertifolia: Don't run! It's already in DS as part of some Q. crassipes entries
@@ -159,8 +159,8 @@ geo_info <- rbind(geo_info, add_plant)
 # # occ_download(pred("taxonKey", missing_keys[5]), format = "SIMPLE_CSV",
 # #              user = "", email = "", pwd = "")
 # # occ_download_wait('0361447-210914110416597')
-# add_plant <- occ_download_get('0361547-210914110416597', path = "tmp/gbif") %>%
-#              occ_download_import(quote = "", path = "tmp/")
+# add_plant <- occ_download_get('0361547-210914110416597', path = "data/tmp/gbif") %>%
+#              occ_download_import(quote = "", path = "data/tmp/")
 # geo_info <- rbind(geo_info, add_plant)
 
 # Quercus sartorii
@@ -169,8 +169,8 @@ missing_sp[6]
 # occ_download(pred("taxonKey", missing_keys[6]), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361555-210914110416597')
-add_plant <- occ_download_get('0361555-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361555-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Quercus sp.nov.
@@ -184,8 +184,8 @@ missing_sp[8]
 # occ_download(pred("taxonKey", 10839442), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361560-210914110416597')
-add_plant <- occ_download_get('0361560-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361560-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 
@@ -224,8 +224,8 @@ plant_keys[1,]
 # occ_download(pred("taxonKey", plant_keys[1,2]), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361580-210914110416597')
-add_plant <- occ_download_get('0361580-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361580-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Betula pendula
@@ -233,8 +233,8 @@ plant_keys[2,]
 # occ_download(pred("taxonKey", plant_keys[2,2]), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361582-210914110416597')
-add_plant <- occ_download_get('0361582-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361582-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Castanea sativa
@@ -242,8 +242,8 @@ plant_keys[3,]
 # occ_download(pred("taxonKey", plant_keys[3,2]), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361584-210914110416597')
-add_plant <- occ_download_get('0361584-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361584-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Corylus avellana
@@ -251,8 +251,8 @@ plant_keys[4,]
 # occ_download(pred("taxonKey", c(plant_keys[4,2])), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361600-210914110416597')
-add_plant <- occ_download_get('0361600-210914110416597', path = "\tmp") %>%
-             occ_download_import(quote = "", path = "\tmp")
+add_plant <- occ_download_get('0361600-210914110416597', path = "data/tmp/") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Fagus sylvatica
@@ -260,8 +260,8 @@ plant_keys[5,]
 # occ_download(pred("taxonKey", c(plant_keys[5,2])), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361610-210914110416597')
-add_plant <- occ_download_get('0361610-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361610-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Ostrya carpinifolia
@@ -269,8 +269,8 @@ plant_keys[6,]
 # occ_download(pred("taxonKey", c(plant_keys[6,2])), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361624-210914110416597')
-add_plant <- occ_download_get('0361624-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361624-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Castanea dentata
@@ -278,8 +278,8 @@ plant_keys[7,]
 # occ_download(pred("taxonKey", c(plant_keys[7,2])), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361625-210914110416597')
-add_plant <- occ_download_get('0361625-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361625-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Fagus grandifolia
@@ -287,8 +287,8 @@ plant_keys[8,]
 # occ_download(pred("taxonKey", c(plant_keys[8,2])), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361626-210914110416597')
-add_plant <- occ_download_get('0361626-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361626-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Salix nigra
@@ -296,8 +296,8 @@ plant_keys[9,]
 # occ_download(pred("taxonKey", c(plant_keys[9,2])), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361628-210914110416597')
-add_plant <- occ_download_get('0361628-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361628-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Diospyros virginiana
@@ -305,8 +305,8 @@ plant_keys[10,]
 # occ_download(pred("taxonKey", c(plant_keys[10,2])), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361642-210914110416597')
-add_plant <- occ_download_get('0361642-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361642-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Gleditsia triacanthos
@@ -314,8 +314,8 @@ plant_keys[11,]
 # occ_download(pred("taxonKey", c(plant_keys[11,2])), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361643-210914110416597')
-add_plant <- occ_download_get('0361643-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361643-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Euonymus europaeus
@@ -323,8 +323,8 @@ plant_keys[12,]
 # occ_download(pred("taxonKey", c(plant_keys[12,2])), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361646-210914110416597')
-add_plant <- occ_download_get('0361646-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361646-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Carpinus betulus
@@ -333,8 +333,8 @@ plant_keys[13,]
 #              user = "", email = "",
 #              pwd = "")
 # occ_download_wait('0361649-210914110416597')
-add_plant <- occ_download_get('0361649-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361649-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Ficus carica
@@ -342,8 +342,8 @@ plant_keys[14,]
 # occ_download(pred("taxonKey", c(plant_keys[14,2])), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361653-210914110416597')
-add_plant <- occ_download_get('0361653-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361653-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 
@@ -352,8 +352,8 @@ plant_keys[15,]
 # occ_download(pred("taxonKey", c(plant_keys[15,2])), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361656-210914110416597')
-add_plant <- occ_download_get('0361656-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361656-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Aesculus pavia
@@ -361,8 +361,8 @@ plant_keys[16,]
 # occ_download(pred("taxonKey", c(plant_keys[16,2])), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361661-210914110416597')
-add_plant <- occ_download_get('0361661-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361661-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Betula lenta
@@ -370,8 +370,8 @@ plant_keys[17,]
 # occ_download(pred("taxonKey", c(plant_keys[17,2])), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361664-210914110416597')
-add_plant <- occ_download_get('0361664-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361664-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Carpinus caroliniana
@@ -379,8 +379,8 @@ plant_keys[18,]
 # occ_download(pred("taxonKey", c(plant_keys[18,2])), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361668-210914110416597')
-add_plant <- occ_download_get('0361668-210914110416597', path = "tmp/gbif") %>%
-             occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361668-210914110416597', path = "data/tmp/gbif") %>%
+             occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Ostrya virginiana
@@ -388,8 +388,8 @@ plant_keys[19,]
 # occ_download(pred("taxonKey", c(plant_keys[19,2])), format = "SIMPLE_CSV",
 #              user = "", email = "", pwd = "")
 # occ_download_wait('0361677-210914110416597')
-add_plant <- occ_download_get('0361677-210914110416597', path = "tmp/gbif") %>%
-  occ_download_import(quote = "", path = "tmp/")
+add_plant <- occ_download_get('0361677-210914110416597', path = "data/tmp/gbif") %>%
+  occ_download_import(quote = "", path = "data/tmp/")
 geo_info <- rbind(geo_info, add_plant)
 
 # Write table

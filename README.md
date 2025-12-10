@@ -10,7 +10,7 @@ This repository contains code and analyses associated with Hernandez-Gutierrez e
 In this repository, you will find:
 * `analysis/`: R scripts implementing the analysis workflow. The scripts are numbered to indicate execution order (e.g., `02_*` follows `01_*`). These can be used to reproduce the published analyses or adapted for related work.
 * `R/`: Helper functions used across the analyses.
-* `docs/`: HTML documentation for the functions in `R/`. If you clone or download the repository locally, you can open index.html to browse the documentation.
+* `docs/`: HTML documentation for the functions in `R/`. If you clone or download the repository locally, you can open `index.html` to browse the documentation.
 * `data/`: Input data required for the analyses, and data generated during the analyses.
 
 This repository also includes an `renv.lock` file, which records the package versions used for these analyses. You can restore this environment with `renv::restore()`.

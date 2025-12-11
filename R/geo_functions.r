@@ -200,23 +200,23 @@ filter_gbif_data <- function(data,
   if (!is.logical(remove_no_coords)) {
     stop("'remove_no_coords' must be logical")
   }
-  if (!is.numeric(coord_uncertainty_thr)) {
-    stop("'coord_uncertainty_thr' must be an integer")
+  if (!is.null(coord_uncertainty_thr) && is.numeric(coord_uncertainty_thr)) {
+    stop("'coord_uncertainty_thr' must be an integer  or NULL")
   }
   if (!is.logical(remove_zero_indiv_count)) {
     stop("'remove_zero_indiv_count' must be logical")
   }
-  if (!is.numeric(max_indiv_count)) {
-    stop("'max_indiv_count' must be an integer")
+  if (!is.null(max_indiv_count) && !is.numeric(max_indiv_count)) {
+    stop("'max_indiv_count' must be an integer or NULL")
   }
   if (!is.logical(remove_absent)) {
     stop("'remove_absent' must be logical")
   }
-  if (!is.numeric(min_year)) {
-    stop("'min_year' must be an integer")
+  if (!is.null(min_year) && !is.numeric(min_year)) {
+    stop("'min_year' must be an integer or NULL")
   }
-  if (!is.character(issues)) {
-    stop("'issues' must be a character vector")
+  if (!is.null(issues) && !is.character(issues)) {
+    stop("'issues' must be a character vector or NULL")
   }
 
   result <- data

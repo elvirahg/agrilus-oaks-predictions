@@ -194,6 +194,8 @@ plant_geo <- do.call(rbind, c(list(oak_geo), manual_plant_geo))
 
 
 #### CLEAN GBIF GEO DATASET ####
+# See https://cran.r-project.org/web/packages/CoordinateCleaner/vignettes/Cleaning_GBIF_data_with_CoordinateCleaner.html#:~:text=We%20might%20also%20want%20to,it%20with%20the%20following%20code
+
 # Note, file not included in data/ due to size (4 GB)
 # plant_geo <- read.table("data/results/gbif_geo_plants.tsv",
 #                         header = TRUE,

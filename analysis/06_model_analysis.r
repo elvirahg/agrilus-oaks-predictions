@@ -1,10 +1,12 @@
 #### SET ENVIRONMENT ####
 # Custom functions
+source("R/phylo_functions.r")
 source("R/analysis_functions.r")
 source("R/plot_functions.r")
 
 # Libraries
 library(brms)
+library(dplyr)
 library(ggplot2)
 
 # Load brms models from previous script
@@ -44,14 +46,6 @@ predictions <- data.frame(
   prediction_prob = fitted(oak_models$mod046, scale = "response")[, "Estimate"],
   prediction_lodds  = fitted(oak_models$mod046, scale = "linear")[, "Estimate"]
 )
-
-# Write predictions to file
-# write.table(predictions,
-#             "data/results/predictions.tsv",
-#             row.names = FALSE,
-#             col.names = TRUE,
-#             sep = "\t",
-#             quote = FALSE)
 
 # Simple initial plot
 par(mfrow = c(1, 2))
@@ -158,20 +152,28 @@ ggplot(thresholds_df, aes(fpr, sensitivity)) +
 # Compute AUC value (0.97)
 DescTools::AUC(thresholds_df$fpr, thresholds_df$sens)
 
+# Add binary predictions to predictions dataframe
+predictions$prediction_binary <- factor(
+  ifelse(predictions$prediction_lodds > thr_intercepts["threshold"], 1, 0),
+  levels = c(0, 1)
+)
 
-#### PLOT RESULTS ####
+# Write predictions to file
+# write.table(predictions,
+#             "data/results/predictions.tsv",
+#             row.names = FALSE,
+#             col.names = TRUE,
+#             sep = "\t",
+#             quote = FALSE)
+
+
+#### PLOT PREDICTION RESULTS ####
 # Genral violin plot
 plot_predictions_violin(predictions = predictions,
                         threshold = thr_intercepts["threshold"])
 
 median(predictions[predictions$host_status == 1, ]$prediction_lodds)
 median(predictions[predictions$host_status == 0, ]$prediction_lodds)
-
-# Add binary predictions to predictions dataframe
-predictions$prediction_binary <- factor(
-  ifelse(predictions$prediction_lodds > thr_intercepts["threshold"], 1, 0),
-  levels = c(0, 1)
-)
 
 # Plot general binary predictions
 plot_fourfold(observations = predictions$host_status,
@@ -218,3 +220,51 @@ plot_highlighted_predictions(
   host_col = "quercus_sp",
   threshold = thr_intercepts["threshold"]
 )
+
+
+#### PLOT PREDICTION RESULTS (PHYLO TREE) ####
+# Read in tree
+# See Hipp et al., 2020; https://github.com/andrew-hipp/global-oaks-2019
+oak_phylo <- ape::read.tree("data/input/tr.singletons.correlated.1.taxaGrepCrown_accepted_names.tre")
+
+# Clean tree
+old_names <- c("Quercus litoralis",
+               "Quercus new",
+               "Quercus sp")
+new_names <- c("Quercus litoralis (Atuna excelsa)",
+               "Quercus sp. nov. QUE000227",
+               "Quercus sp. nov. QUE001568")
+
+oak_phylo <- standardise_phylo(oak_phylo,
+                               old_labels = old_names,
+                               new_labels = new_names,
+                               remove_duplicates = TRUE,
+                               clean_labels = TRUE,
+                               pattern = "^([A-Z][a-z]+)_([×|x]*)_*([a-z-]+).*",
+                               replacement = "\\1 \\2\\3")
+
+# Identify known and predicted host species
+pred_hosts <- unique(subset(predictions,
+                            prediction_binary == 1)$quercus_sp)
+known_hosts <- unique(subset(predictions,
+                             host_status == 1)$quercus_sp)
+
+predicted_hosts <- data.frame(
+  quercus_sp = oak_phylo$tip.label,
+  is_known = oak_phylo$tip.label %in% known_hosts,
+  is_pred = oak_phylo$tip.label %in% pred_hosts
+)
+
+# Plot oak phylogeny with host info
+plot_oak_phylo_hosts(phylo = oak_phylo,
+                     pred_hosts = predicted_hosts,
+                     label = "quercus_sp",
+                     layout = "circular",
+                     tiplab_offset = 5,
+                     tiplab_size = 1.7,
+                     tippoint_shape = 18,
+                     tippoint_size = 2,
+                     pred_color = "darkgoldenrod3",
+                     nonpred_color = "gray50",
+                     known_color = "#cf3530",
+                     show_legend = FALSE)

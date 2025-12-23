@@ -763,3 +763,134 @@ plot_prediction_change <- function(pred_original,
 
   p
 }
+
+#' Plot phylogeny with predicted and known Hhsts
+#'
+#' This function takes a phylogenetic tree (`phylo`) and a data frame containing
+#' information on predicted and known hosts for each tip, and produces a
+#' circular (or rectangular) tree with:
+#' - Predicted hosts highlighted with bold italic labels and custom colour.
+#' - Known hosts marked with a tip point and custom colour.
+#'
+#' @param phylo An object of class `phylo` representing the tree to plot.
+#' @param pred_hosts A data.frame containing tip information with three columns:
+#'   - `label`: character vector of tip names (species names matching tip
+#' labels).
+#'   - `is_known`: logical vector indicating if the tip is a known host.
+#'   - `is_pred`: logical vector indicating if the tip is a predicted host.
+#' @param label Character string indicating the column name in `pred_hosts`
+#'   containing the tip labels.
+#' @param layout Character string specifying the tree layout (default:
+#' `circular`).
+#' @param tiplab_offset Numeric, offset distance of tip labels from the tree
+#' (defaut: `5`).
+#' @param tiplab_size Numeric, font size of tip labels (default: 1.7).
+#' @param tippoint_shape Numeric, shape code for known host tip points (default:
+#' `18`).
+#' @param tippoint_size Numeric, size of the tip point symbols (default: 2).
+#' @param pred_color Character, colour for predicted host labels (default:
+#' `darkgoldenrod3`).
+#' @param nonpred_color Character, colour for non-predicted tips (default:
+#' `gray50`).
+#' @param known_color Character, colour for known host tip points (default:
+#' `#cf3530`).
+#' @param show_legend Logical, whether to show a legend (default: `FALSE`).
+#'
+#' @return A `ggtree` object that can be printed or further customised.
+#'
+#' @examples
+#' pred_hosts <- data.frame(
+#'   quercus_sp = oak_phylo$tip.label,
+#'   is_known = oak_phylo$tip.label %in% known_hosts,
+#'   is_pred = oak_phylo$tip.label %in% pred_hosts
+#' )
+#' plot_oak_phylo_hosts(oak_phylo, pred_hosts, label = "quercus_sp")
+#'
+#' @import ggplot2 ggtree treeio
+#' @export
+plot_oak_phylo_hosts <- function(phylo,
+                                 pred_hosts,
+                                 label,
+                                 layout = "circular",
+                                 tiplab_offset = 5,
+                                 tiplab_size = 1.7,
+                                 tippoint_shape = 18,
+                                 tippoint_size = 2,
+                                 pred_color = "darkgoldenrod3",
+                                 nonpred_color = "gray50",
+                                 known_color = "#cf3530",
+                                 show_legend = FALSE) {
+  # Checks
+  if (!is.data.frame(pred_hosts)
+      || any(colnames(pred_hosts) != c(label, "is_known", "is_pred"))) {
+    stop(paste0("'pred_hosts' must be a data.frame with colnames: ",
+                label, ", is_known, is_pred"))
+  }
+  if (!is.character(pred_hosts[[label]])) {
+    stop("'pred_hosts[[label]]' must be a character vector")
+  }
+  if (!is.logical(pred_hosts$is_known)) {
+    stop("'pred_hosts$is_known' must be a logical vector")
+  }
+  if (!is.logical(pred_hosts$is_pred)) {
+    stop("'pred_hosts$is_pred' must be a logical vector")
+  }
+  if (class(phylo) != "phylo") {
+    stop("'phylo' must be an object of class 'phylo'")
+  }
+  if (!is.character(label) || length(label) != 1) {
+    stop("'label'must be a character string of length 1")
+  }
+  if (!is.character(layout) || length(layout) != 1) {
+    stop("'layout' must be a character string of length 1")
+  }
+  if (!is.numeric(tiplab_offset) || length(tiplab_offset) != 1) {
+    stop("'tiplab_offset' must be a single numeric value")
+  }
+  if (!is.numeric(tiplab_size) || length(tiplab_size) != 1) {
+    stop("'tiplab_size' must be a single numeric value")
+  }
+  if (!is.numeric(tippoint_shape) || length(tippoint_shape) != 1) {
+    stop("'tippoint_shape' must be a single numeric value")
+  }
+  if (!is.numeric(tippoint_size) || length(tippoint_size) != 1) {
+    stop("'tippoint_size' must be a single numeric value")
+  }
+  if (!is.character(pred_color) || length(pred_color) != 1) {
+    stop("'pred_color' must be a character string of length 1")
+  }
+  if (!is.character(nonpred_color) || length(nonpred_color) != 1) {
+    stop("'nonpred_color' must be a character string of length 1")
+  }
+  if (!is.character(known_color) || length(known_color) != 1) {
+    stop("'known_color' must be a character string of length 1")
+  }
+  if (!is.logical(show_legend) || length(show_legend) != 1) {
+    stop("'show_legend' must be a single logical value")
+  }
+
+  # Add host info to phylo
+  phylo_preds <- phylo |>
+    ggtree::fortify() |>
+    left_join(pred_hosts, by = c("label" = label)) |>
+    treeio::as.treedata()
+
+  # Plot
+  ggtree::ggtree(phylo_preds, layout = layout) +
+    # Tip labels for predicted hosts
+    ggtree::geom_tiplab(ggplot2::aes(subset = TRUE,
+                                     fontface = ifelse(is_pred,
+                                                       "bold.italic",
+                                                       "italic"),
+                                     color = is_pred),
+                        offset = tiplab_offset,
+                        size = tiplab_size,
+                        show.legend = show_legend) +
+    ggplot2::scale_color_manual(values = c(nonpred_color, pred_color)) +
+    # Tip points for known hosts
+    ggtree::geom_tippoint(ggplot2::aes(subset = is_known),
+                          shape = tippoint_shape,
+                          size = tippoint_size,
+                          color = known_color,
+                          show.legend = show_legend)
+}

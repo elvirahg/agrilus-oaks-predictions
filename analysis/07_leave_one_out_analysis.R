@@ -9,7 +9,8 @@ library(brms)
 library(foreach)
 library(ggplot2)
 
-# Seed
+# Seed (not needed for actual analyses, only if exact reproducibility of
+# results is desired)
 set.seed(24601)
 
 # Load brms models from previous script

@@ -8,7 +8,8 @@ source("R/plot_functions.r")
 library(dplyr)
 library(ggplot2)
 
-# Seed
+# Seed (not needed for actual analyses, only if exact reproducibility of
+# results is desired)s
 set.seed(24601)
 
 

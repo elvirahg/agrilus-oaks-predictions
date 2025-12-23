@@ -3,7 +3,8 @@
 source("R/phylo_functions.r")
 source("R/model_functions.r")
 
-# Seed
+# Seed (not needed for actual analyses, only if exact reproducibility of
+# results is desired)s
 set.seed(24601)
 
 

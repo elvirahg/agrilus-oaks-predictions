@@ -6,7 +6,8 @@ source("R/geo_functions.r")
 # Packages
 library(dplyr)
 
-# Seed
+# Seed (not needed for actual analyses, only if exact reproducibility of
+# results is desired)
 set.seed(24601)
 
 

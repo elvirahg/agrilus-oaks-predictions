@@ -59,7 +59,7 @@ manual_oak_keys <- c(
 )
 
 oak_gbif_keys$key <- ifelse(
-  is.na(oak_gbif_keys$key) & oak_gbif_keys$species %in% names(manual_oak_keys),
+  is.na(oak_gbif_keys$key) & oak_gbif_keys$species %in% wcvp_v10_names(manual_oak_keys),
   manual_oak_keys[oak_gbif_keys$species],
   oak_gbif_keys$key
 )
@@ -229,7 +229,7 @@ replacements <- c("Quercus candicans" = "Quercus calophylla",
                   "Quercus xalapensis" = "Quercus sartorii",
                   "Atuna excelsa" = "Quercus litoralis (Atuna excelsa)",
                   "Quercus crenata" = "Quercus ×crenata")
-for (original_name in names(replacements)) {
+for (original_name in wcvp_v10_names(replacements)) {
   plant_geo_clean$species <- gsub(original_name,
                                   replacements[original_name],
                                   plant_geo_clean$species)

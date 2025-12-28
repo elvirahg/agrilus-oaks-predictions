@@ -200,7 +200,7 @@ filter_gbif_data <- function(data,
   if (!is.logical(remove_no_coords)) {
     stop("'remove_no_coords' must be logical")
   }
-  if (!is.null(coord_uncertainty_thr) && is.numeric(coord_uncertainty_thr)) {
+  if (!is.null(coord_uncertainty_thr) && !is.numeric(coord_uncertainty_thr)) {
     stop("'coord_uncertainty_thr' must be an integer  or NULL")
   }
   if (!is.logical(remove_zero_indiv_count)) {
@@ -332,7 +332,7 @@ add_species_centroid <- function(df,
   if (!is.character(col_species)) {
     stop("'col_species' must be a character")
   }
-if (!is.character(col_lon) || !is.character(col_lat)) {
+  if (!is.character(col_lon) || !is.character(col_lat)) {
     stop("'col_lon' and 'col_lat' must be characters")
   }
 

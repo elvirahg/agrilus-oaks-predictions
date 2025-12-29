@@ -839,7 +839,7 @@ plot_oak_phylo_hosts <- function(phylo,
     stop("'phylo' must be an object of class 'phylo'")
   }
   if (!is.character(label) || length(label) != 1) {
-    stop("'label'must be a character string of length 1")
+    stop("'label' must be a character string of length 1")
   }
   if (!is.character(layout) || length(layout) != 1) {
     stop("'layout' must be a character string of length 1")
@@ -871,8 +871,8 @@ plot_oak_phylo_hosts <- function(phylo,
 
   # Add host info to phylo
   phylo_preds <- phylo |>
-    ggtree::fortify() |>
-    left_join(pred_hosts, by = c("label" = label)) |>
+    ggplot2::fortify() |>
+    dplyr::left_join(pred_hosts, by = c("label" = label)) |>
     treeio::as.treedata()
 
   # Plot
@@ -967,7 +967,7 @@ plot_distribution <- function(df,
                      colour = "gray40",
                      size = 0.1) +
     ggplot2::scale_fill_manual(values = palette_vals,
-                             na.value = na_col) +
+                               na.value = na_col) +
     ggplot2::theme_minimal() +
     ggplot2::labs(fill = counts_type,
                   title = paste("Choropleth map of", counts_type,

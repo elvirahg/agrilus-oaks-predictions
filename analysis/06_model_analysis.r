@@ -296,7 +296,6 @@ lookup <- c("Quercus frainetto" = "Quercus conferta",
 taxon_queries <- ifelse(plant_names %in% names(lookup),
                         lookup[plant_names], plant_names)
 
-
 # Retrieve WCVP distribution information for each oak species in dataset
 oak_distributions_list <- wcvp_distribution_list(
   taxon_queries = taxon_queries,

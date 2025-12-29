@@ -894,3 +894,169 @@ plot_oak_phylo_hosts <- function(phylo,
                           color = known_color,
                           show.legend = show_legend)
 }
+
+
+#' Plot plant species distribution per region
+#'
+#' This function prepares counts of plant species per region and plots them
+#' on a world map with discrete colour bins.
+#'
+#' @param df A data frame (or sf object) containing plant distribution data.
+#' @param group_col Character string specifying the column to group by (default
+#' `"LEVEL3_NAM"`).
+#' @param counts_type Character string specifying which counts to plot.
+#'   Options are `"sp"`, `"native_sp"`, `"hosts"`, `"hosts_native"`, `"pred"`,
+#' `"native_pred"`.
+#' @param breaks Numeric vector specifying breakpoints for binning counts.
+#' @param labels Character vector of labels for the bins.
+#' @param world_sf Optional `sf` object with world polygons. If `NULL`, uses
+#' rnaturalearth.
+#' @param palette_val Colour palette values for `scale_fill_brewer`; must be a
+#' character vector. Defaults to RColorBrewer::brewer.pal(9, "PuBuGn").
+#' @param na_col Colour for NA values. Defaults to `"gray70"`.
+#'
+#' @return A ggplot object showing a world map coloured by the selected counts.
+#'
+#' @examples
+#' plot_distribution(oak_distributions, counts_type = "native_sp")
+#' @import rnaturalearth ggplot2 RColorBrewer
+#' @export
+plot_distribution <- function(df,
+                              group_col = "LEVEL3_NAM",
+                              counts_type,
+                              breaks = c(-Inf, 0, 10, 20,
+                                         30, 40, Inf),
+                              labels = c("0", "1–10", "11–20",
+                                         "21–30", "31–40", "40+"),
+                              world_sf = NULL,
+                              palette_vals = RColorBrewer::brewer.pal(9, "PuBuGn"),
+                              na_col = "gray70") {
+  # Checks
+  if (!is.data.frame(df)) {
+    stop("'df' must be a data frame")
+  }
+  if (!is.null(world_sf) && !inherits(world, "sf")) {
+    stop("'world_sf' must be a world sf object")
+  }
+  if (!is.character(palette_vals)) {
+    stop("'palette' must be a character vector")
+  }
+
+
+  # Prepare world map if not provided
+  if (is.null(world_sf)) {
+    world_sf <- rnaturalearth::ne_countries(scale = "medium",
+                                            returnclass = "sf")
+  }
+
+  # Prepare counts (with binned values)
+  counts_binned <- prepare_counts(df = df,
+                                  group_col = group_col,
+                                  counts_type = counts_type,
+                                  breaks = breaks,
+                                  labels = labels)
+
+  # Plot
+  ggplot2::ggplot() +
+    ggplot2::geom_sf(data = world_sf,
+                     fill = na_col,
+                     colour = "gray40",
+                     size = 0.2) +
+    ggplot2::geom_sf(data = counts_binned,
+                     ggplot2::aes(fill = value_band),
+                     colour = "gray40",
+                     size = 0.1) +
+    ggplot2::scale_fill_manual(values = palette_vals,
+                             na.value = na_col) +
+    ggplot2::theme_minimal() +
+    ggplot2::labs(fill = counts_type,
+                  title = paste("Choropleth map of", counts_type,
+                                "distribution, grouped by", group_col))
+
+}
+
+
+#' Prepare counts per region and bin them
+#'
+#' This is an internal helper function that computes the number of
+#' plant species, native species, known hosts, or predicted hosts
+#' per region, and assigns each region to a discrete bin for plotting.
+#'
+#' @param df A data frame (or sf object) containing plant distribution
+#' data. Must include the columns `plant_sp`, `occurrence_type`,
+#' `known_host` (for host couts), `pred_host` (for predicte host counts),
+#' and the grouping column.
+#' @param group_col Character string giving the name of the column to group by.
+#' Defaults to `"LEVEL3_NAM"`.
+#' @param counts_type Character string specifying what to count. Options are:
+#' `"species"`, `"species_native"`, `"hosts"`, `"hosts_native"`, `"pred_hosts"`,
+#' `"pred_hosts_native"`.
+#' @param breaks Numeric vector of break points for binning counts. Defaults to
+#' `c(-Inf, 0, 10, 20, 30, 40, Inf)`.
+#' @param labels Character vector of labels for the bins; must have length one
+#' less than `breaks`. Defaults to
+#' `c("0", "1–10", "11–20", "21–30", "31–40", "40+")`.
+#'
+#' @return A data frame with columns:
+#'   - the grouping column (`group_col`)
+#'   - `value`: the raw count for the selected `counts_type`
+#'   - `value_band`: the binned factor for plotting
+#'
+#' @import dplyr
+#' @keywords internal
+prepare_counts <- function(df,
+                           group_col = "LEVEL3_NAM",
+                           counts_type,
+                           breaks = c(-Inf, 0, 10, 20, 30, 40, Inf),
+                           labels = c("0", "1–10", "11–20", "21–30",
+                                      "31–40", "40+")) {
+  # Checks
+  if (!is.data.frame(df)) {
+    stop("'df' must be a data frame")
+  }
+  if (!is.character(group_col) || length(group_col) != 1) {
+    stop("'group_col' must be a single character string")
+  }
+  if (!is.character(counts_type) || length(counts_type) != 1) {
+    stop("'counts_type' must be a single character string")
+  }
+  if (!(counts_type %in% c("species", "species_native",
+                           "hosts", "hosts_native",
+                           "pred_hosts", "pred_hosts_native"))) {
+    stop("'counts_type' must be one of 'species', 'species_native',
+         'hosts', 'hosts_native', 'pred_hosts', or 'pred_hosts_native'")
+  }
+  if (!is.numeric(breaks)) {
+    stop("'breaks' must be a numeric vector")
+  }
+  if (!is.character(labels)) {
+    stop("'labels' must be a character vector")
+  }
+
+  # Generate counts data frame
+  counts <- df |>
+    dplyr::group_by(!!dplyr::sym(group_col)) |>
+    dplyr::summarise(
+      value = dplyr::case_when(
+        counts_type == "species" ~ n_distinct(plant_sp),
+        counts_type == "species_native" ~ n_distinct(plant_sp[occurrence_type == "native"]),
+        counts_type == "hosts" ~ n_distinct(plant_sp[known_host]),
+        counts_type == "hosts_native" ~ n_distinct(plant_sp[known_host
+                                                            & occurrence_type == "native"]),
+        counts_type == "pred_hosts" ~ n_distinct(plant_sp[pred_host]),
+        counts_type == "pred_hosts_native" ~ n_distinct(plant_sp[pred_host
+                                                                 & occurrence_type == "native"])
+      ),
+      .groups = "drop"
+    ) |>
+    dplyr::arrange(!!dplyr::sym(group_col)) |>
+    dplyr::mutate(value_band = cut(value,
+                                   breaks = breaks,
+                                   labels = labels))
+
+  cat("Counts value summary:\n")
+  summary_result <- summary(counts$value)
+  cat(paste(names(summary_result), summary_result, sep = ": "), sep = "\n")
+
+  counts
+}

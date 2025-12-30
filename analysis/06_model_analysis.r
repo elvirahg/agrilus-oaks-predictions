@@ -168,7 +168,7 @@ predictions$prediction_binary <- factor(
 #             quote = FALSE)
 
 
-#### PLOT PREDICTION RESULTS ####
+#### PLOT PREDICTION RESULTS (GRAPHS) ####
 # Genral violin plot
 plot_predictions_violin(predictions = predictions,
                         threshold = thr_intercepts["threshold"])
@@ -287,7 +287,7 @@ wcvp_v10_distributions <- read.table("data/input/wcvp_v10/wcvp_distribution.csv"
 # Oak species in dataset
 plant_names <- unique(predictions$quercus_sp)
 
-#Replace names in dataset that need to be looked up as someting else
+# Replace names in dataset that need to be looked up as someting else
 lookup <- c("Quercus frainetto" = "Quercus conferta",
             "Quercus litoralis (Atuna excelsa)" = "Atuna excelsa",
             "Quercus margarettae" = "Quercus margaretiae",
@@ -309,9 +309,14 @@ oak_distributions_list <- wcvp_distribution_list(
 # Combine into a single data frame
 oak_distributions <- do.call(rbind, oak_distributions_list)
 
-# Prepare palette
+# Prepare palettes
 palette_vals_l3 <- colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(12)
 names(palette_vals_l3) <- paste0(seq(1, 56, 5), "–", seq(5, 60, 5))
+
+palette_vals_country <- c("white",
+                          colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(13))
+names(palette_vals_country) <- c("0",
+                                 paste0(seq(1, 130, 10), "–", seq(10, 130, 10)))
 
 # Plot total oak species (LEVEL3_NAM)
 plot_distribution_region(df = oak_distributions,
@@ -369,4 +374,45 @@ plot_distribution_region(df = oak_distributions,
                          world_sf = NULL,
                          palette_vals = palette_vals_l3,
                          na_col = "gray90")
- 
+
+# Plot total oak species (country)
+plot_distribution_country(df = oak_distributions,
+                          counts_type = "species",
+                          breaks = c(0, 1, seq(10, 130, 10)),
+                          labels = names(palette_vals_country),
+                          palette_vals = palette_vals_country,
+                          na_col = "gray90")
+plot_distribution_country(df = oak_distributions,
+                          counts_type = "species_native",
+                          breaks = c(0, 1, seq(10, 130, 10)),
+                          labels = names(palette_vals_country),
+                          palette_vals = palette_vals_country,
+                          na_col = "gray90")
+
+# Plot known hosts (country)
+plot_distribution_country(df = oak_distributions,
+                          counts_type = "hosts",
+                          breaks = c(0, 1, seq(10, 130, 10)),
+                          labels = names(palette_vals_country),
+                          palette_vals = palette_vals_country,
+                          na_col = "gray90")
+plot_distribution_country(df = oak_distributions,
+                          counts_type = "hosts_native",
+                          breaks = c(0, 1, seq(10, 130, 10)),
+                          labels = names(palette_vals_country),
+                          palette_vals = palette_vals_country,
+                          na_col = "gray90")
+
+# Plot predicted hosts (country)
+plot_distribution_country(df = oak_distributions,
+                          counts_type = "pred_hosts",
+                          breaks = c(0, 1, seq(10, 130, 10)),
+                          labels = names(palette_vals_country),
+                          palette_vals = palette_vals_country,
+                          na_col = "gray90")
+plot_distribution_country(df = oak_distributions,
+                          counts_type = "pred_hosts_native",
+                          breaks = c(0, 1, seq(10, 130, 10)),
+                          labels = names(palette_vals_country),
+                          palette_vals = palette_vals_country,
+                          na_col = "gray90")

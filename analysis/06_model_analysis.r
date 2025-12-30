@@ -416,3 +416,156 @@ plot_distribution_country(df = oak_distributions,
                           labels = names(palette_vals_country),
                           palette_vals = palette_vals_country,
                           na_col = "gray90")
+
+
+##### EXPLORE AGRILUS SPECIES WHOSE REAL HOSTS ARE NOT PREDICTED AS SUCH #####
+# Seems to happen when:
+# Beetle only has one host species
+# Hosts are far in phylogeny ("cold clades") or geography
+subset(predictions, prediction_binary == 0 & host_status == 1)
+
+# i) Explore species with only one known host
+unique(subset(interaction_data,
+              agrilus_sp == "Agrilus samai"
+              & interaction == 1)$quercus_sp)
+unique(subset(interaction_data,
+              agrilus_sp == "Agrilus niveoguttatus"
+              & interaction == 1)$quercus_sp)
+unique(subset(interaction_data,
+              agrilus_sp == "Agrilus chiricahuae"
+              & interaction == 1)$quercus_sp)
+unique(subset(interaction_data,
+              agrilus_sp == "Agrilus relegatoides"
+              & interaction == 1)$quercus_sp)
+unique(subset(interaction_data,
+              agrilus_sp == "Agrilus acutipennis"
+              & interaction == 1)$quercus_sp)
+
+# ii) Explore all other species
+# Colour legend:
+# * Blue: oak species is a known host of the given beetle in its current range
+# * Light blue: predicted value fell under the binary threshold.
+# For Agrilus auroguttatus:
+# * Orange: novel host in its invasive range.
+# * Lighter orange: predicted value fell under the binary threshold.
+# * Pink: known non-host in the beetle’s introduced range.
+
+# ii.i) Agrilus auroguttatus
+a_auroguttatus_map <- c(
+  # known hosts in native range
+  "Quercus conzattii" = "#e6c27e",
+  "Quercus hypoleucoides" = "#ae6773",
+  "Quercus peduncularis" = "#e6c27e",
+  "Quercus emoryi" = "#2775b4",
+  # known novel hosts in new range
+  "Quercus engelmannii" = "#2775b4",
+  "Quercus chrysolepis" = "#e6c27e",
+  "Quercus kelloggii" = "#2775b4",
+  "Quercus agrifolia" = "#f0a720",
+  # known non-host
+  "Quercus arizonica" = "#7c9db9"
+)
+
+# Plot known hosts phylogeny
+plot_phylogeny(phylo = oak_phylo,
+               interaction_df = interaction_data,
+               species = "Agrilus auroguttatus",
+               host_spp = names(a_auroguttatus_map),
+               main = "Agrilus auroguttatus",
+               layout = "circular",
+               offset = 5,
+               size = 1.7,
+               tip_colours = c("black", "coral"),
+               legend_pos = "none")
+
+# Plot phylo_dist_min values for known hosts
+barplot_host_distance(interaction_df = interaction_data,
+                      species = "Agrilus auroguttatus",
+                      species_col = "agrilus_sp",
+                      host_col = "quercus_sp",
+                      host_status_col = "interaction",
+                      dist_col = "phylo_dist_min",
+                      host_spp = names(a_auroguttatus_map),
+                      colour = a_auroguttatus_map,
+                      cex_names = 0.5,
+                      ylab = paste("Minimum phylogenetic distance to",
+                                   "another host species"))
+
+# Plot geo_min_dist_mean_norm values for known hosts
+barplot_host_distance(interaction_df = interaction_data,
+                      species = "Agrilus auroguttatus",
+                      species_col = "agrilus_sp",
+                      host_col = "quercus_sp",
+                      host_status_col = "interaction",
+                      dist_col = "geo_min_dist_mean_norm",
+                      host_spp = names(a_auroguttatus_map),
+                      colour = a_auroguttatus_map,
+                      cex_names = 0.5,
+                      ylab = paste("Minimum normalised geographic distance",
+                                   "to another host species"))
+
+# Plot random effects for known hosts
+barplot_ranef(model = oak_models$mod046,
+              host_spp = names(a_auroguttatus_map),
+              species = "Agrilus auroguttatus",
+              species_col = "agrilus_sp",
+              host_col = "quercus_sp",
+              host_status_col = "interaction",
+              colour = a_auroguttatus_map)
+
+# ii.ii) Rest of the Agrilus species
+agrilus_list <- list(
+  "Agrilus albocomus" = c("#2775b4", "#7c9db9"),
+  "Agrilus coxalis" = c("#2775b4", "#2775b4", "#7c9db9", "#2775b4", "#7c9db9"),
+  "Agrilus defectus" = c("#2775b4", "#2775b4", "#7c9db9"),
+  "Agrilus hemiphanes" = c("#7c9db9", "#2775b4", "#2775b4")
+)
+
+for (i in seq_along(agrilus_list)) {
+  # Plot known hosts phylogeny
+  plot_phylogeny(phylo = oak_phylo,
+                 interaction_df = interaction_data,
+                 species = names(agrilus_list)[i],
+                 species_col = "agrilus_sp",
+                 host_status_col = "interaction",
+                 host_col = "quercus_sp",
+                 main = names(agrilus_list)[i],
+                 layout = "circular",
+                 offset = 5,
+                 size = 1.7,
+                 tip_colours = c("black", "coral"),
+                 legend_pos = "none")
+
+  # Plot phylo_dist_min values for known hosts
+  barplot_host_distance(interaction_df = interaction_data,
+                        species = names(agrilus_list)[i],
+                        species_col = "agrilus_sp",
+                        host_col = "quercus_sp",
+                        host_status_col = "interaction",
+                        dist_col = "phylo_dist_min",
+                        colour = agrilus_list[[i]],
+                        cex_names = 0.5,
+                        ylab = paste("Minimum phylogenetic distance to",
+                                     "another host species"))
+
+  # Plot geo_min_dist_mean_norm values for known hosts
+  barplot_host_distance(interaction_df = interaction_data,
+                        species = names(agrilus_list)[i],
+                        species_col = "agrilus_sp",
+                        host_col = "quercus_sp",
+                        host_status_col = "interaction",
+                        dist_col = "geo_min_dist_mean_norm",
+                        colour = agrilus_list[[i]],
+                        cex_names = 0.5,
+                        ylab = paste("Minimum normalised geographic distance",
+                                     "to another host species"))
+
+  # Plot random effects for known hosts
+  barplot_ranef(interaction_df = interaction_data,
+                model = oak_models$mod046,
+                species = names(agrilus_list)[i],
+                species_col = "agrilus_sp",
+                host_col = "quercus_sp",
+                host_status_col = "interaction",
+                colour = agrilus_list[[i]])
+}

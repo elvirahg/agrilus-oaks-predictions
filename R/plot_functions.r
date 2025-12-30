@@ -872,7 +872,7 @@ plot_phylo_hosts <- function(phylo,
 
   # Add host info to phylo
   phylo_preds <- phylo |>
-    ggplot2::fortify() |>
+    ggtree::fortify() |>
     dplyr::left_join(pred_hosts, by = c("label" = label)) |>
     treeio::as.treedata()
 
@@ -918,8 +918,11 @@ plot_phylo_hosts <- function(phylo,
 #'
 #' @return A ggplot object showing a world map coloured by the selected counts.
 #'
+#' @seealso \code{\link{prepare_counts_region}}
+#'
 #' @examples
 #' plot_distribution_region(oak_distributions, counts_type = "native_sp")
+#'
 #' @import rnaturalearth ggplot2 RColorBrewer
 #' @export
 plot_distribution_region <- function(df,
@@ -1091,8 +1094,11 @@ prepare_counts_region <- function(df,
 #'
 #' @return A ggplot object showing a world map coloured by the selected counts.
 #'
+#' @seealso \code{\link{prepare_counts_country}}
+#'
 #' @examples
 #' plot_distribution_country(oak_distributions, counts_type = "native_sp")
+#'
 #' @import ggplot2 RColorBrewer
 #' @export
 plot_distribution_country <- function(df,
@@ -1244,4 +1250,399 @@ prepare_counts_country <- function(df,
   cat(paste(names(summary_result), summary_result, sep = ": "), sep = "\n")
 
   world_sf
+}
+
+
+#' Plot a phylogeny highlighting host species for a focal species
+#'
+#' This function plots a phylogenetic tree and highlights host species
+#' associated with a given focal species using tip label colours.
+#'
+#' @param phylo An object of class \code{phylo} containing the phylogenetic
+#' tree.
+#' @param host_spp A character string specifying the host species. This can be
+#' provided as an alternative to inferring the host species via `get_host_spp`
+#' when an `interaction_df` is supplied.  Default: `NULL` (not required if
+#' `interaction_df` is provided).
+#' @param interaction_df A data frame containing species-host interaction data.
+#' Default: `NULL` (not required if `host_spp` is provided).
+#' @param species Character string giving the focal species of interest.
+#' @param species_col A character string indicating the column name in
+#' `interaction_df` that contains species names.  Default: `NULL` (not required
+#' if `interaction_df` is provided).
+#' @param host_col A character string indicating the column name in both `model`
+#' and `interaction_df` that contains host species names.
+#' @param host_status_col A character string specifying the column in
+#' `interaction_df` that indicates the host status.  Default: `NULL` (not
+#' required if `interaction_df` is provided).
+#' @param main Character string indicating plot title. Defaults to the name
+#' of the focal species (set to `NULL` to ignore).
+#' @param layout Character string specifying the tree layout passed to
+#' \code{ggtree} (e.g. "circular", "rectangular"). Default: `"circular"`.
+#' @param offset Number indicating the offset of tip labels from the
+#' phylogenetic tree. Default: `5`.
+#' @param size Number indicating the size of tip labels. Default: `1.7`.
+#' @param tip_colours Character vector of length 2, indicating colours for
+#' non-hosts and hosts. Default: `c("black", "coral")`.
+#' @param legend_pos Character string specifying legend position. Default:
+#' `"none"`.
+#'
+#' @return A \code{ggplot} object produced by \code{ggtree}.
+#'
+#' @seealso \code{\link{get_host_spp}}
+#'
+#' @examples
+#' plot_phylogeny(phylo = oak_phylo,
+#'                interaction_df = interaction_data,
+#'                species = "Agrilus coxalis",
+#'                species_col = "agrilus_sp",
+#'                host_status_col = "interaction",
+#'                host_col = "quercus_sp")
+#'
+#' @importFrom ggplot2 aes scale_color_manual theme
+#' @importFrom ggtree ggtree geom_tiplab fortify
+#' @importFrom dplyr left_join
+#' @importFrom treeio as.treedata
+#' @export
+plot_phylogeny <- function(phylo,
+                           host_spp = NULL,
+                           interaction_df = NULL,
+                           species = NULL,
+                           species_col = NULL,
+                           host_col = NULL,
+                           host_status_col = NULL,
+                           main = species,
+                           layout = "circular",
+                           offset = 5,
+                           size = 1.7,
+                           tip_colours = c("black", "coral"),
+                           legend_pos = "none") {
+  # Checks
+  if (class(phylo) != "phylo") {
+    stop("'phylo' must be an object of class 'phylo'")
+  }
+  if (!is.null(host_spp) && !is.character(host_spp)) {
+    stop("'host_spp' must be a character vector or NULL")
+  }
+  if (!is.null(!is.character(main)) && !is.character(main)
+      || length(main) != 1) {
+    stop("'main' must be a single character string or NULL")
+  }
+  if (!is.character(layout) || length(layout) != 1) {
+    stop("'layout' must be a character string of length 1")
+  }
+  if (!is.numeric(offset) || length(offset) != 1) {
+    stop("'offset' must be a single numeric value")
+  }
+  if (!is.numeric(size) || length(size) != 1) {
+    stop("'size' must be a single numeric value")
+  }
+  if (!is.character(tip_colours) || length(tip_colours) != 2) {
+    stop("'tip_colours' must be a character vector of length 2")
+  }
+  if (!is.character(legend_pos) || length(legend_pos) != 1) {
+    stop("'legend_pos' must be a single character string")
+  }
+
+  # Get hosts of given species
+  if (is.null(host_spp)) {
+    host_spp <- get_host_spp(df = interaction_df,
+                             species_col = species_col,
+                             host_col = host_col,
+                             host_status_col = host_status_col,
+                             species = species)
+  }
+
+  hosts <- setNames(
+    data.frame(phylo$tip.label,
+               phylo$tip.label %in% host_spp),
+    c("taxon", "is_host")
+  )
+
+  # Add host info to phylo
+  phylo_hosts <- phylo |>
+    ggtree::fortify() |>
+    dplyr::left_join(hosts, by = c("label" = "taxon")) |>
+    treeio::as.treedata()
+
+  # Plot
+  ggtree::ggtree(phylo_hosts, layout = layout) +
+    ggtree::geom_tiplab(ggplot2::aes(color = is_host),
+                        offset = offset,
+                        size = size,
+                        fontface = "italic") +
+    ggplot2::scale_color_manual(values = tip_colours) +
+    ggplot2::theme(legend.position = legend_pos) +
+    ggplot2::ggtitle(main)
+}
+
+
+#' Plot phylogenetic distances for host species
+#'
+#' This function creates a barplot showing phylogenetic distances
+#' associated with host species for a given focal species.
+#'
+#' @param interaction_df A data frame containing species–host interaction data.
+#' @param species Character string giving the focal species of interest.
+#' @param species_col Character string specifying the column containing species
+#' names in `interaction_df`.
+#' @param host_col Character string specifying the column containing host
+#' species names in `interaction_df`.
+#' @param host_status_col Character string specifying the column indicating host
+#' status in `interaction_df`.
+#' @param dist_col Character string specifying the column containing
+#' phylogenetic distances in`interaction_df`.
+#' @param host_spp A character string specifying the host species. This can be
+#' provided as an alternative to inferring the host species via `get_host_spp`
+#' when an `interaction_df` is supplied.  Default: `NULL` (not required if
+#' `interaction_df` is provided).
+#' @param colour Character string specifying the bar colour. Default: `"coral"`.
+#' @param cex_names Numeric value controlling the size of axis labels. Default:
+#' `0.5`.
+#' @param ylab Character string specifying the y-axis label. Default:
+#' `"Distance to another host species"`.
+#' @param main Character string indicating plot title. Defaults to the name
+#' of the focal species (set to `NULL` to ignore).
+#'
+#' @return Invisibly returns the heights used in the barplot.
+#'
+#' @seealso \code{\link{get_host_spp}}
+#'
+#' @examples
+#' barplot_host_distance(interaction_df = interaction_data,
+#'                       species = "Agrilus coxalis",
+#'                       species_col = "agrilus_sp",
+#'                       host_col = "quercus_sp",
+#'                       host_status_col = "interaction",
+#'                       dist_col = "phylo_dist_min")
+#'
+#' @export
+barplot_host_distance <- function(interaction_df,
+                                  species,
+                                  species_col,
+                                  host_col,
+                                  host_status_col,
+                                  dist_col,
+                                  host_spp = NULL,
+                                  colour = "coral",
+                                  cex_names = 0.5,
+                                  ylab = "Distance to another host species",
+                                  main = species) {
+  # Checks
+  if (!is.data.frame(interaction_df)) {
+    stop(paste0("'interaction_df' must be a data.frame"))
+  }
+  if (!is.character(dist_col) || length(dist_col) != 1) {
+    stop("'dist_col' must be a single character string")
+  }
+  if (!(dist_col %in% colnames(interaction_df))) {
+    stop("dist_col must be a column in 'interaction_df'")
+  }
+  if (!is.numeric(interaction_df[[dist_col]])) {
+    stop("'interaction_df[[dist_col]]' must be a numeric vector")
+  }
+  if (!is.null(host_spp) && !is.character(host_spp)) {
+    stop("'host_spp' must be a character vector or NULL")
+  }
+  if (!is.character(colour)) {
+    stop("'colour' must be a character vector")
+  }
+  if (!is.numeric(cex_names) || length(cex_names) != 1) {
+    stop("'cex_names' must be a single number")
+  }
+  if (!is.character(ylab) || length(ylab) != 1) {
+    stop("'ylab' must be a single character string")
+  }
+  if (!is.null(!is.character(main)) && !is.character(main)
+      || length(main) != 1) {
+    stop("'main' must be a single character string or NULL")
+  }
+
+  # Get hosts of given species
+  if (is.null(host_spp)) {
+    host_spp <- get_host_spp(df = interaction_df,
+                             species_col = species_col,
+                             host_col = host_col,
+                             host_status_col = host_status_col,
+                             species = species)
+  }
+
+  # Get distances
+  hosts_dist <- subset(interaction_df,
+                       interaction_df[[species_col]] == species
+                       & interaction_df[[host_col]] %in% host_spp)
+  hosts_phylo_dist <- hosts_dist[, c(host_col, dist_col)]
+
+  # Plot
+  barplot(height = hosts_phylo_dist[[dist_col]],
+          names.arg = hosts_phylo_dist[[host_col]],
+          ylab = ylab,
+          las = 2,
+          cex.names = cex_names,
+          col = colour,
+          main = species)
+}
+
+
+#' Plot random effect estimates for host species
+#'
+#' This function extracts and plots random effect estimates from a
+#' \code{brmsfit} model for host species associated with a given focal species.
+#'
+#' @param model A fitted Bayesian model of class \code{brmsfit}.
+#' @param host_spp A character string specifying the host species. This can be
+#' provided as an alternative to inferring the host species via `get_host_spp`
+#' when an `interaction_df` is supplied.  Default: `NULL` (not required if
+#' `interaction_df` is provided).
+#' @param interaction_df A data frame containing species-host interaction data.
+#' Default: `NULL` (not required if `host_spp` is provided).
+#' @param species_col A character string indicating the column name in
+#' `interaction_df` that contains species names.  Default: `NULL` (not required
+#' if `interaction_df` is provided).
+#' @param host_col A character string indicating the column name in both `model`
+#' and `interaction_df` that contains host species names.
+#' @param host_status_col A character string specifying the column in
+#' `interaction_df` that indicates the host status.  Default: `NULL` (not
+#' required if `interaction_df` is provided).
+#' @param species Character string giving the focal species of interest.
+#' @param colour Character string specifying the bar colour. Default: `coral`.
+#' @param cex_names Numeric value controlling the size of axis labels. Default:
+#' `0.5`.
+#' @param ylab Character string specifying the y-axis label. Default:
+#' `"Random effect estimates"`.
+#' @param main Character string indicating plot title. Defaults to the name
+#' of the focal species (set to `NULL` to ignore).
+#'
+#' @return Invisibly returns the random effect estimates used in the barplot.
+#'
+#' @seealso \code{\link{get_host_spp}}, \code{brms::ranef}
+#'
+#' @examples
+#' plot_ranef(interaction_df = interaction_data,
+#'            model = oak_model,
+#'            species = "Agrilus coxalis",
+#'            species_col = "agrilus_sp",
+#'            host_col = "quercus_sp",
+#'            host_status_col = "interaction")
+#'
+#' @importFrom brms ranef
+#' @export
+barplot_ranef <- function(model,
+                          host_spp = NULL,
+                          interaction_df = NULL,
+                          species_col = NULL,
+                          host_col,
+                          host_status_col = NULL,
+                          species,
+                          colour = "coral",
+                          cex_names = 0.5,
+                          ylab = "Random effect estimates",
+                          main = species) {
+  # Checks
+  if (!inherits(model, "brmsfit")) {
+    stop("'model' must be an object of class brmsfit")
+  }
+  if (!is.null(host_spp) && !is.character(host_spp)) {
+    stop("'host_spp' must be a character vector or NULL")
+  }
+  if (!is.character(colour)) {
+    stop("'colour' must be a character vector")
+  }
+  if (!is.character(ylab) || length(ylab) != 1) {
+    stop("'ylab' must be a single character string")
+  }
+  if (!is.null(!is.character(main)) && !is.character(main)
+      || length(main) != 1) {
+    stop("'main' must be a single character string or NULL")
+  }
+
+  # Get hosts of given species
+  if (is.null(host_spp)) {
+    host_spp <- get_host_spp(df = interaction_df,
+                             species_col = species_col,
+                             host_col = host_col,
+                             host_status_col = host_status_col,
+                             species = species)
+  }
+
+  # Get random effect estimates
+  ranef_list <- lapply(host_spp,
+                       function(sp) brms::ranef(model)[[host_col]][, , 1][sp, ])
+  ranef_df <- do.call(rbind, ranef_list)
+
+  # Plot
+  barplot(height = ranef_df[, "Estimate"],
+          names.arg = host_spp,
+          ylab = ylab,
+          las = 2,
+          cex.names = cex_names,
+          col = colour,
+          main = species)
+}
+
+
+#' Extract host species for a given focal species
+#'
+#' This function identifies host species associated with a focal species
+#' from a species–host interaction data frame.
+#'
+#' @param df A data frame containing species–host interaction data.
+#' @param species_col Character string specifying the column containing species
+#' names.
+#' @param host_col Character string specifying the column containing host
+#' species names.
+#' @param host_status_col Character string specifying the column indicating
+#' host status (values must include 0 and 1, where 1 indicates a host).
+#' @param species Character string giving the focal species of interest.
+#' @param main Character string indicating plot title. Defaults to the name
+#' of the focal species (set to `NULL` to ignore).
+#'
+#' @return A character vector of unique host species associated with the focal
+#' species.
+#'
+#' @keywords internal
+get_host_spp <- function(df,
+                         species_col,
+                         host_col,
+                         host_status_col,
+                         species) {
+  # Checks
+  if (!is.character(species_col) || length(species_col) != 1) {
+    stop("'species_col' must be a single character string")
+  }
+  if (!is.character(host_col) || length(host_col) != 1) {
+    stop("'host_col' must be a single character string")
+  }
+  if (!is.character(host_status_col) || length(host_status_col) != 1) {
+    stop("'host_status_col' must be a single character string")
+  }
+
+  if (!is.data.frame(df)
+      || !(all(c(species_col, host_col, host_status_col) %in% colnames(df)))) {
+    stop(paste("'df' must be a data.frame with colnames:",
+               species_col, ",", host_status_col, ",", host_col))
+  }
+  if (!is.character(df[[species_col]])) {
+    stop("'df[[species_col]]' must be a character vector")
+  }
+  if (!is.character(df[[host_col]])) {
+    stop("'df[[host_col]]' must be a character vector")
+  }
+  if (!any(df[[host_status_col]] %in% c(0, 1))) {
+    stop("'df[[host_status_col]]' must be a vector of 0s and 1s")
+  }
+  if (!is.character(species) || length(species) != 1) {
+    stop("'species' must be a sigle character string")
+  }
+  if (!(species %in% df[[species_col]])) {
+    stop("'species' must be present in 'df[[species_col]]'")
+  }
+
+  # Extract host species
+  hosts_df <- unique(subset(df,
+                            df[[species_col]] == species
+                            & df[[host_status_col]] == 1))
+  hosts <- hosts_df[[host_col]]
+
+  hosts
 }

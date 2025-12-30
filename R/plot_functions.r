@@ -764,7 +764,8 @@ plot_prediction_change <- function(pred_original,
   p
 }
 
-#' Plot phylogeny with predicted and known Hhsts
+
+#' Plot phylogeny with predicted and known hosts
 #'
 #' This function takes a phylogenetic tree (`phylo`) and a data frame containing
 #' information on predicted and known hosts for each tip, and produces a
@@ -907,8 +908,8 @@ plot_phylo_hosts <- function(phylo,
 #' @param counts_type Character string specifying which counts to plot.
 #'   Options are `"sp"`, `"native_sp"`, `"hosts"`, `"hosts_native"`, `"pred"`,
 #' `"native_pred"`. Defaults to `"species"`.
-#' @param world_sf Optional `sf` object with world polygons. If `NULL` (default),
-#' uses rnaturalearth.
+#' @param world_sf Optional `sf` object with world polygons. If `NULL`
+#' (default), uses rnaturalearth.
 #' @param breaks Numeric vector specifying breakpoints for binning counts.
 #' @param labels Character vector of labels for the bins.
 #' @param palette_val Colour palette values for `scale_fill_brewer`; must be a
@@ -929,7 +930,7 @@ plot_distribution_region <- function(df,
                                                 30, 40, Inf),
                                      labels = c("0", "1–10", "11–20",
                                                 "21–30", "31–40", "40+"),
-                                                palette_vals = RColorBrewer::brewer.pal(9, "PuBuGn"),
+                                     palette_vals = RColorBrewer::brewer.pal(9, "PuBuGn"),
                                      na_col = "gray70") {
   # Checks
   if (!is.data.frame(df)) {
@@ -951,10 +952,10 @@ plot_distribution_region <- function(df,
 
   # Prepare counts (with binned values)
   counts_binned <- prepare_counts_region(df = df,
-                                  group_level = group_level,
-                                  counts_type = counts_type,
-                                  breaks = breaks,
-                                  labels = labels)
+                                         group_level = group_level,
+                                         counts_type = counts_type,
+                                         breaks = breaks,
+                                         labels = labels)
 
   # Plot
   ggplot2::ggplot() +
@@ -986,8 +987,8 @@ plot_distribution_region <- function(df,
 #' data. Must include the columns `plant_sp`, `occurrence_type`,
 #' `known_host` (for host couts), `pred_host` (for predicte host counts),
 #' and the grouping column.
-#' @param group_level Character string giving the name of the column to group by.
-#' Defaults to `"LEVEL3_NAM"`.
+#' @param group_level Character string giving the name of the column to group
+#' by. Defaults to `"LEVEL3_NAM"`.
 #' @param counts_type Character string specifying what to count. Options are:
 #' `"species"`, `"species_native"`, `"hosts"`, `"hosts_native"`, `"pred_hosts"`,
 #' `"pred_hosts_native"`.

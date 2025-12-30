@@ -1065,3 +1065,183 @@ prepare_counts_region <- function(df,
 
   counts
 }
+
+
+#' Plot plant species distribution per country
+#'
+#' This function computes counts of plant species per country and plots
+#' them on a world map with discrete colour bins.
+#'
+#' @param df An sf object or data frame containing plant distribution data.
+#' Must include the columns `plant_sp`, `occurrence_type`, `known_host` (for
+#' host couts), `pred_host` (for predicte host counts).
+#' @param counts_type Character string specifying which counts to plot.
+#' Options are `"species"`, `"species_native"`, `"hosts"`, `"hosts_native"`,
+#' `"pred_hosts"`, `"pred_hosts_native"`. Defaults to `"species"`.
+#' @param world_sf Optional `sf` object with world country polygons. If `NULL`
+#' (default), the world map is obtained from `rnaturalearth::ne_countries()`.
+#' @param breaks Numeric vector specifying breakpoints for binning counts.
+#' `c(0, 1, seq(10, 130, 10))`.
+#' @param labels Character vector of labels for the bins. Defaults to
+#' `c("0", paste0(seq(1, 130, 10), "–", seq(10, 130, 10)))`.
+#' @param palette_vals Colour palette values for `scale_fill_manual`; must be
+#' a character vector. Defaults to
+#' `c("gray90", colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(13)))`.
+#' @param na_col Colour for NA values. Defaults to `"grey70"`.
+#'
+#' @return A ggplot object showing a world map coloured by the selected counts.
+#'
+#' @examples
+#' plot_distribution_country(oak_distributions, counts_type = "native_sp")
+#' @import ggplot2 RColorBrewer
+#' @export
+plot_distribution_country <- function(df,
+                                      counts_type = "species",
+                                      world_sf = NULL,
+                                      breaks = c(0, 1, seq(10, 130, 10)),
+                                      labels = c("0",
+                                                 paste0(seq(1, 130, 10),
+                                                        "–",
+                                                        seq(10, 130, 10))),
+                                      palette_vals = c("gray90",
+                                                       colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(13)),
+                                      na_col = "gray70") {
+  # Checks
+  if (!is.data.frame(df)) {
+    stop("'df' must be a data frame")
+  }
+  if (!is.character(palette_vals)) {
+    stop("'palette' must be a character vector")
+  }
+
+  # Get world counts
+  world_counts <- prepare_counts_country(df = df,
+                                         counts_type = counts_type,
+                                         world_sf = world_sf,
+                                         breaks = breaks,
+                                         labels = labels)
+
+  ggplot2::ggplot(world_counts) +
+    ggplot2::geom_sf(ggplot2::aes(fill = value_band)) +
+    ggplot2::scale_fill_manual(values = palette_vals,
+                               na.value = na_col) +
+    ggplot2::theme_minimal() +
+    ggplot2::labs(
+      fill = counts_type,
+      title = paste("Country-level choropleth of", counts_type)
+    )
+}
+
+
+#' Prepare counts per country
+#'
+#' This is an internal helper function that computes the number of plant
+#' species, native species, known hosts, or predicted hosts per country
+#' based on spatial intersections with country polygons, and assigns each
+#' country to a discrete bin for plotting.
+#'
+#' @param df A data frame (or sf object) containing plant distribution
+#' data. Must include the columns `plant_sp`, `occurrence_type`,
+#' `known_host` (for host couts), `pred_host` (for predicte host counts).
+#' @param counts_type Character string specifying what to count. Options are:
+#' `"species"`, `"species_native"`, `"hosts"`, `"hosts_native"`,
+#' `"pred_hosts"`, `"pred_hosts_native"`. Defaults to `"species"`.
+#' @param world_sf Optional `sf` object with world country polygons. If `NULL`,
+#' the world map is obtained from `rnaturalearth::ne_countries()`.
+#' @param breaks Numeric vector of break points for binning counts. Defaults to
+#' `c(0, 1, seq(10, 130, 10))`.
+#' @param labels Character vector of labels for the bins; must have length one
+#' less than `breaks`. Defaults to
+#' `c("0", paste0(seq(1, 130, 10), "–", seq(10, 130, 10)))`.
+#'
+#' @return An sf object of countries with two additional columns:
+#'   - `species_count`: raw count for the selected `counts_type`
+#'   - `value_band`: the binned factor for plotting
+#'
+#' @import sf dplyr rnaturalearth
+#' @keywords internal
+prepare_counts_country <- function(df,
+                                   counts_type = "species",
+                                   world_sf = NULL,
+                                   breaks = c(0, 1, seq(10, 130, 10)),
+                                   labels = c("0",
+                                              paste0(seq(1, 130, 10),
+                                                     "–",
+                                                     seq(10, 130, 10)))) {
+  # Checks
+  if (!is.data.frame(df)) {
+    stop("'df' must be a data frame")
+  }
+  if (!is.character(counts_type) || length(counts_type) != 1) {
+    stop("'counts_type' must be a single character string")
+  }
+  if (!(counts_type %in% c("species", "species_native",
+                           "hosts", "hosts_native",
+                           "pred_hosts", "pred_hosts_native"))) {
+    stop("'counts_type' must be one of 'species', 'species_native',
+         'hosts', 'hosts_native', 'pred_hosts', or 'pred_hosts_native'")
+  }
+  if (!is.null(world_sf) && !inherits(world_sf, "sf")) {
+    stop("'world_sf' must be a world sf object")
+  }
+  if (!is.numeric(breaks)) {
+    stop("'breaks' must be a numeric vector")
+  }
+  if (!is.character(labels)) {
+    stop("'labels' must be a character vector")
+  }
+
+  # Prepare world map if not provided
+  if (is.null(world_sf)) {
+    world_sf <- rnaturalearth::ne_countries(scale = "medium",
+                                            returnclass = "sf")
+  }
+
+  # Transform df geometry to match world CRS
+  df <- sf::st_transform(df, sf::st_crs(world_sf))
+
+  # Logical matrix of intersections: rows = countries, cols = df entries
+  joined <- sf::st_intersects(world_sf, df, sparse = FALSE)
+
+  # Compute counts according to type
+  cols_per_country <- apply(joined, 1, which)
+  species_count <- vapply(cols_per_country, function(cols) {
+
+    if (length(cols) == 0) 0
+
+    country_subset <- df[cols, ]
+
+    dplyr::case_when(
+      counts_type == "species" ~
+        length(unique(country_subset$plant_sp)),
+      counts_type == "species_native" ~
+        length(unique(country_subset$plant_sp[country_subset$occurrence_type == "native"])),
+      counts_type == "hosts" ~
+        length(unique(country_subset$plant_sp[country_subset$known_host])),
+      counts_type == "hosts_native" ~
+        length(unique(country_subset$plant_sp[country_subset$known_host
+                                              & country_subset$occurrence_type == "native"])),
+      counts_type == "pred_hosts" ~
+        length(unique(country_subset$plant_sp[country_subset$pred_host])),
+      counts_type == "pred_hosts_native" ~
+        length(unique(country_subset$plant_sp[country_subset$pred_host
+                                              & country_subset$occurrence_type == "native"]))
+    )
+  }, numeric(1))
+
+  world_sf$species_count <- species_count
+
+  # Value bands
+  world_sf$value_band <- cut(
+    world_sf$species_count,
+    breaks = breaks,
+    labels = labels,
+    right = FALSE,
+  )
+
+  cat("Counts value summary:\n")
+  summary_result <- summary(world_sf$species_count)
+  cat(paste(names(summary_result), summary_result, sep = ": "), sep = "\n")
+
+  world_sf
+}

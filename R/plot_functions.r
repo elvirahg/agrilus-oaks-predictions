@@ -808,21 +808,21 @@ plot_prediction_change <- function(pred_original,
 #'
 #' @import ggplot2 ggtree treeio
 #' @export
-plot_oak_phylo_hosts <- function(phylo,
-                                 pred_hosts,
-                                 label,
-                                 layout = "circular",
-                                 tiplab_offset = 5,
-                                 tiplab_size = 1.7,
-                                 tippoint_shape = 18,
-                                 tippoint_size = 2,
-                                 pred_color = "darkgoldenrod3",
-                                 nonpred_color = "gray50",
-                                 known_color = "#cf3530",
-                                 show_legend = FALSE) {
+plot_phylo_hosts <- function(phylo,
+                             pred_hosts,
+                             label,
+                             layout = "circular",
+                             tiplab_offset = 5,
+                             tiplab_size = 1.7,
+                             tippoint_shape = 18,
+                             tippoint_size = 2,
+                             pred_color = "darkgoldenrod3",
+                             nonpred_color = "gray50",
+                             known_color = "#cf3530",
+                             show_legend = FALSE) {
   # Checks
   if (!is.data.frame(pred_hosts)
-      || any(colnames(pred_hosts) != c(label, "is_known", "is_pred"))) {
+      || !(all(c(label, "is_known", "is_pred") %in% colnames(pred_hosts)))) {
     stop(paste0("'pred_hosts' must be a data.frame with colnames: ",
                 label, ", is_known, is_pred"))
   }
@@ -896,21 +896,21 @@ plot_oak_phylo_hosts <- function(phylo,
 }
 
 
-#' Plot plant species distribution per region
+#' Plot plant species distribution per region (level)
 #'
 #' This function prepares counts of plant species per region and plots them
 #' on a world map with discrete colour bins.
 #'
 #' @param df A data frame (or sf object) containing plant distribution data.
-#' @param group_col Character string specifying the column to group by (default
-#' `"LEVEL3_NAM"`).
+#' @param group_level Character string specifying the column to group by
+#' (default `"LEVEL3_NAM"`).
 #' @param counts_type Character string specifying which counts to plot.
 #'   Options are `"sp"`, `"native_sp"`, `"hosts"`, `"hosts_native"`, `"pred"`,
-#' `"native_pred"`.
+#' `"native_pred"`. Defaults to `"species"`.
+#' @param world_sf Optional `sf` object with world polygons. If `NULL` (default),
+#' uses rnaturalearth.
 #' @param breaks Numeric vector specifying breakpoints for binning counts.
 #' @param labels Character vector of labels for the bins.
-#' @param world_sf Optional `sf` object with world polygons. If `NULL`, uses
-#' rnaturalearth.
 #' @param palette_val Colour palette values for `scale_fill_brewer`; must be a
 #' character vector. Defaults to RColorBrewer::brewer.pal(9, "PuBuGn").
 #' @param na_col Colour for NA values. Defaults to `"gray70"`.
@@ -918,24 +918,24 @@ plot_oak_phylo_hosts <- function(phylo,
 #' @return A ggplot object showing a world map coloured by the selected counts.
 #'
 #' @examples
-#' plot_distribution(oak_distributions, counts_type = "native_sp")
+#' plot_distribution_region(oak_distributions, counts_type = "native_sp")
 #' @import rnaturalearth ggplot2 RColorBrewer
 #' @export
-plot_distribution <- function(df,
-                              group_col = "LEVEL3_NAM",
-                              counts_type,
-                              breaks = c(-Inf, 0, 10, 20,
-                                         30, 40, Inf),
-                              labels = c("0", "1–10", "11–20",
-                                         "21–30", "31–40", "40+"),
-                              world_sf = NULL,
-                              palette_vals = RColorBrewer::brewer.pal(9, "PuBuGn"),
-                              na_col = "gray70") {
+plot_distribution_region <- function(df,
+                                     group_level = "LEVEL3_NAM",
+                                     counts_type = "species",
+                                     world_sf = NULL,
+                                     breaks = c(-Inf, 0, 10, 20,
+                                                30, 40, Inf),
+                                     labels = c("0", "1–10", "11–20",
+                                                "21–30", "31–40", "40+"),
+                                                palette_vals = RColorBrewer::brewer.pal(9, "PuBuGn"),
+                                     na_col = "gray70") {
   # Checks
   if (!is.data.frame(df)) {
     stop("'df' must be a data frame")
   }
-  if (!is.null(world_sf) && !inherits(world, "sf")) {
+  if (!is.null(world_sf) && !inherits(world_sf, "sf")) {
     stop("'world_sf' must be a world sf object")
   }
   if (!is.character(palette_vals)) {
@@ -950,8 +950,8 @@ plot_distribution <- function(df,
   }
 
   # Prepare counts (with binned values)
-  counts_binned <- prepare_counts(df = df,
-                                  group_col = group_col,
+  counts_binned <- prepare_counts_region(df = df,
+                                  group_level = group_level,
                                   counts_type = counts_type,
                                   breaks = breaks,
                                   labels = labels)
@@ -971,12 +971,12 @@ plot_distribution <- function(df,
     ggplot2::theme_minimal() +
     ggplot2::labs(fill = counts_type,
                   title = paste("Choropleth map of", counts_type,
-                                "distribution, grouped by", group_col))
+                                "distribution, grouped by", group_level))
 
 }
 
 
-#' Prepare counts per region and bin them
+#' Prepare counts per region (level) and bin them
 #'
 #' This is an internal helper function that computes the number of
 #' plant species, native species, known hosts, or predicted hosts
@@ -986,7 +986,7 @@ plot_distribution <- function(df,
 #' data. Must include the columns `plant_sp`, `occurrence_type`,
 #' `known_host` (for host couts), `pred_host` (for predicte host counts),
 #' and the grouping column.
-#' @param group_col Character string giving the name of the column to group by.
+#' @param group_level Character string giving the name of the column to group by.
 #' Defaults to `"LEVEL3_NAM"`.
 #' @param counts_type Character string specifying what to count. Options are:
 #' `"species"`, `"species_native"`, `"hosts"`, `"hosts_native"`, `"pred_hosts"`,
@@ -998,24 +998,24 @@ plot_distribution <- function(df,
 #' `c("0", "1–10", "11–20", "21–30", "31–40", "40+")`.
 #'
 #' @return A data frame with columns:
-#'   - the grouping column (`group_col`)
+#'   - the grouping column (`group_level`)
 #'   - `value`: the raw count for the selected `counts_type`
 #'   - `value_band`: the binned factor for plotting
 #'
 #' @import dplyr
 #' @keywords internal
-prepare_counts <- function(df,
-                           group_col = "LEVEL3_NAM",
-                           counts_type,
-                           breaks = c(-Inf, 0, 10, 20, 30, 40, Inf),
-                           labels = c("0", "1–10", "11–20", "21–30",
-                                      "31–40", "40+")) {
+prepare_counts_region <- function(df,
+                                  group_level = "LEVEL3_NAM",
+                                  counts_type,
+                                  breaks = c(-Inf, 0, 10, 20, 30, 40, Inf),
+                                  labels = c("0", "1–10", "11–20", "21–30",
+                                             "31–40", "40+")) {
   # Checks
   if (!is.data.frame(df)) {
     stop("'df' must be a data frame")
   }
-  if (!is.character(group_col) || length(group_col) != 1) {
-    stop("'group_col' must be a single character string")
+  if (!is.character(group_level) || length(group_level) != 1) {
+    stop("'group_level' must be a single character string")
   }
   if (!is.character(counts_type) || length(counts_type) != 1) {
     stop("'counts_type' must be a single character string")
@@ -1035,21 +1035,25 @@ prepare_counts <- function(df,
 
   # Generate counts data frame
   counts <- df |>
-    dplyr::group_by(!!dplyr::sym(group_col)) |>
+    dplyr::group_by(!!dplyr::sym(group_level)) |>
     dplyr::summarise(
       value = dplyr::case_when(
-        counts_type == "species" ~ n_distinct(plant_sp),
-        counts_type == "species_native" ~ n_distinct(plant_sp[occurrence_type == "native"]),
-        counts_type == "hosts" ~ n_distinct(plant_sp[known_host]),
-        counts_type == "hosts_native" ~ n_distinct(plant_sp[known_host
-                                                            & occurrence_type == "native"]),
-        counts_type == "pred_hosts" ~ n_distinct(plant_sp[pred_host]),
-        counts_type == "pred_hosts_native" ~ n_distinct(plant_sp[pred_host
-                                                                 & occurrence_type == "native"])
+        counts_type == "species" ~
+          n_distinct(plant_sp),
+        counts_type == "species_native" ~
+          n_distinct(plant_sp[occurrence_type == "native"]),
+        counts_type == "hosts" ~
+          n_distinct(plant_sp[known_host]),
+        counts_type == "hosts_native" ~
+          n_distinct(plant_sp[known_host & occurrence_type == "native"]),
+        counts_type == "pred_hosts" ~
+          n_distinct(plant_sp[pred_host]),
+        counts_type == "pred_hosts_native" ~
+          n_distinct(plant_sp[pred_host & occurrence_type == "native"])
       ),
       .groups = "drop"
     ) |>
-    dplyr::arrange(!!dplyr::sym(group_col)) |>
+    dplyr::arrange(!!dplyr::sym(group_level)) |>
     dplyr::mutate(value_band = cut(value,
                                    breaks = breaks,
                                    labels = labels))

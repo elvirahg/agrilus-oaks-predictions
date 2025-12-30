@@ -257,18 +257,18 @@ predicted_hosts <- data.frame(
 )
 
 # Plot oak phylogeny with host info
-plot_oak_phylo_hosts(phylo = oak_phylo,
-                     pred_hosts = predicted_hosts,
-                     label = "quercus_sp",
-                     layout = "circular",
-                     tiplab_offset = 5,
-                     tiplab_size = 1.7,
-                     tippoint_shape = 18,
-                     tippoint_size = 2,
-                     pred_color = "darkgoldenrod3",
-                     nonpred_color = "gray50",
-                     known_color = "#cf3530",
-                     show_legend = FALSE)
+plot_phylo_hosts(phylo = oak_phylo,
+                 pred_hosts = predicted_hosts,
+                 label = "quercus_sp",
+                 layout = "circular",
+                 tiplab_offset = 5,
+                 tiplab_size = 1.7,
+                 tippoint_shape = 18,
+                 tippoint_size = 2,
+                 pred_color = "darkgoldenrod3",
+                 nonpred_color = "gray50",
+                 known_color = "#cf3530",
+                 show_legend = FALSE)
 
 
 #### PLOT PREDICTION RESULTS (GEO CHOROPLETHS) ####
@@ -310,73 +310,63 @@ oak_distributions_list <- wcvp_distribution_list(
 oak_distributions <- do.call(rbind, oak_distributions_list)
 
 # Prepare palette
-my_palette <- colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(12)
-palette_vals <- c("1–5" = my_palette[1],
-                  "6–10" = my_palette[2],
-                  "11–15" = my_palette[3],
-                  "16–20" = my_palette[4],
-                  "21-25" = my_palette[5],
-                  "26-30" = my_palette[6],
-                  "31-35" = my_palette[7],
-                  "36-40" = my_palette[8],
-                  "41-45" = my_palette[9],
-                  "46-50" = my_palette[10],
-                  "51-55" = my_palette[11],
-                  "56-60" = my_palette[12])
+palette_vals_l3 <- colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(12)
+names(palette_vals_l3) <- paste0(seq(1, 56, 5), "–", seq(5, 60, 5))
 
-# Plot total oak species
-plot_distribution(oak_distributions,
-                  group_col = "LEVEL3_NAM",
-                  counts_type = "species",
-                  breaks = c(-Inf, seq(0, 60, 5)),
-                  labels = c("0", names(palette_vals)),
-                  world_sf = NULL,
-                  palette_vals = palette_vals,
-                  na_col = "gray90")
+# Plot total oak species (LEVEL3_NAM)
+plot_distribution_region(df = oak_distributions,
+                         group_level = "LEVEL3_NAM",
+                         counts_type = "species",
+                         breaks = c(-Inf, seq(0, 60, 5)),
+                         labels = c("0", names(palette_vals_l3)),
+                         world_sf = NULL,
+                         palette_vals = palette_vals_l3,
+                         na_col = "gray90")
 
-plot_distribution(oak_distributions,
-                  group_col = "LEVEL3_NAM",
-                  counts_type = "species_native",
-                  breaks = c(-Inf, seq(0, 60, 5)),
-                  labels = c("0", names(palette_vals)),
-                  world_sf = NULL,
-                  palette_vals = palette_vals,
-                  na_col = "gray90")
+plot_distribution_region(df = oak_distributions,
+                         group_level = "LEVEL3_NAM",
+                         counts_type = "species_native",
+                         breaks = c(-Inf, seq(0, 60, 5)),
+                         labels = c("0", names(palette_vals_l3)),
+                         world_sf = NULL,
+                         palette_vals = palette_vals_l3,
+                         na_col = "gray90")
 
-# Plot known hosts
-plot_distribution(oak_distributions,
-                  group_col = "LEVEL3_NAM",
-                  counts_type = "hosts",
-                  breaks = c(-Inf, seq(0, 60, 5)),
-                  labels = c("0", names(palette_vals)),
-                  world_sf = NULL,
-                  palette_vals = palette_vals,
-                  na_col = "gray90")
+# Plot known hosts (LEVEL3_NAM)
+plot_distribution_region(df = oak_distributions,
+                         group_level = "LEVEL3_NAM",
+                         counts_type = "hosts",
+                         breaks = c(-Inf, seq(0, 60, 5)),
+                         labels = c("0", names(palette_vals_l3)),
+                         world_sf = NULL,
+                         palette_vals = palette_vals_l3,
+                         na_col = "gray90")
 
-plot_distribution(oak_distributions,
-                  group_col = "LEVEL3_NAM",
-                  counts_type = "hosts_native",
-                  breaks = c(-Inf, seq(0, 60, 5)),
-                  labels = c("0", names(palette_vals)),
-                  world_sf = NULL,
-                  palette_vals = palette_vals,
-                  na_col = "gray90")
+plot_distribution_region(oak_distributions,
+                         group_level = "LEVEL3_NAM",
+                         counts_type = "hosts_native",
+                         breaks = c(-Inf, seq(0, 60, 5)),
+                         labels = c("0", names(palette_vals_l3)),
+                         world_sf = NULL,
+                         palette_vals = palette_vals_l3,
+                         na_col = "gray90")
 
-# Plot predicted hosts
-plot_distribution(oak_distributions,
-                  group_col = "LEVEL3_NAM",
-                  counts_type = "pred_hosts",
-                  breaks = c(-Inf, seq(0, 60, 5)),
-                  labels = c("0", names(palette_vals)),
-                  world_sf = NULL,
-                  palette_vals = palette_vals,
-                  na_col = "gray90")
+# Plot predicted hosts (LEVEL3_NAM)
+plot_distribution_region(df = oak_distributions,
+                         group_level = "LEVEL3_NAM",
+                         counts_type = "pred_hosts",
+                         breaks = c(-Inf, seq(0, 60, 5)),
+                         labels = c("0", names(palette_vals_l3)),
+                         world_sf = NULL,
+                         palette_vals = palette_vals_l3,
+                         na_col = "gray90")
 
-plot_distribution(oak_distributions,
-                  group_col = "LEVEL3_NAM",
-                  counts_type = "pred_hosts_native",
-                  breaks = c(-Inf, seq(0, 60, 5)),
-                  labels = c("0", names(palette_vals)),
-                  world_sf = NULL,
-                  palette_vals = palette_vals,
-                  na_col = "gray90")
+plot_distribution_region(df = oak_distributions,
+                         group_level = "LEVEL3_NAM",
+                         counts_type = "pred_hosts_native",
+                         breaks = c(-Inf, seq(0, 60, 5)),
+                         labels = c("0", names(palette_vals_l3)),
+                         world_sf = NULL,
+                         palette_vals = palette_vals_l3,
+                         na_col = "gray90")
+ 

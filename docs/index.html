@@ -62,17 +62,10 @@
 <div class="section level2">
 <h2 id="repository-structure-and-contents">Repository structure and contents<a class="anchor" aria-label="anchor" href="#repository-structure-and-contents"></a>
 </h2>
+<blockquote>
 <p>Please note that the original code used to generate the data in the paper is under the <code>original-analyses</code> branch. The <code>main</code> branch mirrors these same analyses, but with refactored code for better readability, reusability, and efficiency.</p>
-<ul>
-<li>
-<code>analysis/</code>: R scripts implementing the analysis workflow. The scripts are numbered to indicate execution order (e.g. <code>02_*</code> follows <code>01_*</code>). These can be used to reproduce the published analyses or adapted for related work.</li>
-<li>
-<code>R/</code>: helper functions used across the analyses.</li>
-<li>
-<code>docs/</code>: HTML documentation for the functions in R/. If you clone or download the repository locally, you can open index.html to browse the documentation.</li>
-<li>
-<code>data/</code>: input data required for the analyses.</li>
-</ul>
+</blockquote>
+<p>In this repository, you will find: * <code>analysis/</code>: R scripts implementing the analysis workflow. The scripts are numbered to indicate execution order (e.g., <code>02_*</code> follows <code>01_*</code>). These can be used to reproduce the published analyses or adapted for related work. * <code>R/</code>: Helper functions used across the analyses. * <code>docs/</code>: HTML documentation for the functions in <code>R/</code>. If you clone or download the repository locally, you can open <code>index.html</code> to browse the documentation. * <code>data/</code>: Input data required for the analyses, and data generated during the analyses.</p>
 <p>This repository also includes an <code>renv.lock</code> file, which records the package versions used for these analyses. You can restore this environment with <code><a href="https://rstudio.github.io/renv/reference/restore.html" class="external-link">renv::restore()</a></code>.</p>
 </div>
 <div class="section level2">

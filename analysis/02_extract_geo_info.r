@@ -6,7 +6,8 @@ source("R/geo_functions.r")
 # Packages
 library(dplyr)
 
-# Seed
+# Seed (not needed for actual analyses, only if exact reproducibility of
+# results is desired)
 set.seed(24601)
 
 
@@ -58,7 +59,7 @@ manual_oak_keys <- c(
 )
 
 oak_gbif_keys$key <- ifelse(
-  is.na(oak_gbif_keys$key) & oak_gbif_keys$species %in% names(manual_oak_keys),
+  is.na(oak_gbif_keys$key) & oak_gbif_keys$species %in% wcvp_v10_names(manual_oak_keys),
   manual_oak_keys[oak_gbif_keys$species],
   oak_gbif_keys$key
 )
@@ -194,6 +195,8 @@ plant_geo <- do.call(rbind, c(list(oak_geo), manual_plant_geo))
 
 
 #### CLEAN GBIF GEO DATASET ####
+# See https://cran.r-project.org/web/packages/CoordinateCleaner/vignettes/Cleaning_GBIF_data_with_CoordinateCleaner.html#:~:text=We%20might%20also%20want%20to,it%20with%20the%20following%20code
+
 # Note, file not included in data/ due to size (4 GB)
 # plant_geo <- read.table("data/results/gbif_geo_plants.tsv",
 #                         header = TRUE,
@@ -226,7 +229,7 @@ replacements <- c("Quercus candicans" = "Quercus calophylla",
                   "Quercus xalapensis" = "Quercus sartorii",
                   "Atuna excelsa" = "Quercus litoralis (Atuna excelsa)",
                   "Quercus crenata" = "Quercus ×crenata")
-for (original_name in names(replacements)) {
+for (original_name in wcvp_v10_names(replacements)) {
   plant_geo_clean$species <- gsub(original_name,
                                   replacements[original_name],
                                   plant_geo_clean$species)

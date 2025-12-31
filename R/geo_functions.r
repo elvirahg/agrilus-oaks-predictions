@@ -200,23 +200,23 @@ filter_gbif_data <- function(data,
   if (!is.logical(remove_no_coords)) {
     stop("'remove_no_coords' must be logical")
   }
-  if (!is.numeric(coord_uncertainty_thr)) {
-    stop("'coord_uncertainty_thr' must be an integer")
+  if (!is.null(coord_uncertainty_thr) && !is.numeric(coord_uncertainty_thr)) {
+    stop("'coord_uncertainty_thr' must be an integer  or NULL")
   }
   if (!is.logical(remove_zero_indiv_count)) {
     stop("'remove_zero_indiv_count' must be logical")
   }
-  if (!is.numeric(max_indiv_count)) {
-    stop("'max_indiv_count' must be an integer")
+  if (!is.null(max_indiv_count) && !is.numeric(max_indiv_count)) {
+    stop("'max_indiv_count' must be an integer or NULL")
   }
   if (!is.logical(remove_absent)) {
     stop("'remove_absent' must be logical")
   }
-  if (!is.numeric(min_year)) {
-    stop("'min_year' must be an integer")
+  if (!is.null(min_year) && !is.numeric(min_year)) {
+    stop("'min_year' must be an integer or NULL")
   }
-  if (!is.character(issues)) {
-    stop("'issues' must be a character vector")
+  if (!is.null(issues) && !is.character(issues)) {
+    stop("'issues' must be a character vector or NULL")
   }
 
   result <- data
@@ -332,7 +332,7 @@ add_species_centroid <- function(df,
   if (!is.character(col_species)) {
     stop("'col_species' must be a character")
   }
-if (!is.character(col_lon) || !is.character(col_lat)) {
+  if (!is.character(col_lon) || !is.character(col_lat)) {
     stop("'col_lon' and 'col_lat' must be characters")
   }
 
@@ -355,4 +355,166 @@ if (!is.character(col_lon) || !is.character(col_lat)) {
 
   # Append to existing dataset
   rbind(df, new_row)
+}
+
+
+#' Retrieve WCVP distribution data for a set of plant taxa
+#'
+#' Retrieves WCVP distribution records for each taxon supplied in
+#' `taxon_queries`, returning a list of data frames. Each element corresponds to
+#' one taxon and contains its WCVP distribution information, annotated with the
+#' supplied plant name and (optionally) known and predicted host status. Taxa
+#' for which no distribution records are available produce a warning and return
+#' `NULL` for that list element.
+#'
+#' @param taxon_queries Character vector of taxon names to query. Must contain
+#'   unique values.
+#' @param plant_names Character vector of plant names to assign to the returned
+#'   records (via the `plant_sp` column). Must be the same length as
+#'   `taxon_queries`, and must also contain unique values. If not set, taxon
+#'   names are used directly.
+#' @param known_hosts Optional character vector of known host species. Used to
+#'   assign a logical `known_host` column. Defaults to `NULL`.
+#' @param pred_hosts Optional character vector of predicted host species. Used
+#'   to assign a logical `pred_host` column. Defaults to `NULL`.
+#' @param wcvp_names WCVP names data frame.
+#' @param wcvp_distributions WCVP distribution data frame.
+#' @param ... Additional arguments forwarded to `get_wcvp_distribution()`, and
+#'   ultimately to `rWCVP::wcvp_distribution()`.
+#'
+#' @details
+#' This function relies on an internal helper (`get_wcvp_distribution()`)
+#' which wraps [rWCVP::wcvp_distribution()] and handles annotation of species
+#' names and host status.
+#'
+#' @return A list of data frames, one per taxon, containing WCVP distribution
+#'   records. Elements may be `NULL` where no distribution data were found.
+#'
+#' @examples
+#' \dontrun{
+#' wcvp_distribution_list(
+#'   taxon_queries = c("Quercus robur", "Quercus petraea"),
+#'   known_hosts = c("Quercus robur"),
+#'   pred_hosts = NULL,
+#'   wcvp_names = wcvp_v10_names,
+#'   wcvp_distributions = wcvp_v10_distributions
+#' )
+#' }
+#'
+#' @export
+wcvp_distribution_list <- function(taxon_queries,
+                                   plant_names = taxon_queries,
+                                   known_hosts = NULL,
+                                   pred_hosts = NULL,
+                                   wcvp_names,
+                                   wcvp_distributions,
+                                   ...) {
+  # Checks
+  if (!is.character(taxon_queries)) {
+    stop("'species_vector' must be a character vector")
+  }
+  if (length(unique(taxon_queries)) != length(taxon_queries)) {
+    stop("'species_vector' must only contain unique strings")
+  }
+  if (!is.null(plant_names) && !is.character(plant_names)) {
+    stop("'names_vector' must be a character vector")
+  }
+  if (!is.null(plant_names)
+      && length(unique(plant_names)) != length(plant_names)) {
+    stop("'names_vector' must only contain unique strings")
+  }
+
+  # Get WCVP distribution information for each plant taxon in list
+  lapply(seq_along(taxon_queries), function(i) {
+    distrb <- get_wcvp_distribution(taxon_query = taxon_queries[i],
+                                    plant_name = plant_names[i],
+                                    known_hosts = known_hosts,
+                                    pred_hosts = pred_hosts,
+                                    wcvp_names = wcvp_names,
+                                    wcvp_distributions = wcvp_distributions,
+                                    ...)
+    if (is.null(distrb)) warning("No records found for: ",
+                                 taxon_queries[i],
+                                 " -- skipping!")
+    distrb
+  })
+}
+
+
+#' Fetch and annotate WCVP distribution data for a single plant taxon
+#'
+#' Internal helper function wrapping [rWCVP::wcvp_distribution()] to retrieve
+#' distribution records for a given plant taxon and optionally annotate the
+#' result with host information. Returns `NULL` if no records are available
+#' or if the underlying WCVP query fails.
+#'
+#' @param taxon_query Character string; taxon name passed to
+#'   `rWCVP::wcvp_distribution()`. If `NULL` (default), the column is omitted.
+#' @param plant_name Character string of length one; name inserted into the
+#'   returned data frame as `plant_sp`. Defaults to `taxon_query`.
+#' @param known_hosts Character vector of known host species. Used to produce a
+#'   logical `known_host` column. If `NULL` (default), the column is omitted.
+#' @param pred_hosts Character vector of predicted host species. Used to produce
+#'   a logical `pred_host` column. If `NULL` (default), the column is omitted.
+#' @param wcvp_names WCVP names data frame, see `rWCVP::wcvp_distribution()`.
+#' @param wcvp_distributions WCVP distributions data frame, see
+#'   `rWCVP::wcvp_distribution()`.
+#' @param ... Additional arguments passed to
+#'   `rWCVP::wcvp_distribution()`, allowing users to override defaults such as
+#'   `taxon_rank`, `native`, `introduced`, or `extinct`.
+#'
+#' @return A data frame containing WCVP distribution records with added optional
+#'   columns (`plant_sp`, `known_host` and `pred_host`), or `NULL` if the
+#'   lookup fails.
+#'
+#' @importFrom rWCVP wcvp_distribution
+#' @keywords internal
+get_wcvp_distribution <- function(taxon_query,
+                                  plant_name = NULL,
+                                  known_hosts = NULL,
+                                  pred_hosts = NULL,
+                                  wcvp_names,
+                                  wcvp_distributions,
+                                  ...) {
+  # Checks
+  if (!is.null(plant_name)
+      && (!is.character(plant_name) || length(plant_name) != 1)) {
+    stop("'plant_name' must be a single character string")
+  }
+  if (!is.character(known_hosts)) {
+    stop("'known_hosts' must be a character vector")
+  }
+  if (!is.character(pred_hosts)) {
+    stop("'pred_hosts' must be a character vector")
+  }
+
+  # Get distribution of given plant taxon (return NULL if unavailable)
+  distrb <- try(
+    rWCVP::wcvp_distribution(taxon = taxon_query,
+                             taxon_rank = "species",
+                             wcvp_names = wcvp_names,
+                             wcvp_distributions = wcvp_distributions,
+                             native = TRUE,
+                             introduced = TRUE,
+                             extinct = FALSE,
+                             location_doubtful = FALSE,
+                             ...),
+    silent = TRUE
+  )
+
+  if (inherits(distrb, "try-error") || is.null(distrb)) return(NULL)
+
+  # Optionally add plant species name, and host status information to
+  # distribution data frame
+  if (!is.null(plant_name)) {
+    distrb$plant_sp <- plant_name
+  }
+  if (!is.null(known_hosts)) {
+    distrb$known_host <- plant_name %in% known_hosts
+  }
+  if (!is.null(pred_hosts)) {
+    distrb$pred_host <- plant_name %in% pred_hosts
+  }
+
+  distrb
 }

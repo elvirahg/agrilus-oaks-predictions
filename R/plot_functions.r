@@ -301,6 +301,8 @@ plot_predictions_violin <- function(predictions,
       && (!is.numeric(threshold) || length(threshold) != 1)) {
     stop("'threshold' must be a single numeric value or NULL")
   }
+  # Make sure host status is a factor
+  predictions$host_status <- as.factor(predictions$host_status)
 
   # Plot
   p <- ggplot2::ggplot(data = predictions,
@@ -762,4 +764,887 @@ plot_prediction_change <- function(pred_original,
                    legend.position = "none")
 
   p
+}
+
+
+#' Plot phylogeny with predicted and known hosts
+#'
+#' This function takes a phylogenetic tree (`phylo`) and a data frame containing
+#' information on predicted and known hosts for each tip, and produces a
+#' circular (or rectangular) tree with:
+#' - Predicted hosts highlighted with bold italic labels and custom colour.
+#' - Known hosts marked with a tip point and custom colour.
+#'
+#' @param phylo An object of class `phylo` representing the tree to plot.
+#' @param pred_hosts A data.frame containing tip information with three columns:
+#'   - `label`: character vector of tip names (species names matching tip
+#' labels).
+#'   - `is_known`: logical vector indicating if the tip is a known host.
+#'   - `is_pred`: logical vector indicating if the tip is a predicted host.
+#' @param label Character string indicating the column name in `pred_hosts`
+#'   containing the tip labels.
+#' @param layout Character string specifying the tree layout (default:
+#' `circular`).
+#' @param tiplab_offset Numeric, offset distance of tip labels from the tree
+#' (defaut: `5`).
+#' @param tiplab_size Numeric, font size of tip labels (default: 1.7).
+#' @param tippoint_shape Numeric, shape code for known host tip points (default:
+#' `18`).
+#' @param tippoint_size Numeric, size of the tip point symbols (default: 2).
+#' @param pred_color Character, colour for predicted host labels (default:
+#' `darkgoldenrod3`).
+#' @param nonpred_color Character, colour for non-predicted tips (default:
+#' `gray50`).
+#' @param known_color Character, colour for known host tip points (default:
+#' `#cf3530`).
+#' @param show_legend Logical, whether to show a legend (default: `FALSE`).
+#'
+#' @return A `ggtree` object that can be printed or further customised.
+#'
+#' @examples
+#' pred_hosts <- data.frame(
+#'   quercus_sp = oak_phylo$tip.label,
+#'   is_known = oak_phylo$tip.label %in% known_hosts,
+#'   is_pred = oak_phylo$tip.label %in% pred_hosts
+#' )
+#' plot_oak_phylo_hosts(oak_phylo, pred_hosts, label = "quercus_sp")
+#'
+#' @import ggplot2 ggtree treeio
+#' @export
+plot_phylo_hosts <- function(phylo,
+                             pred_hosts,
+                             label,
+                             layout = "circular",
+                             tiplab_offset = 5,
+                             tiplab_size = 1.7,
+                             tippoint_shape = 18,
+                             tippoint_size = 2,
+                             pred_color = "darkgoldenrod3",
+                             nonpred_color = "gray50",
+                             known_color = "#cf3530",
+                             show_legend = FALSE) {
+  # Checks
+  if (!is.data.frame(pred_hosts)
+      || !(all(c(label, "is_known", "is_pred") %in% colnames(pred_hosts)))) {
+    stop(paste0("'pred_hosts' must be a data.frame with colnames: ",
+                label, ", is_known, is_pred"))
+  }
+  if (!is.character(pred_hosts[[label]])) {
+    stop("'pred_hosts[[label]]' must be a character vector")
+  }
+  if (!is.logical(pred_hosts$is_known)) {
+    stop("'pred_hosts$is_known' must be a logical vector")
+  }
+  if (!is.logical(pred_hosts$is_pred)) {
+    stop("'pred_hosts$is_pred' must be a logical vector")
+  }
+  if (class(phylo) != "phylo") {
+    stop("'phylo' must be an object of class 'phylo'")
+  }
+  if (!is.character(label) || length(label) != 1) {
+    stop("'label' must be a character string of length 1")
+  }
+  if (!is.character(layout) || length(layout) != 1) {
+    stop("'layout' must be a character string of length 1")
+  }
+  if (!is.numeric(tiplab_offset) || length(tiplab_offset) != 1) {
+    stop("'tiplab_offset' must be a single numeric value")
+  }
+  if (!is.numeric(tiplab_size) || length(tiplab_size) != 1) {
+    stop("'tiplab_size' must be a single numeric value")
+  }
+  if (!is.numeric(tippoint_shape) || length(tippoint_shape) != 1) {
+    stop("'tippoint_shape' must be a single numeric value")
+  }
+  if (!is.numeric(tippoint_size) || length(tippoint_size) != 1) {
+    stop("'tippoint_size' must be a single numeric value")
+  }
+  if (!is.character(pred_color) || length(pred_color) != 1) {
+    stop("'pred_color' must be a character string of length 1")
+  }
+  if (!is.character(nonpred_color) || length(nonpred_color) != 1) {
+    stop("'nonpred_color' must be a character string of length 1")
+  }
+  if (!is.character(known_color) || length(known_color) != 1) {
+    stop("'known_color' must be a character string of length 1")
+  }
+  if (!is.logical(show_legend) || length(show_legend) != 1) {
+    stop("'show_legend' must be a single logical value")
+  }
+
+  # Add host info to phylo
+  phylo_preds <- phylo |>
+    ggtree::fortify() |>
+    dplyr::left_join(pred_hosts, by = c("label" = label)) |>
+    treeio::as.treedata()
+
+  # Plot
+  ggtree::ggtree(phylo_preds, layout = layout) +
+    # Tip labels for predicted hosts
+    ggtree::geom_tiplab(ggplot2::aes(subset = TRUE,
+                                     fontface = ifelse(is_pred,
+                                                       "bold.italic",
+                                                       "italic"),
+                                     color = is_pred),
+                        offset = tiplab_offset,
+                        size = tiplab_size,
+                        show.legend = show_legend) +
+    ggplot2::scale_color_manual(values = c(nonpred_color, pred_color)) +
+    # Tip points for known hosts
+    ggtree::geom_tippoint(ggplot2::aes(subset = is_known),
+                          shape = tippoint_shape,
+                          size = tippoint_size,
+                          color = known_color,
+                          show.legend = show_legend)
+}
+
+
+#' Plot plant species distribution per region (level)
+#'
+#' This function prepares counts of plant species per region and plots them
+#' on a world map with discrete colour bins.
+#'
+#' @param df A data frame (or sf object) containing plant distribution data.
+#' @param group_level Character string specifying the column to group by
+#' (default `"LEVEL3_NAM"`).
+#' @param counts_type Character string specifying which counts to plot.
+#'   Options are `"sp"`, `"native_sp"`, `"hosts"`, `"hosts_native"`, `"pred"`,
+#' `"native_pred"`. Defaults to `"species"`.
+#' @param world_sf Optional `sf` object with world polygons. If `NULL`
+#' (default), uses rnaturalearth.
+#' @param breaks Numeric vector specifying breakpoints for binning counts.
+#' @param labels Character vector of labels for the bins.
+#' @param palette_val Colour palette values for `scale_fill_brewer`; must be a
+#' character vector. Defaults to RColorBrewer::brewer.pal(9, "PuBuGn").
+#' @param na_col Colour for NA values. Defaults to `"gray70"`.
+#'
+#' @return A ggplot object showing a world map coloured by the selected counts.
+#'
+#' @seealso \code{\link{prepare_counts_region}}
+#'
+#' @examples
+#' plot_distribution_region(oak_distributions, counts_type = "native_sp")
+#'
+#' @import rnaturalearth ggplot2 RColorBrewer
+#' @export
+plot_distribution_region <- function(df,
+                                     group_level = "LEVEL3_NAM",
+                                     counts_type = "species",
+                                     world_sf = NULL,
+                                     breaks = c(-Inf, 0, 10, 20,
+                                                30, 40, Inf),
+                                     labels = c("0", "1–10", "11–20",
+                                                "21–30", "31–40", "40+"),
+                                     palette_vals = RColorBrewer::brewer.pal(9, "PuBuGn"),
+                                     na_col = "gray70") {
+  # Checks
+  if (!is.data.frame(df)) {
+    stop("'df' must be a data frame")
+  }
+  if (!is.null(world_sf) && !inherits(world_sf, "sf")) {
+    stop("'world_sf' must be a world sf object")
+  }
+  if (!is.character(palette_vals)) {
+    stop("'palette' must be a character vector")
+  }
+
+
+  # Prepare world map if not provided
+  if (is.null(world_sf)) {
+    world_sf <- rnaturalearth::ne_countries(scale = "medium",
+                                            returnclass = "sf")
+  }
+
+  # Prepare counts (with binned values)
+  counts_binned <- prepare_counts_region(df = df,
+                                         group_level = group_level,
+                                         counts_type = counts_type,
+                                         breaks = breaks,
+                                         labels = labels)
+
+  # Plot
+  ggplot2::ggplot() +
+    ggplot2::geom_sf(data = world_sf,
+                     fill = na_col,
+                     colour = "gray40",
+                     size = 0.2) +
+    ggplot2::geom_sf(data = counts_binned,
+                     ggplot2::aes(fill = value_band),
+                     colour = "gray40",
+                     size = 0.1) +
+    ggplot2::scale_fill_manual(values = palette_vals,
+                               na.value = na_col) +
+    ggplot2::theme_minimal() +
+    ggplot2::labs(fill = counts_type,
+                  title = paste("Choropleth map of", counts_type,
+                                "distribution, grouped by", group_level))
+
+}
+
+
+#' Prepare counts per region (level) and bin them
+#'
+#' This is an internal helper function that computes the number of
+#' plant species, native species, known hosts, or predicted hosts
+#' per region, and assigns each region to a discrete bin for plotting.
+#'
+#' @param df A data frame (or sf object) containing plant distribution
+#' data. Must include the columns `plant_sp`, `occurrence_type`,
+#' `known_host` (for host couts), `pred_host` (for predicte host counts),
+#' and the grouping column.
+#' @param group_level Character string giving the name of the column to group
+#' by. Defaults to `"LEVEL3_NAM"`.
+#' @param counts_type Character string specifying what to count. Options are:
+#' `"species"`, `"species_native"`, `"hosts"`, `"hosts_native"`, `"pred_hosts"`,
+#' `"pred_hosts_native"`.
+#' @param breaks Numeric vector of break points for binning counts. Defaults to
+#' `c(-Inf, 0, 10, 20, 30, 40, Inf)`.
+#' @param labels Character vector of labels for the bins; must have length one
+#' less than `breaks`. Defaults to
+#' `c("0", "1–10", "11–20", "21–30", "31–40", "40+")`.
+#'
+#' @return A data frame with columns:
+#'   - the grouping column (`group_level`)
+#'   - `value`: the raw count for the selected `counts_type`
+#'   - `value_band`: the binned factor for plotting
+#'
+#' @import dplyr
+#' @keywords internal
+prepare_counts_region <- function(df,
+                                  group_level = "LEVEL3_NAM",
+                                  counts_type,
+                                  breaks = c(-Inf, 0, 10, 20, 30, 40, Inf),
+                                  labels = c("0", "1–10", "11–20", "21–30",
+                                             "31–40", "40+")) {
+  # Checks
+  if (!is.data.frame(df)) {
+    stop("'df' must be a data frame")
+  }
+  if (!is.character(group_level) || length(group_level) != 1) {
+    stop("'group_level' must be a single character string")
+  }
+  if (!is.character(counts_type) || length(counts_type) != 1) {
+    stop("'counts_type' must be a single character string")
+  }
+  if (!(counts_type %in% c("species", "species_native",
+                           "hosts", "hosts_native",
+                           "pred_hosts", "pred_hosts_native"))) {
+    stop("'counts_type' must be one of 'species', 'species_native',
+         'hosts', 'hosts_native', 'pred_hosts', or 'pred_hosts_native'")
+  }
+  if (!is.numeric(breaks)) {
+    stop("'breaks' must be a numeric vector")
+  }
+  if (!is.character(labels)) {
+    stop("'labels' must be a character vector")
+  }
+
+  # Generate counts data frame
+  counts <- df |>
+    dplyr::group_by(!!dplyr::sym(group_level)) |>
+    dplyr::summarise(
+      value = dplyr::case_when(
+        counts_type == "species" ~
+          n_distinct(plant_sp),
+        counts_type == "species_native" ~
+          n_distinct(plant_sp[occurrence_type == "native"]),
+        counts_type == "hosts" ~
+          n_distinct(plant_sp[known_host]),
+        counts_type == "hosts_native" ~
+          n_distinct(plant_sp[known_host & occurrence_type == "native"]),
+        counts_type == "pred_hosts" ~
+          n_distinct(plant_sp[pred_host]),
+        counts_type == "pred_hosts_native" ~
+          n_distinct(plant_sp[pred_host & occurrence_type == "native"])
+      ),
+      .groups = "drop"
+    ) |>
+    dplyr::arrange(!!dplyr::sym(group_level)) |>
+    dplyr::mutate(value_band = cut(value,
+                                   breaks = breaks,
+                                   labels = labels))
+
+  cat("Counts value summary:\n")
+  summary_result <- summary(counts$value)
+  cat(paste(names(summary_result), summary_result, sep = ": "), sep = "\n")
+
+  counts
+}
+
+
+#' Plot plant species distribution per country
+#'
+#' This function computes counts of plant species per country and plots
+#' them on a world map with discrete colour bins.
+#'
+#' @param df An sf object or data frame containing plant distribution data.
+#' Must include the columns `plant_sp`, `occurrence_type`, `known_host` (for
+#' host couts), `pred_host` (for predicte host counts).
+#' @param counts_type Character string specifying which counts to plot.
+#' Options are `"species"`, `"species_native"`, `"hosts"`, `"hosts_native"`,
+#' `"pred_hosts"`, `"pred_hosts_native"`. Defaults to `"species"`.
+#' @param world_sf Optional `sf` object with world country polygons. If `NULL`
+#' (default), the world map is obtained from `rnaturalearth::ne_countries()`.
+#' @param breaks Numeric vector specifying breakpoints for binning counts.
+#' `c(0, 1, seq(10, 130, 10))`.
+#' @param labels Character vector of labels for the bins. Defaults to
+#' `c("0", paste0(seq(1, 130, 10), "–", seq(10, 130, 10)))`.
+#' @param palette_vals Colour palette values for `scale_fill_manual`; must be
+#' a character vector. Defaults to
+#' `c("gray90", colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(13)))`.
+#' @param na_col Colour for NA values. Defaults to `"grey70"`.
+#'
+#' @return A ggplot object showing a world map coloured by the selected counts.
+#'
+#' @seealso \code{\link{prepare_counts_country}}
+#'
+#' @examples
+#' plot_distribution_country(oak_distributions, counts_type = "native_sp")
+#'
+#' @import ggplot2 RColorBrewer
+#' @export
+plot_distribution_country <- function(df,
+                                      counts_type = "species",
+                                      world_sf = NULL,
+                                      breaks = c(0, 1, seq(10, 130, 10)),
+                                      labels = c("0",
+                                                 paste0(seq(1, 130, 10),
+                                                        "–",
+                                                        seq(10, 130, 10))),
+                                      palette_vals = c("gray90",
+                                                       colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(13)),
+                                      na_col = "gray70") {
+  # Checks
+  if (!is.data.frame(df)) {
+    stop("'df' must be a data frame")
+  }
+  if (!is.character(palette_vals)) {
+    stop("'palette' must be a character vector")
+  }
+
+  # Get world counts
+  world_counts <- prepare_counts_country(df = df,
+                                         counts_type = counts_type,
+                                         world_sf = world_sf,
+                                         breaks = breaks,
+                                         labels = labels)
+
+  ggplot2::ggplot(world_counts) +
+    ggplot2::geom_sf(ggplot2::aes(fill = value_band)) +
+    ggplot2::scale_fill_manual(values = palette_vals,
+                               na.value = na_col) +
+    ggplot2::theme_minimal() +
+    ggplot2::labs(
+      fill = counts_type,
+      title = paste("Country-level choropleth of", counts_type)
+    )
+}
+
+
+#' Prepare counts per country
+#'
+#' This is an internal helper function that computes the number of plant
+#' species, native species, known hosts, or predicted hosts per country
+#' based on spatial intersections with country polygons, and assigns each
+#' country to a discrete bin for plotting.
+#'
+#' @param df A data frame (or sf object) containing plant distribution
+#' data. Must include the columns `plant_sp`, `occurrence_type`,
+#' `known_host` (for host couts), `pred_host` (for predicte host counts).
+#' @param counts_type Character string specifying what to count. Options are:
+#' `"species"`, `"species_native"`, `"hosts"`, `"hosts_native"`,
+#' `"pred_hosts"`, `"pred_hosts_native"`. Defaults to `"species"`.
+#' @param world_sf Optional `sf` object with world country polygons. If `NULL`,
+#' the world map is obtained from `rnaturalearth::ne_countries()`.
+#' @param breaks Numeric vector of break points for binning counts. Defaults to
+#' `c(0, 1, seq(10, 130, 10))`.
+#' @param labels Character vector of labels for the bins; must have length one
+#' less than `breaks`. Defaults to
+#' `c("0", paste0(seq(1, 130, 10), "–", seq(10, 130, 10)))`.
+#'
+#' @return An sf object of countries with two additional columns:
+#'   - `species_count`: raw count for the selected `counts_type`
+#'   - `value_band`: the binned factor for plotting
+#'
+#' @import sf dplyr rnaturalearth
+#' @keywords internal
+prepare_counts_country <- function(df,
+                                   counts_type = "species",
+                                   world_sf = NULL,
+                                   breaks = c(0, 1, seq(10, 130, 10)),
+                                   labels = c("0",
+                                              paste0(seq(1, 130, 10),
+                                                     "–",
+                                                     seq(10, 130, 10)))) {
+  # Checks
+  if (!is.data.frame(df)) {
+    stop("'df' must be a data frame")
+  }
+  if (!is.character(counts_type) || length(counts_type) != 1) {
+    stop("'counts_type' must be a single character string")
+  }
+  if (!(counts_type %in% c("species", "species_native",
+                           "hosts", "hosts_native",
+                           "pred_hosts", "pred_hosts_native"))) {
+    stop("'counts_type' must be one of 'species', 'species_native',
+         'hosts', 'hosts_native', 'pred_hosts', or 'pred_hosts_native'")
+  }
+  if (!is.null(world_sf) && !inherits(world_sf, "sf")) {
+    stop("'world_sf' must be a world sf object")
+  }
+  if (!is.numeric(breaks)) {
+    stop("'breaks' must be a numeric vector")
+  }
+  if (!is.character(labels)) {
+    stop("'labels' must be a character vector")
+  }
+
+  # Prepare world map if not provided
+  if (is.null(world_sf)) {
+    world_sf <- rnaturalearth::ne_countries(scale = "medium",
+                                            returnclass = "sf")
+  }
+
+  # Transform df geometry to match world CRS
+  df <- sf::st_transform(df, sf::st_crs(world_sf))
+
+  # Logical matrix of intersections: rows = countries, cols = df entries
+  joined <- sf::st_intersects(world_sf, df, sparse = FALSE)
+
+  # Compute counts according to type
+  cols_per_country <- apply(joined, 1, which)
+  species_count <- vapply(cols_per_country, function(cols) {
+
+    if (length(cols) == 0) 0
+
+    country_subset <- df[cols, ]
+
+    dplyr::case_when(
+      counts_type == "species" ~
+        length(unique(country_subset$plant_sp)),
+      counts_type == "species_native" ~
+        length(unique(country_subset$plant_sp[country_subset$occurrence_type == "native"])),
+      counts_type == "hosts" ~
+        length(unique(country_subset$plant_sp[country_subset$known_host])),
+      counts_type == "hosts_native" ~
+        length(unique(country_subset$plant_sp[country_subset$known_host
+                                              & country_subset$occurrence_type == "native"])),
+      counts_type == "pred_hosts" ~
+        length(unique(country_subset$plant_sp[country_subset$pred_host])),
+      counts_type == "pred_hosts_native" ~
+        length(unique(country_subset$plant_sp[country_subset$pred_host
+                                              & country_subset$occurrence_type == "native"]))
+    )
+  }, numeric(1))
+
+  world_sf$species_count <- species_count
+
+  # Value bands
+  world_sf$value_band <- cut(
+    world_sf$species_count,
+    breaks = breaks,
+    labels = labels,
+    right = FALSE,
+  )
+
+  cat("Counts value summary:\n")
+  summary_result <- summary(world_sf$species_count)
+  cat(paste(names(summary_result), summary_result, sep = ": "), sep = "\n")
+
+  world_sf
+}
+
+
+#' Plot a phylogeny highlighting host species for a focal species
+#'
+#' This function plots a phylogenetic tree and highlights host species
+#' associated with a given focal species using tip label colours.
+#'
+#' @param phylo An object of class \code{phylo} containing the phylogenetic
+#' tree.
+#' @param host_spp A character string specifying the host species. This can be
+#' provided as an alternative to inferring the host species via `get_host_spp`
+#' when an `interaction_df` is supplied.  Default: `NULL` (not required if
+#' `interaction_df` is provided).
+#' @param interaction_df A data frame containing species-host interaction data.
+#' Default: `NULL` (not required if `host_spp` is provided).
+#' @param species Character string giving the focal species of interest.
+#' @param species_col A character string indicating the column name in
+#' `interaction_df` that contains species names.  Default: `NULL` (not required
+#' if `interaction_df` is provided).
+#' @param host_col A character string indicating the column name in both `model`
+#' and `interaction_df` that contains host species names.
+#' @param host_status_col A character string specifying the column in
+#' `interaction_df` that indicates the host status.  Default: `NULL` (not
+#' required if `interaction_df` is provided).
+#' @param main Character string indicating plot title. Defaults to the name
+#' of the focal species (set to `NULL` to ignore).
+#' @param layout Character string specifying the tree layout passed to
+#' \code{ggtree} (e.g. "circular", "rectangular"). Default: `"circular"`.
+#' @param offset Number indicating the offset of tip labels from the
+#' phylogenetic tree. Default: `5`.
+#' @param size Number indicating the size of tip labels. Default: `1.7`.
+#' @param tip_colours Character vector of length 2, indicating colours for
+#' non-hosts and hosts. Default: `c("black", "coral")`.
+#' @param legend_pos Character string specifying legend position. Default:
+#' `"none"`.
+#'
+#' @return A \code{ggplot} object produced by \code{ggtree}.
+#'
+#' @seealso \code{\link{get_host_spp}}
+#'
+#' @examples
+#' plot_phylogeny(phylo = oak_phylo,
+#'                interaction_df = interaction_data,
+#'                species = "Agrilus coxalis",
+#'                species_col = "agrilus_sp",
+#'                host_status_col = "interaction",
+#'                host_col = "quercus_sp")
+#'
+#' @importFrom ggplot2 aes scale_color_manual theme
+#' @importFrom ggtree ggtree geom_tiplab fortify
+#' @importFrom dplyr left_join
+#' @importFrom treeio as.treedata
+#' @export
+plot_phylogeny <- function(phylo,
+                           host_spp = NULL,
+                           interaction_df = NULL,
+                           species = NULL,
+                           species_col = NULL,
+                           host_col = NULL,
+                           host_status_col = NULL,
+                           main = species,
+                           layout = "circular",
+                           offset = 5,
+                           size = 1.7,
+                           tip_colours = c("black", "coral"),
+                           legend_pos = "none") {
+  # Checks
+  if (class(phylo) != "phylo") {
+    stop("'phylo' must be an object of class 'phylo'")
+  }
+  if (!is.null(host_spp) && !is.character(host_spp)) {
+    stop("'host_spp' must be a character vector or NULL")
+  }
+  if (!is.null(!is.character(main)) && !is.character(main)
+      || length(main) != 1) {
+    stop("'main' must be a single character string or NULL")
+  }
+  if (!is.character(layout) || length(layout) != 1) {
+    stop("'layout' must be a character string of length 1")
+  }
+  if (!is.numeric(offset) || length(offset) != 1) {
+    stop("'offset' must be a single numeric value")
+  }
+  if (!is.numeric(size) || length(size) != 1) {
+    stop("'size' must be a single numeric value")
+  }
+  if (!is.character(tip_colours) || length(tip_colours) != 2) {
+    stop("'tip_colours' must be a character vector of length 2")
+  }
+  if (!is.character(legend_pos) || length(legend_pos) != 1) {
+    stop("'legend_pos' must be a single character string")
+  }
+
+  # Get hosts of given species
+  if (is.null(host_spp)) {
+    host_spp <- get_host_spp(df = interaction_df,
+                             species_col = species_col,
+                             host_col = host_col,
+                             host_status_col = host_status_col,
+                             species = species)
+  }
+
+  hosts <- setNames(
+    data.frame(phylo$tip.label,
+               phylo$tip.label %in% host_spp),
+    c("taxon", "is_host")
+  )
+
+  # Add host info to phylo
+  phylo_hosts <- phylo |>
+    ggtree::fortify() |>
+    dplyr::left_join(hosts, by = c("label" = "taxon")) |>
+    treeio::as.treedata()
+
+  # Plot
+  ggtree::ggtree(phylo_hosts, layout = layout) +
+    ggtree::geom_tiplab(ggplot2::aes(color = is_host),
+                        offset = offset,
+                        size = size,
+                        fontface = "italic") +
+    ggplot2::scale_color_manual(values = tip_colours) +
+    ggplot2::theme(legend.position = legend_pos) +
+    ggplot2::ggtitle(main)
+}
+
+
+#' Plot phylogenetic distances for host species
+#'
+#' This function creates a barplot showing phylogenetic distances
+#' associated with host species for a given focal species.
+#'
+#' @param interaction_df A data frame containing species–host interaction data.
+#' @param species Character string giving the focal species of interest.
+#' @param species_col Character string specifying the column containing species
+#' names in `interaction_df`.
+#' @param host_col Character string specifying the column containing host
+#' species names in `interaction_df`.
+#' @param host_status_col Character string specifying the column indicating host
+#' status in `interaction_df`.
+#' @param dist_col Character string specifying the column containing
+#' phylogenetic distances in`interaction_df`.
+#' @param host_spp A character string specifying the host species. This can be
+#' provided as an alternative to inferring the host species via `get_host_spp`
+#' when an `interaction_df` is supplied.  Default: `NULL` (not required if
+#' `interaction_df` is provided).
+#' @param colour Character string specifying the bar colour. Default: `"coral"`.
+#' @param cex_names Numeric value controlling the size of axis labels. Default:
+#' `0.5`.
+#' @param ylab Character string specifying the y-axis label. Default:
+#' `"Distance to another host species"`.
+#' @param main Character string indicating plot title. Defaults to the name
+#' of the focal species (set to `NULL` to ignore).
+#'
+#' @return Invisibly returns the heights used in the barplot.
+#'
+#' @seealso \code{\link{get_host_spp}}
+#'
+#' @examples
+#' barplot_host_distance(interaction_df = interaction_data,
+#'                       species = "Agrilus coxalis",
+#'                       species_col = "agrilus_sp",
+#'                       host_col = "quercus_sp",
+#'                       host_status_col = "interaction",
+#'                       dist_col = "phylo_dist_min")
+#'
+#' @export
+barplot_host_distance <- function(interaction_df,
+                                  species,
+                                  species_col,
+                                  host_col,
+                                  host_status_col,
+                                  dist_col,
+                                  host_spp = NULL,
+                                  colour = "coral",
+                                  cex_names = 0.5,
+                                  ylab = "Distance to another host species",
+                                  main = species) {
+  # Checks
+  if (!is.data.frame(interaction_df)) {
+    stop(paste0("'interaction_df' must be a data.frame"))
+  }
+  if (!is.character(dist_col) || length(dist_col) != 1) {
+    stop("'dist_col' must be a single character string")
+  }
+  if (!(dist_col %in% colnames(interaction_df))) {
+    stop("dist_col must be a column in 'interaction_df'")
+  }
+  if (!is.numeric(interaction_df[[dist_col]])) {
+    stop("'interaction_df[[dist_col]]' must be a numeric vector")
+  }
+  if (!is.null(host_spp) && !is.character(host_spp)) {
+    stop("'host_spp' must be a character vector or NULL")
+  }
+  if (!is.character(colour)) {
+    stop("'colour' must be a character vector")
+  }
+  if (!is.numeric(cex_names) || length(cex_names) != 1) {
+    stop("'cex_names' must be a single number")
+  }
+  if (!is.character(ylab) || length(ylab) != 1) {
+    stop("'ylab' must be a single character string")
+  }
+  if (!is.null(!is.character(main)) && !is.character(main)
+      || length(main) != 1) {
+    stop("'main' must be a single character string or NULL")
+  }
+
+  # Get hosts of given species
+  if (is.null(host_spp)) {
+    host_spp <- get_host_spp(df = interaction_df,
+                             species_col = species_col,
+                             host_col = host_col,
+                             host_status_col = host_status_col,
+                             species = species)
+  }
+
+  # Get distances
+  hosts_dist <- subset(interaction_df,
+                       interaction_df[[species_col]] == species
+                       & interaction_df[[host_col]] %in% host_spp)
+  hosts_phylo_dist <- hosts_dist[, c(host_col, dist_col)]
+
+  # Plot
+  barplot(height = hosts_phylo_dist[[dist_col]],
+          names.arg = hosts_phylo_dist[[host_col]],
+          ylab = ylab,
+          las = 2,
+          cex.names = cex_names,
+          col = colour,
+          main = species)
+}
+
+
+#' Plot random effect estimates for host species
+#'
+#' This function extracts and plots random effect estimates from a
+#' \code{brmsfit} model for host species associated with a given focal species.
+#'
+#' @param model A fitted Bayesian model of class \code{brmsfit}.
+#' @param host_spp A character string specifying the host species. This can be
+#' provided as an alternative to inferring the host species via `get_host_spp`
+#' when an `interaction_df` is supplied.  Default: `NULL` (not required if
+#' `interaction_df` is provided).
+#' @param interaction_df A data frame containing species-host interaction data.
+#' Default: `NULL` (not required if `host_spp` is provided).
+#' @param species_col A character string indicating the column name in
+#' `interaction_df` that contains species names.  Default: `NULL` (not required
+#' if `interaction_df` is provided).
+#' @param host_col A character string indicating the column name in both `model`
+#' and `interaction_df` that contains host species names.
+#' @param host_status_col A character string specifying the column in
+#' `interaction_df` that indicates the host status.  Default: `NULL` (not
+#' required if `interaction_df` is provided).
+#' @param species Character string giving the focal species of interest.
+#' @param colour Character string specifying the bar colour. Default: `coral`.
+#' @param cex_names Numeric value controlling the size of axis labels. Default:
+#' `0.5`.
+#' @param ylab Character string specifying the y-axis label. Default:
+#' `"Random effect estimates"`.
+#' @param main Character string indicating plot title. Defaults to the name
+#' of the focal species (set to `NULL` to ignore).
+#'
+#' @return Invisibly returns the random effect estimates used in the barplot.
+#'
+#' @seealso \code{\link{get_host_spp}}, \code{brms::ranef}
+#'
+#' @examples
+#' plot_ranef(interaction_df = interaction_data,
+#'            model = oak_model,
+#'            species = "Agrilus coxalis",
+#'            species_col = "agrilus_sp",
+#'            host_col = "quercus_sp",
+#'            host_status_col = "interaction")
+#'
+#' @importFrom brms ranef
+#' @export
+barplot_ranef <- function(model,
+                          host_spp = NULL,
+                          interaction_df = NULL,
+                          species_col = NULL,
+                          host_col,
+                          host_status_col = NULL,
+                          species,
+                          colour = "coral",
+                          cex_names = 0.5,
+                          ylab = "Random effect estimates",
+                          main = species) {
+  # Checks
+  if (!inherits(model, "brmsfit")) {
+    stop("'model' must be an object of class brmsfit")
+  }
+  if (!is.null(host_spp) && !is.character(host_spp)) {
+    stop("'host_spp' must be a character vector or NULL")
+  }
+  if (!is.character(colour)) {
+    stop("'colour' must be a character vector")
+  }
+  if (!is.character(ylab) || length(ylab) != 1) {
+    stop("'ylab' must be a single character string")
+  }
+  if (!is.null(!is.character(main)) && !is.character(main)
+      || length(main) != 1) {
+    stop("'main' must be a single character string or NULL")
+  }
+
+  # Get hosts of given species
+  if (is.null(host_spp)) {
+    host_spp <- get_host_spp(df = interaction_df,
+                             species_col = species_col,
+                             host_col = host_col,
+                             host_status_col = host_status_col,
+                             species = species)
+  }
+
+  # Get random effect estimates
+  ranef_list <- lapply(host_spp,
+                       function(sp) brms::ranef(model)[[host_col]][, , 1][sp, ])
+  ranef_df <- do.call(rbind, ranef_list)
+
+  # Plot
+  barplot(height = ranef_df[, "Estimate"],
+          names.arg = host_spp,
+          ylab = ylab,
+          las = 2,
+          cex.names = cex_names,
+          col = colour,
+          main = species)
+}
+
+
+#' Extract host species for a given focal species
+#'
+#' This function identifies host species associated with a focal species
+#' from a species–host interaction data frame.
+#'
+#' @param df A data frame containing species–host interaction data.
+#' @param species_col Character string specifying the column containing species
+#' names.
+#' @param host_col Character string specifying the column containing host
+#' species names.
+#' @param host_status_col Character string specifying the column indicating
+#' host status (values must include 0 and 1, where 1 indicates a host).
+#' @param species Character string giving the focal species of interest.
+#' @param main Character string indicating plot title. Defaults to the name
+#' of the focal species (set to `NULL` to ignore).
+#'
+#' @return A character vector of unique host species associated with the focal
+#' species.
+#'
+#' @keywords internal
+get_host_spp <- function(df,
+                         species_col,
+                         host_col,
+                         host_status_col,
+                         species) {
+  # Checks
+  if (!is.character(species_col) || length(species_col) != 1) {
+    stop("'species_col' must be a single character string")
+  }
+  if (!is.character(host_col) || length(host_col) != 1) {
+    stop("'host_col' must be a single character string")
+  }
+  if (!is.character(host_status_col) || length(host_status_col) != 1) {
+    stop("'host_status_col' must be a single character string")
+  }
+
+  if (!is.data.frame(df)
+      || !(all(c(species_col, host_col, host_status_col) %in% colnames(df)))) {
+    stop(paste("'df' must be a data.frame with colnames:",
+               species_col, ",", host_status_col, ",", host_col))
+  }
+  if (!is.character(df[[species_col]])) {
+    stop("'df[[species_col]]' must be a character vector")
+  }
+  if (!is.character(df[[host_col]])) {
+    stop("'df[[host_col]]' must be a character vector")
+  }
+  if (!any(df[[host_status_col]] %in% c(0, 1))) {
+    stop("'df[[host_status_col]]' must be a vector of 0s and 1s")
+  }
+  if (!is.character(species) || length(species) != 1) {
+    stop("'species' must be a sigle character string")
+  }
+  if (!(species %in% df[[species_col]])) {
+    stop("'species' must be present in 'df[[species_col]]'")
+  }
+
+  # Extract host species
+  hosts_df <- unique(subset(df,
+                            df[[species_col]] == species
+                            & df[[host_status_col]] == 1))
+  hosts <- hosts_df[[host_col]]
+
+  hosts
 }

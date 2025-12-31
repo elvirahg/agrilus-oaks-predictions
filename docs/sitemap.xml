@@ -5,6 +5,8 @@
 <url><loc>/index.html</loc></url>
 <url><loc>/reference/add_formula_variations.html</loc></url>
 <url><loc>/reference/add_species_centroid.html</loc></url>
+<url><loc>/reference/barplot_host_distance.html</loc></url>
+<url><loc>/reference/barplot_ranef.html</loc></url>
 <url><loc>/reference/clean_taxon_name.html</loc></url>
 <url><loc>/reference/compute_intercept.html</loc></url>
 <url><loc>/reference/compute_threshold_metrics.html</loc></url>
@@ -15,19 +17,27 @@
 <url><loc>/reference/generate_phylo_metrics_df.html</loc></url>
 <url><loc>/reference/generate_pres_abs_df.html</loc></url>
 <url><loc>/reference/get_gbif_keys.html</loc></url>
+<url><loc>/reference/get_host_spp.html</loc></url>
+<url><loc>/reference/get_wcvp_distribution.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
 <url><loc>/reference/loo_compare_parallel_groups.html</loc></url>
 <url><loc>/reference/make_dist_plot.html</loc></url>
+<url><loc>/reference/plot_distribution_country.html</loc></url>
+<url><loc>/reference/plot_distribution_region.html</loc></url>
 <url><loc>/reference/plot_fourfold.html</loc></url>
 <url><loc>/reference/plot_geo_dists.html</loc></url>
 <url><loc>/reference/plot_highlighted_predictions.html</loc></url>
 <url><loc>/reference/plot_model_comparison.html</loc></url>
+<url><loc>/reference/plot_phylo_hosts.html</loc></url>
+<url><loc>/reference/plot_phylogeny.html</loc></url>
 <url><loc>/reference/plot_prediction_change.html</loc></url>
 <url><loc>/reference/plot_predictions_by_species.html</loc></url>
 <url><loc>/reference/plot_predictions_violin.html</loc></url>
 <url><loc>/reference/plot_sens_spec_threshold.html</loc></url>
 <url><loc>/reference/precompute_geo_distances.html</loc></url>
 <url><loc>/reference/predict_as_zero_loo.html</loc></url>
+<url><loc>/reference/prepare_counts_country.html</loc></url>
+<url><loc>/reference/prepare_counts_region.html</loc></url>
 <url><loc>/reference/remove_duplicate_tips.html</loc></url>
 <url><loc>/reference/rename_labels.html</loc></url>
 <url><loc>/reference/sort_formulas.html</loc></url>
@@ -35,5 +45,6 @@
 <url><loc>/reference/standardise_phylo.html</loc></url>
 <url><loc>/reference/tpr.html</loc></url>
 <url><loc>/reference/transform_distances.html</loc></url>
+<url><loc>/reference/wcvp_distribution_list.html</loc></url>
 </urlset>
 

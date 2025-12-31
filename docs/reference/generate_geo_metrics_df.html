@@ -214,37 +214,37 @@ selected.</p>
 <span class="r-in"><span>                                    known_interactions_df <span class="op">=</span> <span class="va">hosts_df</span>,</span></span>
 <span class="r-in"><span>                                    host_taxon_col <span class="op">=</span> <span class="st">"plant_sp"</span>,</span></span>
 <span class="r-in"><span>                                    hosted_taxon_col <span class="op">=</span> <span class="st">"agrilus_sp"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2025-12-09 16:14:34.527262 Precomputing distances...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2025-12-31 16:59:04.663717 Precomputing distances...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Taxon 1/5: Quercus_A; no. coords = 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Taxon 2/5: Quercus_B; no. coords = 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Taxon 2/5: Quercus_B; no. coords = 5</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Taxon 3/5: Quercus_C; no. coords = 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Taxon 4/5: Quercus_D; no. coords = 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Taxon 5/5: Quercus_E; no. coords = 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2025-12-09 16:14:34.534559 Finished precomputing distances!</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Taxon 4/5: Quercus_D; no. coords = 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Taxon 5/5: Quercus_E; no. coords = 5</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2025-12-31 16:59:04.67475 Finished precomputing distances!</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating metrics per interaction...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Quercus_E: no other hosts of Agrilus_C; setting distance to 30000</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    plant_sp agrilus_sp interaction geo_min_dist_mean geo_min_dist_median</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 Quercus_A  Agrilus_A           1            325.19              323.13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 Quercus_B  Agrilus_A           0            251.79              201.51</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 Quercus_C  Agrilus_A           0            307.94              341.78</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 Quercus_D  Agrilus_A           1            307.42              283.12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 Quercus_E  Agrilus_A           0            379.30              336.13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 Quercus_A  Agrilus_B           1            323.66              373.21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 Quercus_A  Agrilus_A           1            456.17              427.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 Quercus_B  Agrilus_A           0            213.98              191.43</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 Quercus_C  Agrilus_A           0            185.31              171.28</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 Quercus_D  Agrilus_A           1            452.15              419.15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 Quercus_E  Agrilus_A           0            159.21              169.97</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 Quercus_A  Agrilus_B           1            552.30              453.78</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   geo_min_dist_mean_norm geo_min_dist_median_norm geo_min_dist_mean_log</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                      1                        1                  0.11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                      1                        1                  0.06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                      1                        1                  0.10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                      1                        1                  0.10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                      1                        1                  0.14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6                      1                        1                  0.11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                   1.00                        1                  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                   1.00                        1                  0.06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                   1.00                        1                  0.03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                   1.00                        1                  0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                   0.99                        1                  0.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                   1.00                        1                  0.24</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   geo_min_dist_median_log</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                    0.14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                    0.05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                    0.15</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                    0.12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                    0.15</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6                    0.17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                    0.18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                    0.02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                    0.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                    0.17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                    0.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                    0.19</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

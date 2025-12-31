@@ -5,10 +5,95 @@ source("R/plot_functions.r")
 
 # Libraries
 library(brms)
+library(dplyr)
 library(ggplot2)
 
 # Load brms models from previous script
 oak_models <- readRDS("data/results/oak_models.rds")
+
+
+#### QUICK EXPLORATION OF INPUT HOST DATA ####
+# Read in file with extended host status information
+host_info <- read.csv("data/input/host_info_references.csv")
+host_info <- host_info[, c("agrilus_sp",
+                           "native_region_insect",
+                           "host_family",
+                           "host_sp",
+                           "record_used",
+                           "native_region_host")]
+
+# Remove Q. gambelii as it's not in the final dataset (missing from phylogeny)
+host_info <- subset(host_info, host_sp != "Quercus gambelii")
+
+# Add columns of interest
+host_info <- host_info |>
+  dplyr::mutate(host_genus = stringr::word(host_sp, 1),
+                host_is_oak = host_genus == "Quercus",
+                host_is_sp = stringr::str_detect(host_sp, "\\s"))
+
+# i) Explore Agrilus
+agrilus_summary <- host_info |>
+  dplyr::group_by(agrilus_sp) |>
+  dplyr::summarise(only_oaks = all(host_is_oak),
+                   number_host_spp = dplyr::n_distinct(host_sp[host_is_sp]),
+                   number_host_genera = dplyr::n_distinct(host_genus),
+                   number_continents = dplyr::n_distinct(
+                     unlist(stringr::str_split(native_region_host, ";\\s*"))
+                   ),
+                   .groups = "drop")
+agrilus_summary <- host_info |>
+  dplyr::group_by(agrilus_sp) |>
+  dplyr::summarise(only_oaks = all(host_is_oak),
+                   number_host_spp = dplyr::n_distinct(host_sp[host_is_sp]),
+                   number_host_genera = dplyr::n_distinct(host_genus),
+                   number_continents = dplyr::n_distinct(
+                     unlist(stringr::str_split(native_region_host, ";\\s*"))
+                   ),
+                   .groups = "drop")
+
+# % Agrilus with only oak hosts (56.25%, 18 spp)
+table(agrilus_summary$only_oaks)
+mean(agrilus_summary$only_oaks) * 100
+
+# Number of host spp
+hist(table(agrilus_summary$number_host_spp),
+     xlab = "Number of host species",
+     main = "Number of host species per Agrlius species")
+
+summary(agrilus_summary$number_host_spp)
+
+# Number of host genera
+hist(table(agrilus_summary$number_host_genera),
+     xlab = "Number of host genera",
+     main = "Number of host genera per Agrlius species")
+summary(agrilus_summary$number_host_genera)
+
+# Number of continents
+sort(table(unlist(stringr::str_split(host_info$native_region_insect, ";\\s*"))))
+table(agrilus_summary$number_continents)
+summary(agrilus_summary$number_continents)
+
+# ii) Explore oaks
+quercus_summary <- host_info |>
+  dplyr::filter(host_is_oak, host_is_sp) |>
+  dplyr::group_by(host_sp) |>
+  dplyr::summarise(number_agrilus_spp = dplyr::n_distinct(agrilus_sp),
+                   number_continents = dplyr::n_distinct(
+                     unlist(stringr::str_split(native_region_host, ";\\s*"))
+                   ),
+                   .groups = "drop")
+
+# Number of Agrilus species
+hist(table(quercus_summary$number_agrilus_spp),
+     xlab = "Number of Agrilus species",
+     main = "Number of Agrilus species hosted per oak species")
+
+summary(quercus_summary$number_agrilus_spp)
+
+# Number of continents
+sort(table(unlist(stringr::str_split(host_info$native_region_host, ";\\s*"))))
+table(agrilus_summary$number_continents)
+summary(agrilus_summary$number_continents)
 
 
 #### BASIC EXPLORATION OF SELECTED MODEL ####
@@ -29,11 +114,11 @@ summary(oak_models$mod046)
 
 # Compare the observed outcome variable y to simulated datasets yrep from the
 # posterior predictive distribution; mc-stan.org/rstanarm/reference/
-pp_check(oak_models$mod046)
-pp_check(oak_models$mod046, "stat")
+brms::pp_check(oak_models$mod046)
+brms::pp_check(oak_models$mod046, "stat")
 
 # nspect chains: trace and density plots (b: population-level)
-plot(oak_models$mod046, N = 2, ask = FALSE)
+plot(oak_models$mod046, nvariables = 2, ask = FALSE)
 
 
 #### PREDICT INTERACTION STATUS ####
@@ -44,14 +129,6 @@ predictions <- data.frame(
   prediction_prob = fitted(oak_models$mod046, scale = "response")[, "Estimate"],
   prediction_lodds  = fitted(oak_models$mod046, scale = "linear")[, "Estimate"]
 )
-
-# Write predictions to file
-# write.table(predictions,
-#             "data/results/predictions.tsv",
-#             row.names = FALSE,
-#             col.names = TRUE,
-#             sep = "\t",
-#             quote = FALSE)
 
 # Simple initial plot
 par(mfrow = c(1, 2))
@@ -150,22 +227,13 @@ plot_sens_spec_threshold(thr_df = thresholds_df,
 # Plot ROC curve to assess the model's ability to differentiate between known
 # hosts and alleged non-hosts under different probability thresholds
 # To visualise ROC: plot(thresholds_df$sens~c(1-thresholds_df$spec))
-ggplot(thresholds_df, aes(fpr, sensitivity)) +
-  geom_line() +
-  labs(x = "FPR", y = "TPR") +
-  theme_minimal()
+ggplot2::ggplot(thresholds_df, ggplot2::aes(fpr, sensitivity)) +
+  ggplot2::geom_line() +
+  ggplot2::labs(x = "FPR", y = "TPR") +
+  ggplot2::theme_minimal()
 
 # Compute AUC value (0.97)
 DescTools::AUC(thresholds_df$fpr, thresholds_df$sens)
-
-
-#### PLOT RESULTS ####
-# Genral violin plot
-plot_predictions_violin(predictions = predictions,
-                        threshold = thr_intercepts["threshold"])
-
-median(predictions[predictions$host_status == 1, ]$prediction_lodds)
-median(predictions[predictions$host_status == 0, ]$prediction_lodds)
 
 # Add binary predictions to predictions dataframe
 predictions$prediction_binary <- factor(
@@ -173,48 +241,10 @@ predictions$prediction_binary <- factor(
   levels = c(0, 1)
 )
 
-# Plot general binary predictions
-plot_fourfold(observations = predictions$host_status,
-              predictions = predictions$prediction_binary,
-              print_metrics = TRUE)
-
-# Plot by oak, all oaks
-plot_predictions_by_species(data = predictions,
-                            species_col = "quercus_sp",
-                            threshold = thr_intercepts["threshold"],
-                            pred_var = "prediction_lodds",
-                            hosts_only = FALSE,
-                            ncol = 16,
-                            point_size = 1,
-                            title = NULL,
-                            italic_text = TRUE)
-
-# Plot by oak, hosts only
-plot_predictions_by_species(data = predictions,
-                            species_col = "quercus_sp",
-                            threshold = thr_intercepts["threshold"],
-                            pred_var = "prediction_lodds",
-                            hosts_only = TRUE,
-                            ncol = 16,
-                            point_size = 1,
-                            title = NULL,
-                            italic_text = TRUE)
-
-# Plot by Agrilus species
-plot_predictions_by_species(data = predictions,
-                            species_col = "agrilus_sp",
-                            threshold = thr_intercepts["threshold"],
-                            pred_var = "prediction_lodds",
-                            hosts_only = FALSE,
-                            ncol = 8,
-                            point_size = 1,
-                            title = NULL,
-                            italic_text = TRUE)
-
-# Plot for a specific Agrilus species, labelling novel predicted hosts
-plot_highlighted_predictions(
-  data = subset(predictions, agrilus_sp == "Agrilus angustulus"),
-  hosted_col = "agrilus_sp",
-  host_col = "quercus_sp",
-  threshold = thr_intercepts["threshold"]
-)
+# Write predictions to file
+# write.table(predictions,
+#             "data/results/predictions.tsv",
+#             row.names = FALSE,
+#             col.names = TRUE,
+#             sep = "\t",
+#             quote = FALSE)

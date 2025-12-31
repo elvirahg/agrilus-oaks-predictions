@@ -2,7 +2,8 @@
 # Custom functions
 source("R/model_functions.r")
 
-# Seed
+# Seed (not needed for actual analyses, only if exact reproducibility of
+# results is desired)
 set.seed(24601)
 
 # Libraries

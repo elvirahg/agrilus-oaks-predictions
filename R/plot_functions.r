@@ -301,6 +301,8 @@ plot_predictions_violin <- function(predictions,
       && (!is.numeric(threshold) || length(threshold) != 1)) {
     stop("'threshold' must be a single numeric value or NULL")
   }
+  # Make sure host status is a factor
+  predictions$host_status <- as.factor(predictions$host_status)
 
   # Plot
   p <- ggplot2::ggplot(data = predictions,

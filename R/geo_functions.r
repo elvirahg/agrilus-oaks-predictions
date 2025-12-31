@@ -467,7 +467,7 @@ wcvp_distribution_list <- function(taxon_queries,
 #'   columns (`plant_sp`, `known_host` and `pred_host`), or `NULL` if the
 #'   lookup fails.
 #'
-#' @importfrom rWCVP wcvp_distribution
+#' @importFrom rWCVP wcvp_distribution
 #' @keywords internal
 get_wcvp_distribution <- function(taxon_query,
                                   plant_name = NULL,

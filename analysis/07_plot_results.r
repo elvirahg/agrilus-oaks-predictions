@@ -1,6 +1,6 @@
 #### SET ENVIRONMENT ####
 # Custom functions
-# source("R/phylo_functions.r")
+source("R/phylo_functions.r")
 source("R/geo_functions.r")
 source("R/analysis_functions.r")
 source("R/plot_functions.r")
@@ -11,22 +11,41 @@ library(ggplot2)
 
 
 #### PREPARE INPUT DATA ####
-# Read in interaction data frame
-interaction_data <- read.table("data/data_main/results/interaction_data.tsv",
+# Read interaction data frame
+interaction_data <- read.table("data/results/interaction_data.tsv",
                                header = TRUE,
                                sep = "\t")
 
-# Read in predicitons data
-predictions <- read.table("data/data_main/results/predictions.tsv",
+# Read predicitons data
+predictions <- read.table("data/results/predictions.tsv",
                           header = TRUE,
                           sep = "\t")
+predictions$host_status <- as.factor(predictions$host_status)
 
-# Compute threshold
+# Identify known and predicted host species
+pred_hosts <- unique(subset(predictions,
+                            prediction_binary == 1)$quercus_sp)
+known_hosts <- unique(subset(predictions,
+                             host_status == 1)$quercus_sp)
+
+# Compute binary prediction threshold
 thresholds_df <- compute_threshold_metrics(
   pred_values = predictions$prediction_lodds,
   obs_values = predictions$host_status
 )
 thr_intercepts <- compute_intercept(thr_df = thresholds_df)
+
+# Read WCVP data
+wcvp_v10_names <- read.table("data/input/wcvp_v10/wcvp_names.csv",
+                             sep = "|",
+                             header = TRUE,
+                             quote = "",
+                             comment.char = "")
+wcvp_v10_distributions <- read.table("data/input/wcvp_v10/wcvp_distribution.csv",
+                                     sep = "|",
+                                     header = TRUE,
+                                     quote = "",
+                                     comment.char = "")
 
 #### PLOT PREDICTION RESULTS (GRAPHS) ####
 # Genral violin plot
@@ -104,12 +123,7 @@ oak_phylo <- standardise_phylo(oak_phylo,
                                pattern = "^([A-Z][a-z]+)_([×|x]*)_*([a-z-]+).*",
                                replacement = "\\1 \\2\\3")
 
-# Identify known and predicted host species
-pred_hosts <- unique(subset(predictions,
-                            prediction_binary == 1)$quercus_sp)
-known_hosts <- unique(subset(predictions,
-                             host_status == 1)$quercus_sp)
-
+# Create data frame with binary info on known & predicted host status
 predicted_hosts <- data.frame(
   quercus_sp = oak_phylo$tip.label,
   is_known = oak_phylo$tip.label %in% known_hosts,
@@ -132,18 +146,6 @@ plot_phylo_hosts(phylo = oak_phylo,
 
 
 #### PLOT PREDICTION RESULTS (GEO CHOROPLETHS) ####
-# Read WCVP data
-wcvp_v10_names <- read.table("data/input/wcvp_v10/wcvp_names.csv",
-                             sep = "|",
-                             header = TRUE,
-                             quote = "",
-                             comment.char = "")
-wcvp_v10_distributions <- read.table("data/input/wcvp_v10/wcvp_distribution.csv",
-                                     sep = "|",
-                                     header = TRUE,
-                                     quote = "",
-                                     comment.char = "")
-
 # Oak species in dataset
 plant_names <- unique(predictions$quercus_sp)
 

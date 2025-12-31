@@ -12,6 +12,90 @@ library(ggplot2)
 oak_models <- readRDS("data/results/oak_models.rds")
 
 
+#### QUICK EXPLORATION OF INPUT HOST DATA ####
+# Read in file with extended host status information
+host_info <- read.csv("data/input/host_info_references.csv")
+host_info <- host_info[, c("agrilus_sp",
+                           "native_region_insect",
+                           "host_family",
+                           "host_sp",
+                           "record_used",
+                           "native_region_host")]
+
+# Remove Q. gambelii as it's not in the final dataset (missing from phylogeny)
+host_info <- subset(host_info, host_sp != "Quercus gambelii")
+
+# Add columns of interest
+host_info <- host_info |>
+  dplyr::mutate(host_genus = stringr::word(host_sp, 1),
+                host_is_oak = host_genus == "Quercus",
+                host_is_sp = stringr::str_detect(host_sp, "\\s"))
+
+# i) Explore Agrilus
+agrilus_summary <- host_info |>
+  dplyr::group_by(agrilus_sp) |>
+  dplyr::summarise(only_oaks = all(host_is_oak),
+                   number_host_spp = dplyr::n_distinct(host_sp[host_is_sp]),
+                   number_host_genera = dplyr::n_distinct(host_genus),
+                   number_continents = dplyr::n_distinct(
+                     unlist(stringr::str_split(native_region_host, ";\\s*"))
+                   ),
+                   .groups = "drop")
+agrilus_summary <- host_info |>
+  dplyr::group_by(agrilus_sp) |>
+  dplyr::summarise(only_oaks = all(host_is_oak),
+                   number_host_spp = dplyr::n_distinct(host_sp[host_is_sp]),
+                   number_host_genera = dplyr::n_distinct(host_genus),
+                   number_continents = dplyr::n_distinct(
+                     unlist(stringr::str_split(native_region_host, ";\\s*"))
+                   ),
+                   .groups = "drop")
+
+# % Agrilus with only oak hosts (56.25%, 18 spp)
+table(agrilus_summary$only_oaks)
+mean(agrilus_summary$only_oaks) * 100
+
+# Number of host spp
+hist(table(agrilus_summary$number_host_spp),
+     xlab = "Number of host species",
+     main = "Number of host species per Agrlius species")
+
+summary(agrilus_summary$number_host_spp)
+
+# Number of host genera
+hist(table(agrilus_summary$number_host_genera),
+     xlab = "Number of host genera",
+     main = "Number of host genera per Agrlius species")
+summary(agrilus_summary$number_host_genera)
+
+# Number of continents
+sort(table(unlist(stringr::str_split(host_info$native_region_insect, ";\\s*"))))
+table(agrilus_summary$number_continents)
+summary(agrilus_summary$number_continents)
+
+# ii) Explore oaks
+quercus_summary <- host_info |>
+  dplyr::filter(host_is_oak, host_is_sp) |>
+  dplyr::group_by(host_sp) |>
+  dplyr::summarise(number_agrilus_spp = dplyr::n_distinct(agrilus_sp),
+                   number_continents = dplyr::n_distinct(
+                     unlist(stringr::str_split(native_region_host, ";\\s*"))
+                   ),
+                   .groups = "drop")
+
+# Number of Agrilus species
+hist(table(quercus_summary$number_agrilus_spp),
+     xlab = "Number of Agrilus species",
+     main = "Number of Agrilus species hosted per oak species")
+
+summary(quercus_summary$number_agrilus_spp)
+
+# Number of continents
+sort(table(unlist(stringr::str_split(host_info$native_region_host, ";\\s*"))))
+table(agrilus_summary$number_continents)
+summary(agrilus_summary$number_continents)
+
+
 #### BASIC EXPLORATION OF SELECTED MODEL ####
 # Read interaction data frame
 interaction_data <- read.table("data/results/interaction_data.tsv",

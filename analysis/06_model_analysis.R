@@ -21,11 +21,102 @@ library(geodist)
 library(mcpdiversity)
 library(brms)
 library(ggplot2)
+library(choroplethr)
+library(choroplethrMaps)
 # library(raster)
 # library(geodata)
 # library(ggbiplot)
 # library(factoextra)
 # library(doParallel)
+
+
+
+#
+#### QUICK EXPLORATION OF INPUT HOST DATA ####
+# A) PREPARE INPUT
+# Read in file with extended host status information
+host_info <- read.csv("data/input/host_info_references.csv")
+host_info <- host_info[, c("agrilus_sp",
+                           "native_region_insect",
+                           "host_family",
+                           "host_sp",
+                           "record_used",
+                           "native_region_host")]
+
+# Remove Q. gambelii as it's not in the final dataset (missing from phylogeny)
+host_info <- subset(host_info, host_sp != "Quercus gambelii")
+
+# Add columns of interest
+host_info <- host_info |>
+  dplyr::mutate(host_genus = stringr::word(host_sp, 1),
+                host_is_oak = host_genus == "Quercus",
+                host_is_sp = stringr::str_detect(host_sp, "\\s"))
+
+
+# B) EXPLORE AGRILUS
+agrilus_summary <- host_info |>
+  dplyr::group_by(agrilus_sp) |>
+  dplyr::summarise(only_oaks = all(host_is_oak),
+                   number_host_spp = dplyr::n_distinct(host_sp[host_is_sp]),
+                   number_host_genera = dplyr::n_distinct(host_genus),
+                   number_continents = dplyr::n_distinct(
+                     unlist(stringr::str_split(native_region_host, ";\\s*"))
+                   ),
+                   .groups = "drop")
+agrilus_summary <- host_info |>
+  dplyr::group_by(agrilus_sp) |>
+  dplyr::summarise(only_oaks = all(host_is_oak),
+                   number_host_spp = dplyr::n_distinct(host_sp[host_is_sp]),
+                   number_host_genera = dplyr::n_distinct(host_genus),
+                   number_continents = dplyr::n_distinct(
+                     unlist(stringr::str_split(native_region_host, ";\\s*"))
+                   ),
+                   .groups = "drop")
+
+# % Agrilus with only oak hosts (56.25%, 18 spp)
+table(agrilus_summary$only_oaks)
+mean(agrilus_summary$only_oaks) * 100
+
+# Number of host spp
+hist(table(agrilus_summary$number_host_spp),
+     xlab = "Number of host species",
+     main = "Number of host species per Agrlius species")
+
+summary(agrilus_summary$number_host_spp)
+
+# Number of host genera
+hist(table(agrilus_summary$number_host_genera),
+     xlab = "Number of host genera",
+     main = "Number of host genera per Agrlius species")
+summary(agrilus_summary$number_host_genera)
+
+# Number of continents
+sort(table(unlist(stringr::str_split(host_info$native_region_insect, ";\\s*"))))
+table(agrilus_summary$number_continents)
+summary(agrilus_summary$number_continents)
+
+
+# C) EXPLORE OAKS
+quercus_summary <- host_info |>
+  dplyr::filter(host_is_oak, host_is_sp) |>
+  dplyr::group_by(host_sp) |>
+  dplyr::summarise(number_agrilus_spp = dplyr::n_distinct(agrilus_sp),
+                   number_continents = dplyr::n_distinct(
+                     unlist(stringr::str_split(native_region_host, ";\\s*"))
+                   ),
+                   .groups = "drop")
+
+# Number of Agrilus species
+hist(table(quercus_summary$number_agrilus_spp),
+     xlab = "Number of Agrilus species",
+     main = "Number of Agrilus species hosted per oak species")
+
+summary(quercus_summary$number_agrilus_spp)
+
+# Number of continents
+sort(table(unlist(stringr::str_split(host_info$native_region_host, ";\\s*"))))
+table(agrilus_summary$number_continents)
+summary(agrilus_summary$number_continents)
 
 
 
@@ -84,13 +175,13 @@ plot(predictions$prediction.logodds ~ predictions$host.status)
 comparisons <- data.frame(
   host.status = as.factor(interaction_data$interaction),
   oak = as.factor(interaction_data$quercus.sp),
-  mod043 = fitted(oak_mod043, scale = "linear")[,1],  ## full
-  mod002 = fitted(oak_mod002, scale = "linear")[,1],  ## geo
-  mod004 = fitted(oak_mod004, scale = "linear")[,1],  ## phy1
-  mod008 = fitted(oak_mod008, scale = "linear")[,1],  ## (1 | gr(oak | phy2))
-  mod010 = fitted(oak_mod010, scale = "linear")[,1],  ## geo + phy1
-  mod018 = fitted(oak_mod018, scale = "linear")[,1],  ## geo + (1 | gr(oak | phy2))
-  mod025 = fitted(oak_mod025, scale = "linear")[,1]   ## phy1 + (1 | gr(oak | phy2))
+  mod043 = fitted(oak_mod043, scale = "linear")[,1],  # full
+  mod002 = fitted(oak_mod002, scale = "linear")[,1],  # geo
+  mod004 = fitted(oak_mod004, scale = "linear")[,1],  # phy1
+  mod008 = fitted(oak_mod008, scale = "linear")[,1],  # (1 | gr(oak | phy2))
+  mod010 = fitted(oak_mod010, scale = "linear")[,1],  # geo + phy1
+  mod018 = fitted(oak_mod018, scale = "linear")[,1],  # geo + (1 | gr(oak | phy2))
+  mod025 = fitted(oak_mod025, scale = "linear")[,1]   # phy1 + (1 | gr(oak | phy2))
   )
 
 
@@ -457,6 +548,349 @@ ggplot(subset(predictions, agrilus.sp == "A. angustulus"),
                             hjust = 0, vjust = 0, max.overlaps = 100, size = 4)
 
 # save.image("analysis/results/oak_models.RData")
+
+
+
+#
+#####      PLOT DISITRIBUTION OF HOSTS                                              #####
+# A) PHYLO
+oak_tree <- read.tree("analysis/input/quercus_hipp19_singleton_crown_sp_level.tre")
+plants <- gsub(oak_tree$tip.label, pattern = "\\|.*", replacement = "")
+plants <- gsub(plants, pattern = "_", replacement = " ", fixed = TRUE)
+
+phosts  <- data.frame(matrix(nrow = 238, ncol = 2))
+colnames(phosts) <- c("quercus.sp", "val")
+phosts$quercus.sp <- oak_tree$tip.label
+
+vals <- unique(subset(predictions, prediction.cutoff == 1 & host.status == 0)$quercus.sp)
+phosts$val <- phosts$quercus.sp %in% vals
+
+x <- full_join(as_tibble(oak_tree), phosts, by = c("label" = "quercus.sp"))
+oak_tree_hosts <- treeio::as.treedata(x)
+
+ggtree(oak_tree_hosts, layout = "circular") +
+  geom_tiplab(aes(subset = !val), offset = 5, size = 1.7,
+              fontface = "italic", color = "gray50") +
+  geom_tiplab(aes(subset = val), offset = 5, size = 1.7,
+              fontface = "bold.italic", color = "darkgoldenrod3")
+
+
+# B) GEO
+distribution <- read.table(paste0(pw, "input/gbif_quercus_country.tsv"), header = F, sep = "\t")
+colnames(distribution) <- c("quercus.sp", "region")
+head(distribution)
+
+distribution$region <- countrycode::countrycode(distribution$region, "iso2c", "country.name")
+
+# Attach the country map used in the choropleth function to make sure that country names in
+# our dataset are the same
+data(country.map)
+distribution$region <- tolower(distribution$region)
+
+unique(distribution$region)[which(!(unique(distribution$region) %in% unique(country.map$region)))]
+
+distribution$region[which(distribution$region == "united states")] <- "united states of america"
+distribution$region[which(distribution$region == "myanmar (burma)")] <- "myanmar"
+distribution$region[which(distribution$region == "bosnia & herzegovina")] <- "bosnia and herzegovina"
+distribution$region[which(distribution$region == "czechia")] <- "czech republic"
+distribution$region[which(distribution$region == "isle of man")] <- "united kingdom"
+distribution$region[which(distribution$region == "north macedonia")] <- "macedonia"
+distribution$region[which(distribution$region == "serbia")] <- "republic of serbia"
+distribution$region[which(distribution$region == "guernsey")] <- "united kingdom"
+distribution$region[which(distribution$region == "jersey")] <- "united kingdom"
+distribution$region[which(distribution$region == "tanzania")] <- "united republic of tanzania"
+distribution$region[which(distribution$region == "congo - kinshasa")] <- "democratic republic of the congo"
+
+# Create a DS with the number of oak species each country has, and plot them
+distribution_oaks <-  as.data.frame(table(distribution$region))
+colnames(distribution_oaks) <- c("region", "value")
+distribution_oaks <- distribution_oaks[distribution_oaks$region %in% unique(country.map$region),]
+
+extra <- unique(country.map$region)[which(!(unique(country.map$region) %in% distribution_oaks$region))]
+extra <- data.frame(cbind(extra, rep(0, length(extra))))
+colnames(extra) <- colnames(distribution_oaks)
+extra$value <- as.integer(extra$value)
+
+distribution_oaks <- rbind(distribution_oaks, extra); rm(extra)
+
+country_choropleth(distribution_oaks, num_colors = 9) +
+  scale_fill_brewer(palette = 10)
+
+# Create a DS with the number of known hosts species each country has, and plot them
+distribution_hosts <-  as.data.frame(table(subset(distribution,
+                                                  quercus.sp %in% unique(agrilus_hosts$plant.sp))$region))
+colnames(distribution_hosts) <- c("region", "value")
+distribution_hosts <- distribution_hosts[distribution_hosts$region %in% unique(country.map$region),]
+
+extra <- unique(country.map$region)[which(!(unique(country.map$region) %in% distribution_hosts$region))]
+extra <- data.frame(cbind(extra, rep(0, length(extra))))
+colnames(extra) <- colnames(distribution_hosts)
+extra$value <- as.integer(extra$value)
+
+distribution_hosts <- rbind(distribution_hosts, extra); rm(extra)
+
+country_choropleth(distribution_hosts, num_colors = 9) +
+  scale_fill_brewer(palette = 10)
+
+# Create a DS with the number of predicted hosts species each country has, and plot them
+distribution_phosts <-  as.data.frame(
+  table(subset(distribution, quercus.sp %in%
+                 gsub("Q\\.", "Quercus",
+                      unique(subset(predictions, prediction.cutoff == 1)$quercus.sp)))$region))
+colnames(distribution_phosts) <- c("region", "value")
+distribution_phosts <- distribution_phosts[distribution_phosts$region %in% unique(country.map$region),]
+
+extra <- unique(country.map$region)[which(!(unique(country.map$region) %in% distribution_phosts$region))]
+extra <- data.frame(cbind(extra, rep(0, length(extra))))
+colnames(extra) <- colnames(distribution_phosts)
+extra$value <- as.integer(extra$value)
+
+distribution_phosts <- rbind(distribution_phosts, extra); rm(extra)
+
+country_choropleth(distribution_phosts, num_colors = 9) +
+  scale_fill_brewer(palette = 10)
+
+
+
+#
+#####      EXPLORE AGRILUS SPECIES WHOSE REAL HOSTS ARE NOT PREDICTED AS SUCH       #####
+# It seems to happen when:
+# The beetle is only hosted by one oak species
+# The hosts are far in the phylogeny ("cold clades") or geo
+subset(predictions, prediction.cutoff == 0 & host.status == 1)
+
+# A) SPECIES WITH ONLY ONE KNOWN HOST
+# i) A. samai
+unique(subset(predictions, agrilus.sp == "A. samai" & host.status == 1)$quercus.sp)
+
+# ii) A. niveoguttatus
+unique(subset(predictions, agrilus.sp == "A. niveoguttatus" & host.status == 1)$quercus.sp)
+
+# iii) A. chiricahuae
+unique(subset(predictions, agrilus.sp == "A. chiricahuae" & host.status == 1)$quercus.sp)
+
+# iv) A. relegatoides
+unique(subset(predictions, agrilus.sp == "A. relegatoides" & host.status == 1)$quercus.sp)
+
+# v) A. acutipennis
+unique(subset(predictions, agrilus.sp == "A. acutipennis" & host.status == 1)$quercus.sp)
+
+
+# B) SPECIES WITH MORE THAN ONE KNOWN HOST
+# i) A. coxalis (0s are far in geo and phylo)
+# Check hosts
+subset(predictions, agrilus.sp == "A. coxalis" & host.status == 1)
+
+# Plot phylogeny
+hosts  <- data.frame(matrix(nrow = 238, ncol = 2))
+colnames(hosts) <- c("quercus.sp", "val")
+hosts$quercus.sp <- oak_tree$tip.label
+
+vals <- unique(subset(predictions, agrilus.sp == "A. coxalis" & host.status == 1)$quercus.sp)
+hosts$val <- hosts$quercus.sp %in% vals
+
+x <- full_join(as_tibble(oak_tree), hosts, by = c("label" = "quercus.sp"))
+oak_tree2 <- treeio::as.treedata(x)
+rm(x, hosts)
+
+ggtree(oak_tree2, layout = "circular") +
+  geom_tiplab(aes(color = val), offset = 5, size = 1.7, fontface = "italic") +
+  scale_color_manual(values = c("black", "coral"))
+
+# Check phylo distance
+pdists <- subset(interaction_data, agrilus.sp == "A. coxalis" &
+                       quercus.sp %in% c("Q. conzattii", "Q. peduncularis",
+                                         "Q. chrysolepis", "Q. kelloggii",
+                                         "Q. agrifolia"))[,c(1,3,12)]
+
+barplot(pdists$phylo.dist.min, names.arg = pdists$quercus.sp,
+        ylab = "min phylo mean",
+        las = 2, cex.names = 0.5,
+        col = brewer.pal(n = 3, name = "Dark2")[c(rep(1, 6))])
+
+# Check ranef values (high values make it more likely for sth to be a host)
+ranef <- data.frame(rbind(ranef(oak_mod043)$quercus.sp[,,1]['Q. conzattii',],
+                              ranef(oak_mod043)$quercus.sp[,,1]['Q. peduncularis',],
+                              ranef(oak_mod043)$quercus.sp[,,1]['Q. chrysolepis',],
+                              ranef(oak_mod043)$quercus.sp[,,1]['Q. kelloggii',],
+                              ranef(oak_mod043)$quercus.sp[,,1]['Q. agrifolia',]
+                          ))
+ranef$quercus.sp <- c("Q. conzattii", "Q. peduncularis", "Q. chrysolepis", "Q. kelloggii",
+                      "Q. agrifolia")
+
+barplot(ranef$Estimate, names.arg = ranef$quercus.sp,
+        ylab = "ranef estimate", las = 2, cex.names = 0.5,
+        col = brewer.pal(n = 3, name = "Dark2")[c(1,1,1,1,1,2)])
+
+# Geographic distances
+subset(interaction_data, agrilus.sp == "A. coxalis" & interaction == 1)[, c(1,2,4,5)]
+
+gdists <- subset(interaction_data, agrilus.sp == "A. coxalis" &
+                                       quercus.sp %in% c("Q. conzattii", "Q. peduncularis",
+                                                         "Q. chrysolepis", "Q. kelloggii",
+                                                         "Q. agrifolia"))[,c(1,3,5)]
+
+barplot(gdists$min.dist.mean.norm, names.arg = gdists$quercus.sp,
+        ylab = "min.dist.mean (geo)",
+        las = 2, cex.names = 0.5,
+        col = brewer.pal(n = 3, name = "Dark2")[c(rep(1, 5), 2)])
+
+
+# ii) A. hemiphanes (0s are far in geo and phylo)
+# Check hosts
+subset(predictions, agrilus.sp == "A. hemiphanes" & host.status == 1)
+
+# Plot phylogeny
+hosts  <- data.frame(matrix(nrow = 238, ncol = 2))
+colnames(hosts) <- c("quercus.sp", "val")
+hosts$quercus.sp <- oak_tree$tip.label
+
+vals <- unique(subset(predictions, agrilus.sp == "A. hemiphanes" & host.status == 1)$quercus.sp)
+hosts$val <- hosts$quercus.sp %in% vals
+
+x <- full_join(as_tibble(oak_tree), hosts, by = c("label" = "quercus.sp"))
+oak_tree2 <- treeio::as.treedata(x)
+rm(x, hosts)
+
+ggtree(oak_tree2, layout = "circular") +
+  geom_tiplab(aes(color = val), offset = 5, size = 1.7, fontface = "italic") +
+  scale_color_manual(values = c("black", "coral"))
+
+# Check phylo distance
+pdists <- subset(interaction_data, agrilus.sp == "A. hemiphanes" &
+                       quercus.sp %in% c("Q. coccinea", "Q. coccifera",
+                                         "Q. ilex"))[,c(1,3,12)]
+
+barplot(pdists$phylo.dist.min, names.arg = pdists$quercus.sp,
+        ylab = "min phylo mean",
+        las = 2, cex.names = 0.5,
+        col = brewer.pal(n = 3, name = "Dark2")[c(rep(1, 6))])
+
+# Check ranef values (high values make it more likely for sth to be a host)
+ranef <- data.frame(rbind(ranef(oak_mod043)$quercus.sp[,,1]['Q. coccinea',],
+                              ranef(oak_mod043)$quercus.sp[,,1]['Q. coccifera',],
+                              ranef(oak_mod043)$quercus.sp[,,1]['Q. ilex',]
+                          ))
+ranef$quercus.sp <- c("Q. coccinea", "Q. coccifera",  "Q. ilex")
+
+barplot(ranef$Estimate, names.arg = ranef$quercus.sp,
+        ylab = "ranef estimate", las = 2, cex.names = 0.5,
+        col = brewer.pal(n = 3, name = "Dark2")[c(1,1,1,1,1,2)])
+
+# Geographic distances
+subset(interaction_data, agrilus.sp == "A. hemiphanes" & interaction == 1)[, c(1,2,4,5)]
+
+gdists <- subset(interaction_data, agrilus.sp == "A. hemiphanes" &
+                                       quercus.sp %in% c("Q. coccinea", "Q. coccifera",
+                                                         "Q. ilex"))[,c(1,3,5)]
+
+barplot(gdists$min.dist.mean.norm, names.arg = gdists$quercus.sp,
+        ylab = "min.dist.mean (geo)",
+        las = 2, cex.names = 0.5,
+        col = brewer.pal(n = 3, name = "Dark2")[c(rep(1, 5), 2)])
+
+
+# iii) A. defectus (far in phylo)
+subset(predictions, agrilus.sp == "A. defectus" & host.status == 1)
+
+# Plot phylogeny
+hosts  <- data.frame(matrix(nrow = 238, ncol = 2))
+colnames(hosts) <- c("quercus.sp", "val")
+hosts$quercus.sp <- oak_tree$tip.label
+
+vals <- unique(subset(predictions, agrilus.sp == "A. defectus" & host.status == 1)$quercus.sp)
+hosts$val <- hosts$quercus.sp %in% vals
+
+x <- full_join(as_tibble(oak_tree), hosts, by = c("label" = "quercus.sp"))
+oak_tree2 <- treeio::as.treedata(x)
+rm(x, hosts)
+
+ggtree(oak_tree2, layout = "circular") +
+  geom_tiplab(aes(color = val), offset = 5, size = 1.7, fontface = "italic") +
+  scale_color_manual(values = c("black", "coral"))
+
+# Check phylo distance
+pdists <- subset(interaction_data, agrilus.sp == "A. defectus" &
+                       quercus.sp %in% c("Q. muehlenbergii", "Q. stellata",
+                                         "Q. alba"))[,c(1,3,12)]
+
+barplot(pdists$phylo.dist.min, names.arg = pdists$quercus.sp,
+        ylab = "min phylo mean",
+        las = 2, cex.names = 0.5,
+        col = brewer.pal(n = 3, name = "Dark2")[c(rep(1, 6))])
+
+# Check ranef values (high values make it more likely for sth to be a host)
+ranef <- data.frame(rbind(ranef(oak_mod043)$quercus.sp[,,1]['Q. muehlenbergii',],
+                              ranef(oak_mod043)$quercus.sp[,,1]['Q. stellata',],
+                              ranef(oak_mod043)$quercus.sp[,,1]['Q. alba',]
+                          ))
+ranef$quercus.sp <- c("Q. muehlenbergii", "Q. stellata", "Q. alba")
+
+barplot(ranef$Estimate, names.arg = ranef$quercus.sp,
+        ylab = "ranef estimate", las = 2, cex.names = 0.5,
+        col = brewer.pal(n = 3, name = "Dark2")[c(1,1,1,1,1,2)])
+
+# Geographic distances
+subset(interaction_data, agrilus.sp == "A. defectus" & interaction == 1)[, c(1,2,4,5)]
+
+gdists <- subset(interaction_data, agrilus.sp == "A. defectus" &
+                                       quercus.sp %in% c(c("Q. muehlenbergii", "Q. stellata",
+                                                           "Q. alba")))[,c(1,3,5)]
+
+barplot(gdists$min.dist.mean.norm, names.arg = gdists$quercus.sp,
+        ylab = "min.dist.mean (geo)",
+        las = 2, cex.names = 0.5,
+        col = brewer.pal(n = 3, name = "Dark2")[c(rep(1, 5), 2)])
+
+
+# iv) A. albocomus (far in phylo, somewhat geo)
+subset(predictions, agrilus.sp == "A. albocomus" & host.status == 1)
+
+# Plot phylogeny
+hosts  <- data.frame(matrix(nrow = 238, ncol = 2))
+colnames(hosts) <- c("quercus.sp", "val")
+hosts$quercus.sp <- oak_tree$tip.label
+
+vals <- unique(subset(predictions, agrilus.sp == "A. albocomus" & host.status == 1)$quercus.sp)
+hosts$val <- hosts$quercus.sp %in% vals
+
+x <- full_join(as_tibble(oak_tree), hosts, by = c("label" = "quercus.sp"))
+oak_tree2 <- treeio::as.treedata(x)
+rm(x, hosts)
+
+ggtree(oak_tree2, layout = "circular") +
+  geom_tiplab(aes(color = val), offset = 5, size = 1.7, fontface = "italic") +
+  scale_color_manual(values = c("black", "coral"))
+
+# Check phylo distance
+pdists <- subset(interaction_data, agrilus.sp == "A. albocomus" &
+                       quercus.sp %in% c("Q. emoryi", "Q. grisea"))[,c(1,3,12)]
+
+barplot(pdists$phylo.dist.min, names.arg = pdists$quercus.sp,
+        ylab = "min phylo mean",
+        las = 2, cex.names = 0.5,
+        col = brewer.pal(n = 3, name = "Dark2")[c(rep(1, 6))])
+
+# Check ranef values (high values make it more likely for sth to be a host)
+ranef <- data.frame(rbind(ranef(oak_mod043)$quercus.sp[,,1]['Q. emoryi',],
+                              ranef(oak_mod043)$quercus.sp[,,1]['Q. grisea',]
+                          ))
+ranef$quercus.sp <- c("Q. emoryi", "Q. grisea")
+
+barplot(ranef$Estimate, names.arg = ranef$quercus.sp,
+        ylab = "ranef estimate", las = 2, cex.names = 0.5,
+        col = brewer.pal(n = 3, name = "Dark2")[c(1,1,1,1,1,2)])
+
+# Geographic distances
+subset(interaction_data, agrilus.sp == "A. albocomus" & interaction == 1)[, c(1,2,4,5)]
+
+gdists <- subset(interaction_data, agrilus.sp == "A. albocomus" &
+                                       quercus.sp %in% c("Q. emoryi", "Q. grisea"))[,c(1,3,5)]
+
+barplot(gdists$min.dist.mean.norm, names.arg = gdists$quercus.sp,
+        ylab = "min.dist.mean (geo)",
+        las = 2, cex.names = 0.5,
+        col = brewer.pal(n = 3, name = "Dark2")[c(rep(1, 5), 2)])
 
 
 

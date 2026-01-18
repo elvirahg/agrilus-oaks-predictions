@@ -150,13 +150,13 @@ plot_phylo_hosts(phylo = oak_phylo,
 plant_names <- unique(predictions$quercus_sp)
 
 # Replace names in dataset that need to be looked up as someting else
-lookup <- c("Quercus frainetto" = "Quercus conferta",
-            "Quercus litoralis (Atuna excelsa)" = "Atuna excelsa",
-            "Quercus margarettae" = "Quercus margaretiae",
-            "Quercus ×crenata" = "Quercus × crenata")
+quercus_lookup <- c("Quercus frainetto" = "Quercus conferta",
+                    "Quercus litoralis (Atuna excelsa)" = "Atuna excelsa",
+                    "Quercus margarettae" = "Quercus margaretiae",
+                    "Quercus ×crenata" = "Quercus × crenata")
 
-taxon_queries <- ifelse(plant_names %in% names(lookup),
-                        lookup[plant_names], plant_names)
+taxon_queries <- ifelse(plant_names %in% names(quercus_lookup),
+                        quercus_lookup[plant_names], plant_names)
 
 # Retrieve WCVP distribution information for each oak species in dataset
 oak_distributions_list <- wcvp_distribution_list(
@@ -175,17 +175,84 @@ oak_distributions <- do.call(rbind, oak_distributions_list)
 palette_vals_l3 <- colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(12)
 names(palette_vals_l3) <- paste0(seq(1, 56, 5), "–", seq(5, 60, 5))
 
-palette_vals_country <- c("white",
-                          colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(13))
-names(palette_vals_country) <- c("0",
-                                 paste0(seq(1, 130, 10), "–", seq(10, 130, 10)))
+palette_vals_country <- colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(9)
+names(palette_vals_country) <- paste0(seq(1, 90, 10), "–", seq(10, 90, 10))
+
+# Prepare LEVEL3_COD to COUNTRY lookup table
+world_sf <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+
+country_lookup <- unique(rWCVP::wgsrpd_mapping[, c("LEVEL3_COD", "COUNTRY")])
+country_lookup <- subset(country_lookup,
+                         LEVEL3_COD %in% unique(oak_distributions$LEVEL3_COD))
+
+# Update WCVP regions that do not match world_sf names
+setdiff(country_lookup$COUNTRY, world_sf$subunit)
+
+country_map <- tibble::tribble(
+  ~source_country,               ~target_country,
+  "Bismarck Archipelago",         "Papua New Guinea",
+  "Baltic States",                "Estonia",
+  "Baltic States",                "Latvia",
+  "Baltic States",                "Lithuania",
+  "Borneo",                       "Indonesia",
+  "Borneo",                       "Malaysia",
+  "Borneo",                       "Brunei",
+  "Canary Is.",                   "Spain",
+  "French Offshore Territories",  "France",
+  "Caroline Is.",                 "Micronesia",
+  "Caroline Is.",                 "Palau",
+  "Czechoslovakia",               "Czech Republic",
+  "Czechoslovakia",               "Slovakia",
+  "East Himalaya",                "India",
+  "East Himalaya",                "Bhutan",
+  "East Himalaya",                "China",
+  "East Himalaya",                "Nepal",
+  "East Himalaya",                "Myanmar",
+  "Great Britain",                "United Kingdom",
+  "Jawa",                         "Indonesia",
+  "Korea",                        "North Korea",
+  "Korea",                        "South Korea",
+  "Lebanon-Syria",                "Lebanon",
+  "Lebanon-Syria",                "Syria",
+  "Madeira",                      "Portugal",
+  "Malaya",                       "Malaysia",
+  "Malaya",                       "Singapore",
+  "Maluku",                       "Indonesia",
+  "New Guinea",                   "Papua New Guinea",
+  "New Guinea",                   "Indonesia",
+  "Prince Edward I.",             "Canada",
+  "Leeward Is. AB Ant",           "Antigua and Barbuda",
+  "Santa Cruz Is.",               "Solomon Islands",
+  "Solomon Is.",                  "Solomon Islands",
+  "British Overseas Territories", "United Kingdom",
+  "Sulawesi",                     "Indonesia",
+  "Sumatera",                     "Indonesia",
+  "Transcaucasus",                "Armenia",
+  "Transcaucasus",                "Azerbaijan",
+  "Transcaucasus",                "Georgia",
+  "Wallis-Futuna Is.",            "Wallis and Futuna",
+  "Yugoslavia",                   "Bosnia and Herzegovina",
+  "Yugoslavia",                   "Croatia",
+  "Yugoslavia",                   "Montenegro",
+  "Yugoslavia",                   "North Macedonia",
+  "Yugoslavia",                   "Serbia",
+  "Yugoslavia",                   "Slovenia"
+)
+
+country_lookup <- country_lookup |>
+  left_join(country_map,
+            by = c("COUNTRY" = "source_country"),
+            relationship = "many-to-many") |>
+  mutate(COUNTRY = if_else(is.na(target_country),
+                           COUNTRY, target_country)) |>
+  select(-target_country)
 
 # Plot total oak species (LEVEL3_NAM)
 plot_distribution_region(df = oak_distributions,
                          group_level = "LEVEL3_NAM",
                          counts_type = "species",
-                         breaks = c(-Inf, seq(0, 60, 5)),
-                         labels = c("0", names(palette_vals_l3)),
+                         breaks = c(1, seq(5, 60, 5)),
+                         labels = names(palette_vals_l3),
                          world_sf = NULL,
                          palette_vals = palette_vals_l3,
                          na_col = "gray90")
@@ -193,8 +260,8 @@ plot_distribution_region(df = oak_distributions,
 plot_distribution_region(df = oak_distributions,
                          group_level = "LEVEL3_NAM",
                          counts_type = "species_native",
-                         breaks = c(-Inf, seq(0, 60, 5)),
-                         labels = c("0", names(palette_vals_l3)),
+                         breaks = c(1, seq(5, 60, 5)),
+                         labels = names(palette_vals_l3),
                          world_sf = NULL,
                          palette_vals = palette_vals_l3,
                          na_col = "gray90")
@@ -203,8 +270,8 @@ plot_distribution_region(df = oak_distributions,
 plot_distribution_region(df = oak_distributions,
                          group_level = "LEVEL3_NAM",
                          counts_type = "hosts",
-                         breaks = c(-Inf, seq(0, 60, 5)),
-                         labels = c("0", names(palette_vals_l3)),
+                         breaks = c(1, seq(5, 60, 5)),
+                         labels = names(palette_vals_l3),
                          world_sf = NULL,
                          palette_vals = palette_vals_l3,
                          na_col = "gray90")
@@ -212,8 +279,8 @@ plot_distribution_region(df = oak_distributions,
 plot_distribution_region(oak_distributions,
                          group_level = "LEVEL3_NAM",
                          counts_type = "hosts_native",
-                         breaks = c(-Inf, seq(0, 60, 5)),
-                         labels = c("0", names(palette_vals_l3)),
+                         breaks = c(1, seq(5, 60, 5)),
+                         labels = names(palette_vals_l3),
                          world_sf = NULL,
                          palette_vals = palette_vals_l3,
                          na_col = "gray90")
@@ -222,8 +289,8 @@ plot_distribution_region(oak_distributions,
 plot_distribution_region(df = oak_distributions,
                          group_level = "LEVEL3_NAM",
                          counts_type = "pred_hosts",
-                         breaks = c(-Inf, seq(0, 60, 5)),
-                         labels = c("0", names(palette_vals_l3)),
+                         breaks = c(1, seq(5, 60, 5)),
+                         labels = names(palette_vals_l3),
                          world_sf = NULL,
                          palette_vals = palette_vals_l3,
                          na_col = "gray90")
@@ -231,8 +298,8 @@ plot_distribution_region(df = oak_distributions,
 plot_distribution_region(df = oak_distributions,
                          group_level = "LEVEL3_NAM",
                          counts_type = "pred_hosts_native",
-                         breaks = c(-Inf, seq(0, 60, 5)),
-                         labels = c("0", names(palette_vals_l3)),
+                         breaks = c(1, seq(5, 60, 5)),
+                         labels = names(palette_vals_l3),
                          world_sf = NULL,
                          palette_vals = palette_vals_l3,
                          na_col = "gray90")
@@ -240,13 +307,16 @@ plot_distribution_region(df = oak_distributions,
 # Plot total oak species (country)
 plot_distribution_country(df = oak_distributions,
                           counts_type = "species",
-                          breaks = c(0, 1, seq(10, 130, 10)),
+                          country_lookup = country_lookup,
+                          breaks = c(1, seq(10, 90, 10)),
                           labels = names(palette_vals_country),
                           palette_vals = palette_vals_country,
                           na_col = "gray90")
+
 plot_distribution_country(df = oak_distributions,
                           counts_type = "species_native",
-                          breaks = c(0, 1, seq(10, 130, 10)),
+                          country_lookup = country_lookup,
+                          breaks = c(1, seq(10, 90, 10)),
                           labels = names(palette_vals_country),
                           palette_vals = palette_vals_country,
                           na_col = "gray90")
@@ -254,13 +324,16 @@ plot_distribution_country(df = oak_distributions,
 # Plot known hosts (country)
 plot_distribution_country(df = oak_distributions,
                           counts_type = "hosts",
-                          breaks = c(0, 1, seq(10, 130, 10)),
+                          country_lookup = country_lookup,
+                          breaks = c(1, seq(10, 90, 10)),
                           labels = names(palette_vals_country),
                           palette_vals = palette_vals_country,
                           na_col = "gray90")
+
 plot_distribution_country(df = oak_distributions,
                           counts_type = "hosts_native",
-                          breaks = c(0, 1, seq(10, 130, 10)),
+                          country_lookup = country_lookup,
+                          breaks = c(1, seq(10, 90, 10)),
                           labels = names(palette_vals_country),
                           palette_vals = palette_vals_country,
                           na_col = "gray90")
@@ -268,13 +341,16 @@ plot_distribution_country(df = oak_distributions,
 # Plot predicted hosts (country)
 plot_distribution_country(df = oak_distributions,
                           counts_type = "pred_hosts",
-                          breaks = c(0, 1, seq(10, 130, 10)),
+                          country_lookup = country_lookup,
+                          breaks = c(1, seq(10, 90, 10)),
                           labels = names(palette_vals_country),
                           palette_vals = palette_vals_country,
                           na_col = "gray90")
+
 plot_distribution_country(df = oak_distributions,
                           counts_type = "pred_hosts_native",
-                          breaks = c(0, 1, seq(10, 130, 10)),
+                          country_lookup = country_lookup,
+                          breaks = c(1, seq(10, 90, 10)),
                           labels = names(palette_vals_country),
                           palette_vals = palette_vals_country,
                           na_col = "gray90")

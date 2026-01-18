@@ -1158,7 +1158,8 @@ plot_distribution_country <- function(df,
 #' @param world_sf Optional `sf` object with world country polygons. If `NULL`,
 #' the world map is obtained from `rnaturalearth::ne_countries()`.
 #' @param country_lookup Optional data frame used to map distribution regions
-#' to country names. Must contain columns `LEVEL3_COD` and `COUNTRY`.
+#' to country names. Must contain columns `LEVEL3_COD` and `COUNTRY`. No default,
+#' but rWCVP::wgsrpd_mapping can be used to generate lookup data frame.
 #' @param world_col_map Character string giving the column name in `world_sf`
 #' used for joining country names (e.g. `"subunit"`). Defaults to `"subunit"`.
 #' @param breaks Numeric vector of break points for binning counts. Defaults to
@@ -1215,11 +1216,6 @@ prepare_counts_country <- function(df,
   if (is.null(world_sf)) {
     world_sf <- rnaturalearth::ne_countries(scale = "medium",
                                             returnclass = "sf")
-  }
-
-  # Prepare lookup table if not provided
-  if (is.null(country_lookup)) {
-    rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
   }
 
   # Add country info to df

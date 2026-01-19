@@ -8,14 +8,16 @@ prepare_counts_country(
   df,
   counts_type = "species",
   world_sf = NULL,
-  breaks = c(0, 1, seq(10, 130, 10)),
-  labels = c("0", paste0(seq(1, 130, 10), "–", seq(10, 130, 10)))
+  country_lookup = NULL,
+  world_col_map = "subunit",
+  breaks = c(1, seq(10, 90, 10)),
+  labels = c(paste0(seq(1, 90, 10), "–", seq(10, 90, 10)))
 )
 }
 \arguments{
 \item{df}{A data frame (or sf object) containing plant distribution
 data. Must include the columns `plant_sp`, `occurrence_type`,
-`known_host` (for host couts), `pred_host` (for predicte host counts).}
+`known_host` (for host counts), `pred_host` (for predicted host counts).}
 
 \item{counts_type}{Character string specifying what to count. Options are:
 `"species"`, `"species_native"`, `"hosts"`, `"hosts_native"`,
@@ -24,12 +26,19 @@ data. Must include the columns `plant_sp`, `occurrence_type`,
 \item{world_sf}{Optional `sf` object with world country polygons. If `NULL`,
 the world map is obtained from `rnaturalearth::ne_countries()`.}
 
+\item{country_lookup}{Optional data frame used to map distribution regions
+to country names. Must contain columns `LEVEL3_COD` and `COUNTRY`. No default,
+but rWCVP::wgsrpd_mapping can be used to generate lookup data frame.}
+
+\item{world_col_map}{Character string giving the column name in `world_sf`
+used for joining country names (e.g. `"subunit"`). Defaults to `"subunit"`.}
+
 \item{breaks}{Numeric vector of break points for binning counts. Defaults to
-`c(0, 1, seq(10, 130, 10))`.}
+`c(0, 1, seq(10, 90, 10))`.}
 
 \item{labels}{Character vector of labels for the bins; must have length one
 less than `breaks`. Defaults to
-`c("0", paste0(seq(1, 130, 10), "–", seq(10, 130, 10)))`.}
+`c(paste0(seq(1, 90, 10), "–", seq(10, 90, 10)))`.}
 }
 \value{
 An sf object of countries with two additional columns:
@@ -39,7 +48,6 @@ An sf object of countries with two additional columns:
 \description{
 This is an internal helper function that computes the number of plant
 species, native species, known hosts, or predicted hosts per country
-based on spatial intersections with country polygons, and assigns each
-country to a discrete bin for plotting.
+and assigns each country to a discrete bin for plotting.
 }
 \keyword{internal}

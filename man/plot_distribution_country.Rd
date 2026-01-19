@@ -8,16 +8,17 @@ plot_distribution_country(
   df,
   counts_type = "species",
   world_sf = NULL,
-  breaks = c(0, 1, seq(10, 130, 10)),
-  labels = c("0", paste0(seq(1, 130, 10), "–", seq(10, 130, 10))),
-  palette_vals = c("gray90", colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(13)),
+  country_lookup = NULL,
+  breaks = c(1, seq(10, 90, 10)),
+  labels = c(paste0(seq(1, 90, 10), "–", seq(10, 90, 10))),
+  palette_vals = colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(9),
   na_col = "gray70"
 )
 }
 \arguments{
 \item{df}{An sf object or data frame containing plant distribution data.
 Must include the columns `plant_sp`, `occurrence_type`, `known_host` (for
-host couts), `pred_host` (for predicte host counts).}
+host counts), `pred_host` (for predicted host counts).}
 
 \item{counts_type}{Character string specifying which counts to plot.
 Options are `"species"`, `"species_native"`, `"hosts"`, `"hosts_native"`,
@@ -26,17 +27,20 @@ Options are `"species"`, `"species_native"`, `"hosts"`, `"hosts_native"`,
 \item{world_sf}{Optional `sf` object with world country polygons. If `NULL`
 (default), the world map is obtained from `rnaturalearth::ne_countries()`.}
 
+\item{country_lookup}{Optional data frame used to map distribution regions
+to country names. Must contain columns `LEVEL3_COD` and `COUNTRY`.}
+
 \item{breaks}{Numeric vector specifying breakpoints for binning counts.
-`c(0, 1, seq(10, 130, 10))`.}
+Defaults to `c(1, seq(10, 90, 10))`.}
 
 \item{labels}{Character vector of labels for the bins. Defaults to
-`c("0", paste0(seq(1, 130, 10), "–", seq(10, 130, 10)))`.}
+`c(paste0(seq(1, 90, 10), "–", seq(10, 90, 10)))`.}
 
 \item{palette_vals}{Colour palette values for `scale_fill_manual`; must be
 a character vector. Defaults to
-`c("gray90", colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(13)))`.}
+`colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(9)`.}
 
-\item{na_col}{Colour for NA values. Defaults to `"grey70"`.}
+\item{na_col}{Colour for NA values. Defaults to `"gray70"`.}
 }
 \value{
 A ggplot object showing a world map coloured by the selected counts.
@@ -46,7 +50,7 @@ This function computes counts of plant species per country and plots
 them on a world map with discrete colour bins.
 }
 \examples{
-plot_distribution_country(oak_distributions, counts_type = "native_sp")
+plot_distribution_country(oak_distributions, counts_type = "species_native")
 
 }
 \seealso{

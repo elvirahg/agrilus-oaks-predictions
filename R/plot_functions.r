@@ -1079,40 +1079,41 @@ prepare_counts_region <- function(df,
 #'
 #' @param df An sf object or data frame containing plant distribution data.
 #' Must include the columns `plant_sp`, `occurrence_type`, `known_host` (for
-#' host couts), `pred_host` (for predicte host counts).
+#' host counts), `pred_host` (for predicted host counts).
 #' @param counts_type Character string specifying which counts to plot.
 #' Options are `"species"`, `"species_native"`, `"hosts"`, `"hosts_native"`,
 #' `"pred_hosts"`, `"pred_hosts_native"`. Defaults to `"species"`.
 #' @param world_sf Optional `sf` object with world country polygons. If `NULL`
 #' (default), the world map is obtained from `rnaturalearth::ne_countries()`.
+#' @param country_lookup Optional data frame used to map distribution regions
+#' to country names. Must contain columns `LEVEL3_COD` and `COUNTRY`.
 #' @param breaks Numeric vector specifying breakpoints for binning counts.
-#' `c(0, 1, seq(10, 130, 10))`.
+#' Defaults to `c(1, seq(10, 90, 10))`.
 #' @param labels Character vector of labels for the bins. Defaults to
-#' `c("0", paste0(seq(1, 130, 10), "–", seq(10, 130, 10)))`.
+#' `c(paste0(seq(1, 90, 10), "–", seq(10, 90, 10)))`.
 #' @param palette_vals Colour palette values for `scale_fill_manual`; must be
 #' a character vector. Defaults to
-#' `c("gray90", colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(13)))`.
-#' @param na_col Colour for NA values. Defaults to `"grey70"`.
+#' `colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(9)`.
+#' @param na_col Colour for NA values. Defaults to `"gray70"`.
 #'
 #' @return A ggplot object showing a world map coloured by the selected counts.
 #'
 #' @seealso \code{\link{prepare_counts_country}}
 #'
 #' @examples
-#' plot_distribution_country(oak_distributions, counts_type = "native_sp")
+#' plot_distribution_country(oak_distributions, counts_type = "species_native")
 #'
 #' @import ggplot2 RColorBrewer
 #' @export
 plot_distribution_country <- function(df,
                                       counts_type = "species",
                                       world_sf = NULL,
-                                      breaks = c(0, 1, seq(10, 130, 10)),
-                                      labels = c("0",
-                                                 paste0(seq(1, 130, 10),
+                                      country_lookup = NULL,
+                                      breaks = c(1, seq(10, 90, 10)),
+                                      labels = c(paste0(seq(1, 90, 10),
                                                         "–",
-                                                        seq(10, 130, 10))),
-                                      palette_vals = c("gray90",
-                                                       colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(13)),
+                                                        seq(10, 90, 10))),
+                                      palette_vals = colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(9),
                                       na_col = "gray70") {
   # Checks
   if (!is.data.frame(df)) {
@@ -1126,6 +1127,7 @@ plot_distribution_country <- function(df,
   world_counts <- prepare_counts_country(df = df,
                                          counts_type = counts_type,
                                          world_sf = world_sf,
+                                         country_lookup = country_lookup,
                                          breaks = breaks,
                                          labels = labels)
 
@@ -1145,22 +1147,26 @@ plot_distribution_country <- function(df,
 #'
 #' This is an internal helper function that computes the number of plant
 #' species, native species, known hosts, or predicted hosts per country
-#' based on spatial intersections with country polygons, and assigns each
-#' country to a discrete bin for plotting.
+#' and assigns each country to a discrete bin for plotting.
 #'
 #' @param df A data frame (or sf object) containing plant distribution
 #' data. Must include the columns `plant_sp`, `occurrence_type`,
-#' `known_host` (for host couts), `pred_host` (for predicte host counts).
+#' `known_host` (for host counts), `pred_host` (for predicted host counts).
 #' @param counts_type Character string specifying what to count. Options are:
 #' `"species"`, `"species_native"`, `"hosts"`, `"hosts_native"`,
 #' `"pred_hosts"`, `"pred_hosts_native"`. Defaults to `"species"`.
 #' @param world_sf Optional `sf` object with world country polygons. If `NULL`,
 #' the world map is obtained from `rnaturalearth::ne_countries()`.
+#' @param country_lookup Optional data frame used to map distribution regions
+#' to country names. Must contain columns `LEVEL3_COD` and `COUNTRY`. No default,
+#' but rWCVP::wgsrpd_mapping can be used to generate lookup data frame.
+#' @param world_col_map Character string giving the column name in `world_sf`
+#' used for joining country names (e.g. `"subunit"`). Defaults to `"subunit"`.
 #' @param breaks Numeric vector of break points for binning counts. Defaults to
-#' `c(0, 1, seq(10, 130, 10))`.
+#' `c(0, 1, seq(10, 90, 10))`.
 #' @param labels Character vector of labels for the bins; must have length one
 #' less than `breaks`. Defaults to
-#' `c("0", paste0(seq(1, 130, 10), "–", seq(10, 130, 10)))`.
+#' `c(paste0(seq(1, 90, 10), "–", seq(10, 90, 10)))`.
 #'
 #' @return An sf object of countries with two additional columns:
 #'   - `species_count`: raw count for the selected `counts_type`
@@ -1171,11 +1177,12 @@ plot_distribution_country <- function(df,
 prepare_counts_country <- function(df,
                                    counts_type = "species",
                                    world_sf = NULL,
-                                   breaks = c(0, 1, seq(10, 130, 10)),
-                                   labels = c("0",
-                                              paste0(seq(1, 130, 10),
+                                   country_lookup = NULL,
+                                   world_col_map = "subunit",
+                                   breaks = c(1, seq(10, 90, 10)),
+                                   labels = c(paste0(seq(1, 90, 10),
                                                      "–",
-                                                     seq(10, 130, 10)))) {
+                                                     seq(10, 90, 10)))) {
   # Checks
   if (!is.data.frame(df)) {
     stop("'df' must be a data frame")
@@ -1192,6 +1199,12 @@ prepare_counts_country <- function(df,
   if (!is.null(world_sf) && !inherits(world_sf, "sf")) {
     stop("'world_sf' must be a world sf object")
   }
+  if (!is.null(country_lookup) && !inherits(country_lookup, "data.frame")) {
+    stop("'country_lookup' must be a data frame")
+  }
+  if (!(any(c("LEVEL3_COD", "COUNTRY") %in% colnames(country_lookup)))) {
+    stop("'country_lookup' must contain columns 'LEVEL3_COD' and 'COUNTRY'")
+  }
   if (!is.numeric(breaks)) {
     stop("'breaks' must be a numeric vector")
   }
@@ -1205,50 +1218,54 @@ prepare_counts_country <- function(df,
                                             returnclass = "sf")
   }
 
-  # Transform df geometry to match world CRS
-  df <- sf::st_transform(df, sf::st_crs(world_sf))
-
-  # Logical matrix of intersections: rows = countries, cols = df entries
-  joined <- sf::st_intersects(world_sf, df, sparse = FALSE)
+  # Add country info to df
+  df_country <- df |>
+    dplyr::left_join(country_lookup,
+                     by = "LEVEL3_COD",
+                     relationship = "many-to-many")
 
   # Compute counts according to type
-  cols_per_country <- apply(joined, 1, which)
-  species_count <- vapply(cols_per_country, function(cols) {
+  country_counts <- df_country |>
+    dplyr::filter(!is.na(COUNTRY)) |>
+    dplyr::group_by(COUNTRY) |>
+    dplyr::summarise(
+      species_count = dplyr::case_when(
+        counts_type == "species" ~
+          dplyr::n_distinct(plant_sp),
 
-    if (length(cols) == 0) 0
+        counts_type == "species_native" ~
+          dplyr::n_distinct(plant_sp[occurrence_type == "native"]),
 
-    country_subset <- df[cols, ]
+        counts_type == "hosts" ~
+          dplyr::n_distinct(plant_sp[known_host]),
 
-    dplyr::case_when(
-      counts_type == "species" ~
-        length(unique(country_subset$plant_sp)),
-      counts_type == "species_native" ~
-        length(unique(country_subset$plant_sp[country_subset$occurrence_type == "native"])),
-      counts_type == "hosts" ~
-        length(unique(country_subset$plant_sp[country_subset$known_host])),
-      counts_type == "hosts_native" ~
-        length(unique(country_subset$plant_sp[country_subset$known_host
-                                              & country_subset$occurrence_type == "native"])),
-      counts_type == "pred_hosts" ~
-        length(unique(country_subset$plant_sp[country_subset$pred_host])),
-      counts_type == "pred_hosts_native" ~
-        length(unique(country_subset$plant_sp[country_subset$pred_host
-                                              & country_subset$occurrence_type == "native"]))
+        counts_type == "hosts_native" ~
+          dplyr::n_distinct(plant_sp[known_host & occurrence_type == "native"]),
+
+        counts_type == "pred_hosts" ~
+          dplyr::n_distinct(plant_sp[pred_host]),
+
+        counts_type == "pred_hosts_native" ~
+          dplyr::n_distinct(
+            plant_sp[pred_host & occurrence_type == "native"]
+          )
+      ),
+      .groups = "drop"
     )
-  }, numeric(1))
 
-  world_sf$species_count <- species_count
+  # Add country counts to world map
+  world_sf <- world_sf |>
+    dplyr::left_join(sf::st_drop_geometry(country_counts),
+                     by = stats::setNames("COUNTRY", world_col_map))
 
-  # Value bands
-  world_sf$value_band <- cut(
-    world_sf$species_count,
-    breaks = breaks,
-    labels = labels,
-    right = FALSE,
-  )
+  # Add value bands to world map
+  world_sf$value_band <- cut(world_sf$species_count,
+                             breaks = breaks,
+                             labels = labels,
+                             right = FALSE)
 
   cat("Counts value summary:\n")
-  summary_result <- summary(world_sf$species_count)
+  summary_result <- summary(world_sf$species_count[!is.na(world_sf$species_count)])
   cat(paste(names(summary_result), summary_result, sep = ": "), sep = "\n")
 
   world_sf

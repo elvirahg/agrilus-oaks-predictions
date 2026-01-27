@@ -9,7 +9,7 @@ library(dplyr)
 library(ggplot2)
 
 # Seed (not needed for actual analyses, only if exact reproducibility of
-# results is desired)s
+# results is desired)
 set.seed(24601)
 
 

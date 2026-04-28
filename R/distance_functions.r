@@ -340,8 +340,15 @@ generate_geo_metrics_df <- function(expanded_interaction_df,
         # No hosts other than the current taxon, so set distance to max
         if (verbose) message(taxon, ": no other hosts of ", hosted_sp,
                              "; setting distance to ", max_dist_km)
-        if ("mean" %in% metric_type) results$geo_min_dist_mean[i] <- max_dist_km
-        if ("median" %in% metric_type) results$geo_min_dist_median[i] <- max_dist_km
+
+        if ("mean" %in% metric_type) {
+          results$geo_min_dist_mean[i] <- max_dist_km
+        }
+
+        if ("median" %in% metric_type) {
+          results$geo_min_dist_median[i] <- max_dist_km
+        }
+
       } else {
         # Extract all minimum distances for given taxon
         taxon_dists <- dist_lookup[[taxon]]
@@ -371,15 +378,21 @@ generate_geo_metrics_df <- function(expanded_interaction_df,
         if ("mean" %in% metric_type) {
           results$geo_min_dist_mean[i] <- round(mean(min_dists, na.rm = TRUE),
                                                 round_val)
-          if (is.nan(results$geo_min_dist_mean[i])) results$geo_min_dist_mean[i] <- NA
+
+          if (is.nan(results$geo_min_dist_mean[i])) {
+            results$geo_min_dist_mean[i] <- NA
+          }
         }
+
         if ("median" %in% metric_type) {
-          results$geo_min_dist_median[i] <- round(median(min_dists, na.rm = TRUE),
+          results$geo_min_dist_median[i] <- round(median(min_dists,
+                                                         na.rm = TRUE),
                                                   round_val)
         }
       }
     }
   }
+
   # Transform distances (norm, log)
   results <- transform_distances(dist_df = results,
                                  metric_type = metric_type,
@@ -645,7 +658,7 @@ transform_distances <- function(dist_df,
 #' \dontrun{
 #' # Example data
 #' phy <- ape::rtree(5, tip.label = c("A", "B", "C", "D", "E"))
-#' 
+#'
 #' known_df <- data.frame(
 #'   host = c("A", "B", "C"),
 #'   hosted = c("X", "X", "Y")

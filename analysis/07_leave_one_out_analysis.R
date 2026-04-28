@@ -225,6 +225,113 @@ round(conf_matrix[2]/(conf_matrix[1] + conf_matrix[2])*100, 2)
 
 rm(conf_matrix, i)
 
+
+
+# C) KFOLD ANALYSIS
+# i) Compute kfold predictions
+# Run 5-fold cross-validation, storing the fitted models (save_fits = TRUE) to
+# be able to generate predictions
+kfold <- brms::kfold(oak_mod043, K = 5, save_fits = TRUE)
+
+# For each observation, use the model where that observation was held out, and
+# return posterior draws of predictions (yrep)
+kfold_preds <- brms::kfold_predict(kfold, method = "posterior_epred")
+
+# colMean gives one predicted probability per observation (yrep = matrix of
+# posterior predictions; rows = draws, columns = observations)
+kfold_prob <- colMeans(kfold_preds$yrep)
+
+# Transform to log-odds
+kfold_lodds <- qlogis(kfold_prob)
+
+
+# ii) Compare kfold vs loo (second-method) results (log-odds)
+loo_lodds <- predictions_loo$prediction.logodds.loo
+
+# Compare kfold vs loo results (log-odds)
+length(loo_lodds) == length(kfold_lodds)
+
+# Check correlation
+cor(loo_lodds, kfold_lodds)
+cor(loo_lodds[idx_rep_pos], kfold_lodds[idx_rep_pos])
+
+# Accuracy (% 'True Positives' detected)
+length(which(predictions$host.status == 1))
+
+round(nrow(predictions[predictions$host.status == 1
+                       & predictions$prediction.logodds > cutoff[2], ]) /
+        nrow(predictions[predictions$host.status == 1, ]) * 100, 2)
+round(nrow(predictions[predictions$host.status == 1
+                       & loo_lodds > cutoff[2], ]) /
+        nrow(predictions[predictions$host.status == 1, ]) * 100, 2)
+round(nrow(predictions[predictions$host.status == 1
+                       & kfold_lodds > cutoff[2], ]) /
+        nrow(predictions[predictions$host.status == 1, ]) * 100, 2)
+
+# % points over threshold
+length(which(predictions$prediction.logodds > cutoff[2]))
+round(length(which(predictions$prediction.logodds > cutoff[2])) /
+        nrow(predictions) * 100, 2)
+
+length(which(loo_lodds > cutoff[2]))
+round(length(which(loo_lodds > cutoff[2])) / nrow(predictions) * 100, 2)
+
+length(which(kfold_lodds > cutoff[2]))
+round(length(which(kfold_lodds > cutoff[2])) / nrow(predictions) * 100, 2)
+
+# No. predictions missing
+nrow(predictions[predictions$prediction.logodds > cutoff[2]
+                 & loo_lodds < cutoff[2], ])
+nrow(predictions[predictions$prediction.logodds > cutoff[2]
+                 & kfold_lodds < cutoff[2], ])
+
+
+# iii) Plot comparison
+# Index reported interactions
+idx_rep_pos <- which(predictions$host.status == 1)
+idx_rep_neg <- which(predictions$host.status != 1)
+
+# Index predicted positive interactions
+idx_pred_pos <- which(predictions$prediction.logodds > cutoff[2])
+
+# Index intersections
+idx_pos_all <- intersect(idx_rep_pos, idx_pred_pos)
+idx_rep_pos_pred_neg <- setdiff(idx_rep_pos, idx_pred_pos)
+
+idx_rep_neg_pred_pos <- intersect(idx_rep_neg, idx_pred_pos)
+idx_neg_all <- setdiff(idx_rep_neg, idx_pred_pos)
+
+# Plot negative interactions
+plot(loo_lodds[idx_neg_all], kfold_lodds[idx_neg_all],
+     xlim = c(min(loo_lodds), max(loo_lodds)),
+     ylim = c(min(kfold_lodds), max(kfold_lodds)),
+     col = rgb(0, 0, 0, 0.02),
+     pch = 16,
+     xlab = "LOO CV predicted log-odds",
+     ylab = "5-fold CV predicted log-odds")
+
+# Add negative interactions predicted as positive (triangle)
+points(loo_lodds[idx_rep_neg_pred_pos], kfold_lodds[idx_rep_neg_pred_pos],
+       col = rgb(0, 0, 0, 0.1),
+       pch = 17)
+
+# Add reported positive interactions (blue) but not predicted as such
+points(loo_lodds[idx_rep_pos_pred_neg], kfold_lodds[idx_rep_pos_pred_neg],
+       bg = rgb(70, 130, 180, 255, maxColorValue = 255),
+       col = rgb(0, 0, 0, 0.5),
+       pch = 21)
+
+# Add reported positive interactions (blue) predicted as such (triangle)
+points(loo_lodds[idx_pos_all], kfold_lodds[idx_pos_all],
+       bg = rgb(70, 130, 180, 255, maxColorValue = 255),
+       col = rgb(0, 0, 0, 0.5),
+       pch = 24)
+
+# Add 1:1 line, and thresholds
+abline(0, 1, lty = 3)
+abline(cutoff[2], 0, lty = 3)
+abline(v = cutoff[2], lty = 3)
+
 # save.image("analysis/results/oak_models.RData")
 
 

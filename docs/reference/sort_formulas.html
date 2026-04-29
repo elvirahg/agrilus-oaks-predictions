@@ -102,7 +102,8 @@ using this prefix and a zero-padded index (e.g. <code>"mod_001"</code>,
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">formulas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="va">formulas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="st">"resp ~ b"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="st">"resp ~ a + (1 | e)"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="st">"resp ~ a"</span><span class="op">)</span>,</span></span>
@@ -112,30 +113,7 @@ using this prefix and a zero-padded index (e.g. <code>"mod_001"</code>,
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">sort_formulas</span><span class="op">(</span><span class="va">formulas</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $mod_001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> resp ~ 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x7f8aecce9350&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $mod_002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> resp ~ a</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x7f8aecce9350&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $mod_003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> resp ~ b</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x7f8aecce9350&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $mod_004</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> resp ~ b + a</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x7f8aecce9350&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $mod_005</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> resp ~ a + (1 | e)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x7f8aecce9350&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $mod_006</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> resp ~ b + a + (d | e)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x7f8aecce9350&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -32,6 +32,8 @@ calculates the true positive rate as:
 The function assumes that both input vectors contain only binary values.
 }
 \examples{
+\dontrun{
 tpr(c(1, 0, 1, 1), c(1, 1, 1, 0))
+}
 
 }

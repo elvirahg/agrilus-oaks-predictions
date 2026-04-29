@@ -1,5 +1,5 @@
 data/data*/
-data/tmp/
+data/*/tmp/
 renv/
 notes.r
 *.RData

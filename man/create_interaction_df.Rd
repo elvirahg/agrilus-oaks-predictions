@@ -37,7 +37,7 @@ Defaults to `TRUE`.}
 }
 \value{
 A data frame with columns:
-\describe{
+\itemize{
   \item{host}{Host taxon name}
   \item{hosted}{Hosted taxon name}
   \item{interaction}{Integer (0/1) indicating whether the pair occurs in

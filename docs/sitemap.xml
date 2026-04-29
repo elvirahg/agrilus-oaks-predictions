@@ -9,8 +9,10 @@
 <url><loc>/reference/barplot_ranef.html</loc></url>
 <url><loc>/reference/clean_taxon_name.html</loc></url>
 <url><loc>/reference/compute_intercept.html</loc></url>
+<url><loc>/reference/compute_summary_metrics.html</loc></url>
 <url><loc>/reference/compute_threshold_metrics.html</loc></url>
 <url><loc>/reference/create_interaction_df.html</loc></url>
+<url><loc>/reference/cv_summary_table.html</loc></url>
 <url><loc>/reference/filter_gbif_data.html</loc></url>
 <url><loc>/reference/generate_formulas.html</loc></url>
 <url><loc>/reference/generate_geo_metrics_df.html</loc></url>
@@ -20,8 +22,10 @@
 <url><loc>/reference/get_host_spp.html</loc></url>
 <url><loc>/reference/get_wcvp_distribution.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/kfold_predict_observations.html</loc></url>
 <url><loc>/reference/loo_compare_parallel_groups.html</loc></url>
 <url><loc>/reference/make_dist_plot.html</loc></url>
+<url><loc>/reference/plot_cv_comparison.html</loc></url>
 <url><loc>/reference/plot_distribution_country.html</loc></url>
 <url><loc>/reference/plot_distribution_region.html</loc></url>
 <url><loc>/reference/plot_fourfold.html</loc></url>

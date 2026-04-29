@@ -29,11 +29,11 @@
 #' Defaults to `TRUE`.
 #'
 #' @return A data frame with columns:
-#' \describe{
-#'   \item{host}{Host taxon name}
-#'   \item{hosted}{Hosted taxon name}
+#' \itemize{
+#'   \item{host}{Host taxon name.}
+#'   \item{hosted}{Hosted taxon name.}
 #'   \item{interaction}{Integer (0/1) indicating whether the pair occurs in
-#'   `known_interactions`}
+#'   `known_interactions`.}
 #' }
 #'
 #' @examples
@@ -192,6 +192,7 @@ create_interaction_df <- function(known_interactions,
 #'   other hosts.
 #'
 #' @examples
+#' \dontrun{
 #' # Generate example dataset
 #' host_spp <- paste0("Quercus_", LETTERS[1:5])
 #' hosted_spp <- paste0("Agrilus_", LETTERS[1:3])
@@ -221,6 +222,7 @@ create_interaction_df <- function(known_interactions,
 #'                                     host_taxon_col = "plant_sp",
 #'                                     hosted_taxon_col = "agrilus_sp")
 #' head(results)
+#' }
 #'
 #' @import dplyr
 #' @export
@@ -340,8 +342,15 @@ generate_geo_metrics_df <- function(expanded_interaction_df,
         # No hosts other than the current taxon, so set distance to max
         if (verbose) message(taxon, ": no other hosts of ", hosted_sp,
                              "; setting distance to ", max_dist_km)
-        if ("mean" %in% metric_type) results$geo_min_dist_mean[i] <- max_dist_km
-        if ("median" %in% metric_type) results$geo_min_dist_median[i] <- max_dist_km
+
+        if ("mean" %in% metric_type) {
+          results$geo_min_dist_mean[i] <- max_dist_km
+        }
+
+        if ("median" %in% metric_type) {
+          results$geo_min_dist_median[i] <- max_dist_km
+        }
+
       } else {
         # Extract all minimum distances for given taxon
         taxon_dists <- dist_lookup[[taxon]]
@@ -371,15 +380,21 @@ generate_geo_metrics_df <- function(expanded_interaction_df,
         if ("mean" %in% metric_type) {
           results$geo_min_dist_mean[i] <- round(mean(min_dists, na.rm = TRUE),
                                                 round_val)
-          if (is.nan(results$geo_min_dist_mean[i])) results$geo_min_dist_mean[i] <- NA
+
+          if (is.nan(results$geo_min_dist_mean[i])) {
+            results$geo_min_dist_mean[i] <- NA
+          }
         }
+
         if ("median" %in% metric_type) {
-          results$geo_min_dist_median[i] <- round(median(min_dists, na.rm = TRUE),
+          results$geo_min_dist_median[i] <- round(median(min_dists,
+                                                         na.rm = TRUE),
                                                   round_val)
         }
       }
     }
   }
+
   # Transform distances (norm, log)
   results <- transform_distances(dist_df = results,
                                  metric_type = metric_type,
@@ -436,7 +451,7 @@ precompute_geo_distances <- function(taxa,
     stop("'coords_df' must be a data frame")
   }
   if (!is.character(taxa) || !is.character(hosts)) {
-    stop("'taxa' and 'hosts' must be a character object")
+    stop("'taxa' and 'hosts' must be character objects")
   }
   if (!(host_taxon_col %in% colnames(coords_df))) {
     stop("'host_taxon_col' must indicate host taxon column name in 'coords_df'")
@@ -645,7 +660,7 @@ transform_distances <- function(dist_df,
 #' \dontrun{
 #' # Example data
 #' phy <- ape::rtree(5, tip.label = c("A", "B", "C", "D", "E"))
-#' 
+#'
 #' known_df <- data.frame(
 #'   host = c("A", "B", "C"),
 #'   hosted = c("X", "X", "Y")

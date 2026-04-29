@@ -26,6 +26,7 @@ model. The resulting list of formula objects can be used directly in
 modelling functions.
 }
 \examples{
+\dontrun{
 vars <- c("geo.dist",
           "phylo.dist",
           "(1 | gr(plant_sp, cov = phylo_cov))")
@@ -35,5 +36,6 @@ models <- generate_formulas(
   response = "interaction",
   include_null = TRUE
 )
+}
 
 }

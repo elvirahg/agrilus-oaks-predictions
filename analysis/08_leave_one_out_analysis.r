@@ -74,7 +74,9 @@ tpr(predictions = one_as_zero_pred_hosts)
 #### LEAVE-ONE-OUT CHECKS: LEAVE ONE INTERACTION OUT AT A TIME ####
 # Compute predictions: loo_predict() is the equivalent to predict(),
 # and loo_linpred() to fitted(method = "linear")
-preds_loo <- loo_linpred(oak_models$mod046, type = "mean")[, 1]
+preds_loo <- brms::loo_linpred(oak_models$mod046,
+                               type = "mean",
+                               moment_match = TRUE)[, 1]
 preds_loo_pos <- preds_loo[which(predictions$host_status == 1)]
 
 # Compare against the previous method
@@ -112,3 +114,36 @@ plot_prediction_change(pred_original = preds_original_pos,
 loo_pred_hosts <- ifelse(preds_loo > thr_intercepts["threshold"], 1, 0)
 tpr(predictions = loo_pred_hosts,
     observations = predictions$host_status)
+
+
+#### KFOLD CHECK: COMPARE AGAINST 'LEAVE ONE INTERACTION OUT AT A TIME' ####
+# options(future.globals.maxSize = 891289600)     # 850 MB limit (850*1024^2)
+
+# Obtain 5-fold predictions for each observation
+kfold_lodds <- kfold_predict_observations(model = oak_models$mod046,
+                                          k = 5,
+                                          type = "lodds")
+# Produce summary stats
+cv_summary_table(cv_method_1 = loo_lodds,
+                 cv_method_2 = kfold_lodds,
+                 reported_status = predictions$host_status,
+                 model = predictions$prediction_lodds,
+                 threshold = thr_intercepts["threshold"],
+                 names = c(cv_method_1 = "loo",
+                           cv_method_2 = "kfold",
+                           model = "model"))
+
+# Compute number of predictions missing
+nrow(predictions[predictions$prediction_lodds > thr_intercepts["threshold"]
+                 & loo_lodds < thr_intercepts["threshold"], ])
+nrow(predictions[predictions$prediction_lodds > thr_intercepts["threshold"]
+                 & kfold_lodds < thr_intercepts["threshold"], ])
+
+# Plot results
+plot_cv_comparison(cv_method_1 = loo_lodds,
+                   cv_method_2 = kfold_lodds,
+                   reported_status = predictions$host_status,
+                   model_predictions = predictions$prediction_lodds,
+                   threshold = thr_intercepts["threshold"],
+                   xlab = "LOO CV log-odds predictions",
+                   ylab = "K-fold CV log-odds predictions")

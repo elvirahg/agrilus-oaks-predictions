@@ -43,8 +43,10 @@ indicating the scale of the response variable. Defaults to 'linear'.}
 }
 \value{
 A data frame with one row per positive observation. Columns:
-  * `row_no`: the index of the row modified,
-  * `pred`: the predicted estimate for the modified row.
+#' \itemize{
+  \item \code{row_no}: the index of the row modified
+  \item \code{pred}: the predicted estimate for the modified row
+}
 }
 \description{
 This function performs the follow: for every row in the model data where

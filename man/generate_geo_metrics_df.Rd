@@ -107,6 +107,7 @@ repeated queries, and the resulting metrics can be further transformed
   other hosts.
 }
 \examples{
+\dontrun{
 # Generate example dataset
 host_spp <- paste0("Quercus_", LETTERS[1:5])
 hosted_spp <- paste0("Agrilus_", LETTERS[1:3])
@@ -136,5 +137,6 @@ results <- generate_geo_metrics_df(expanded_interaction_df = interaction_df,
                                     host_taxon_col = "plant_sp",
                                     hosted_taxon_col = "agrilus_sp")
 head(results)
+}
 
 }

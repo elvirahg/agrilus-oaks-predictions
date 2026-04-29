@@ -39,9 +39,9 @@ console for quick inspection.
 \examples{
 \dontrun{
 plot_model_comparison(df = predictions,
-                    full = "full_model_pred",
-                    other = "other_model_pred",
-                    xlab_text = "Other model prediction")
+                      full = "full_model_pred",
+                      other = "other_model_pred",
+                      xlab_text = "Other model prediction")
 }
 
 }

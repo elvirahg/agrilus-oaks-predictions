@@ -49,6 +49,7 @@ The available sorting criteria are:
 }
 }
 \examples{
+\dontrun{
 formulas <- list(
   as.formula("resp ~ b"),
   as.formula("resp ~ a + (1 | e)"),
@@ -59,5 +60,6 @@ formulas <- list(
 )
 
 sort_formulas(formulas)
+}
 
 }

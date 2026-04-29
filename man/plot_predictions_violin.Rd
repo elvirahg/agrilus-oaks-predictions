@@ -8,7 +8,7 @@ plot_predictions_violin(predictions, threshold = NULL)
 }
 \arguments{
 \item{predictions}{A data frame containing at least two columns:
-\describe{
+\itemize{
   \item{prediction_lodds}{Numeric vector of predicted log-odds.}
   \item{host_status}{Factor or character vector indicating class labels
     (e.g., 0/1 or negative/positive).}

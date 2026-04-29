@@ -36,7 +36,9 @@ to produce fully standardised or globally accurate names. Some valid
 variations or subspecies may be altered or truncated.
 }
 \examples{
+\dontrun{
 names <- c("Quercus martensiana f. perplexans", "Quercus × robur L.")
-clean_sci_name(names)
+clean_taxon_name(names)
+}
 
 }

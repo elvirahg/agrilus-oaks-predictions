@@ -17,7 +17,7 @@ Values are coerced to a factor internally (levels = `0` and `1`).}
 }
 \value{
 A \code{data.frame} with columns:
-\describe{
+\itemize{
   \item{threshold}{Threshold used to classify predictions.}
   \item{sensitivity}{True positive rate (TP / (TP + FN)).}
   \item{specificity}{True negative rate (TN / (TN + FP)).}

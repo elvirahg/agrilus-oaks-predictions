@@ -19,7 +19,9 @@
 #' \dontrun{
 #' plot_geo_dists(
 #'   interaction_data,
-#'   dist_cols = c("geo_min_dist_mean", "geo_min_dist_mean_norm", "geo_min_dist_mean_log")
+#'   dist_cols = c("geo_min_dist_mean",
+#'                 "geo_min_dist_mean_norm",
+#'                 "geo_min_dist_mean_log")
 #' )
 #' }
 #'
@@ -50,7 +52,8 @@ plot_geo_dists <- function(dist_data, dist_cols) {
     title_text <- paste0("Distance (", colname, ")")
     if (colname %in% c("geo_min_dist_mean", "geo_min_dist_median")) {
       y_text <- paste0("Distance (km)")
-    } else if (colname %in% c("geo_min_dist_mean_norm", "geo_min_dist_median_norm")) {
+    } else if (colname %in% c("geo_min_dist_mean_norm",
+                              "geo_min_dist_median_norm")) {
       y_text <- paste0("Normalised distance")
     } else {
       y_text <- paste0("Log distance")
@@ -62,7 +65,8 @@ plot_geo_dists <- function(dist_data, dist_cols) {
       dist_sorted <- sort(dist_data[[colname]], decreasing = FALSE)
       dist_plots[[i]] <- make_dist_plot(dist_sorted, cols[i],
                                         title_text, y_text)
-    } else if (colname %in% c("geo_min_dist_mean_norm", "geo_min_dist_median_norm")) {
+    } else if (colname %in% c("geo_min_dist_mean_norm",
+                              "geo_min_dist_median_norm")) {
       dist_sorted <- sort(dist_data[[colname]], decreasing = TRUE)
       dist_plots[[i]] <- make_dist_plot(-dist_sorted, cols[i],
                                         title_text, y_text)
@@ -151,17 +155,17 @@ make_dist_plot <- function(values,
 #' @examples
 #' \dontrun{
 #' plot_model_comparison(df = predictions,
-#'                     full = "full_model_pred",
-#'                     other = "other_model_pred",
-#'                     xlab_text = "Other model prediction")
+#'                       full = "full_model_pred",
+#'                       other = "other_model_pred",
+#'                       xlab_text = "Other model prediction")
 #' }
 #'
 #' @import ggplot2
 #' @export
 plot_model_comparison <- function(df,
-                                 full,
-                                 other,
-                                 xlab_text) {
+                                  full,
+                                  other,
+                                  xlab_text) {
   # Checks
   if (!is.character(full) || length(full) != 1) {
     stop("'full' must be a character of length 1")
@@ -269,7 +273,7 @@ plot_sens_spec_threshold <- function(thr_df, thr_ints) {
 #' chosen threshold, if probided.
 #'
 #' @param predictions A data frame containing at least two columns:
-#'   \describe{
+#'   \itemize{
 #'     \item{prediction_lodds}{Numeric vector of predicted log-odds.}
 #'     \item{host_status}{Factor or character vector indicating class labels
 #'       (e.g., 0/1 or negative/positive).}
@@ -705,7 +709,8 @@ plot_prediction_change <- function(pred_original,
       warning("'obs_vals' object will not be used, as col_by != 'obs_vals'")
     }
     if (!(is.numeric(obs_vals)) || length(obs_vals) != length(pred_original)) {
-      stop("'obs_vals' must be a numeric vector of equal length to 'pred_original'")
+      stop("'obs_vals' must be a numeric vector of equal length to",
+           "'pred_original'")
     }
   }
   if (!is.character(x_lab) || length(x_lab) != 1) {
@@ -802,12 +807,14 @@ plot_prediction_change <- function(pred_original,
 #' @return A `ggtree` object that can be printed or further customised.
 #'
 #' @examples
+#' \dontrun{
 #' pred_hosts <- data.frame(
 #'   quercus_sp = oak_phylo$tip.label,
 #'   is_known = oak_phylo$tip.label %in% known_hosts,
 #'   is_pred = oak_phylo$tip.label %in% pred_hosts
 #' )
 #' plot_oak_phylo_hosts(oak_phylo, pred_hosts, label = "quercus_sp")
+#' }
 #'
 #' @import ggplot2 ggtree treeio
 #' @export
@@ -923,7 +930,10 @@ plot_phylo_hosts <- function(phylo,
 #' @seealso \code{\link{prepare_counts_region}}
 #'
 #' @examples
-#' plot_distribution_region(oak_distributions, counts_type = "native_sp")
+#' \dontrun{
+#' plot_distribution_region(oak_distributions,
+#'                          counts_type = "native_sp")
+#' }
 #'
 #' @import rnaturalearth ggplot2 RColorBrewer
 #' @export
@@ -1101,7 +1111,10 @@ prepare_counts_region <- function(df,
 #' @seealso \code{\link{prepare_counts_country}}
 #'
 #' @examples
-#' plot_distribution_country(oak_distributions, counts_type = "species_native")
+#' \dontrun{
+#' plot_distribution_country(oak_distributions,
+#'                           counts_type = "species_native")
+#' }
 #'
 #' @import ggplot2 RColorBrewer
 #' @export
@@ -1158,8 +1171,8 @@ plot_distribution_country <- function(df,
 #' @param world_sf Optional `sf` object with world country polygons. If `NULL`,
 #' the world map is obtained from `rnaturalearth::ne_countries()`.
 #' @param country_lookup Optional data frame used to map distribution regions
-#' to country names. Must contain columns `LEVEL3_COD` and `COUNTRY`. No default,
-#' but rWCVP::wgsrpd_mapping can be used to generate lookup data frame.
+#' to country names. Must contain columns `LEVEL3_COD` and `COUNTRY`. No
+#' default, but rWCVP::wgsrpd_mapping can be used to generate lookup data frame.
 #' @param world_col_map Character string giving the column name in `world_sf`
 #' used for joining country names (e.g. `"subunit"`). Defaults to `"subunit"`.
 #' @param breaks Numeric vector of break points for binning counts. Defaults to
@@ -1311,12 +1324,14 @@ prepare_counts_country <- function(df,
 #' @seealso \code{\link{get_host_spp}}
 #'
 #' @examples
+#' \dontrun{
 #' plot_phylogeny(phylo = oak_phylo,
 #'                interaction_df = interaction_data,
 #'                species = "Agrilus coxalis",
 #'                species_col = "agrilus_sp",
 #'                host_status_col = "interaction",
 #'                host_col = "quercus_sp")
+#' }
 #'
 #' @importFrom ggplot2 aes scale_color_manual theme
 #' @importFrom ggtree ggtree geom_tiplab fortify
@@ -1428,12 +1443,14 @@ plot_phylogeny <- function(phylo,
 #' @seealso \code{\link{get_host_spp}}
 #'
 #' @examples
+#' \dontrun{
 #' barplot_host_distance(interaction_df = interaction_data,
 #'                       species = "Agrilus coxalis",
 #'                       species_col = "agrilus_sp",
 #'                       host_col = "quercus_sp",
 #'                       host_status_col = "interaction",
 #'                       dist_col = "phylo_dist_min")
+#' }
 #'
 #' @export
 barplot_host_distance <- function(interaction_df,
@@ -1537,12 +1554,14 @@ barplot_host_distance <- function(interaction_df,
 #' @seealso \code{\link{get_host_spp}}, \code{brms::ranef}
 #'
 #' @examples
+#' \dontrun{
 #' plot_ranef(interaction_df = interaction_data,
 #'            model = oak_model,
 #'            species = "Agrilus coxalis",
 #'            species_col = "agrilus_sp",
 #'            host_col = "quercus_sp",
 #'            host_status_col = "interaction")
+#' }
 #'
 #' @importFrom brms ranef
 #' @export
@@ -1664,4 +1683,191 @@ get_host_spp <- function(df,
   hosts <- hosts_df[[host_col]]
 
   hosts
+}
+
+
+#' Plot comparison of cross-validated predictions
+#'
+#' Creates a scatter plot comparing predictions from two cross-validation
+#' methods, with points categorised according to reported status and a
+#' classification threshold applied to model predictions.
+#'
+#' Each observation is classified into one of four groups:
+#' \itemize{
+#'   \item \code{true_neg}: not reported and predicted below threshold
+#'   \item \code{false_pos}: not reported but predicted above threshold
+#'   \item \code{false_neg}: reported but predicted below threshold
+#'   \item \code{true_pos}: reported and predicted above threshold
+#' }
+#'
+#' These classes are visualised using different point shapes and fills. A
+#' reference 1:1 line and horizontal/vertical threshold lines are added to aid
+#' interpretation.
+#'
+#' In addition, Pearson correlation coefficients are computed and displayed on
+#' the plot:
+#' \itemize{
+#'   \item Overall correlation between \code{cv_method_1} and \code{cv_method_2}
+#'   \item Correlation restricted to observations with reported positive status
+#' }
+#'
+#' @param cv_method_1 Numeric vector. Predictions from the first
+#' cross-validation method.
+#' @param cv_method_2 Numeric vector. Predictions from the second
+#' cross-validation method. Must be the same length as \code{cv_method_1}.
+#' @param reported_status Numeric, factor, or logical vector indicating observed
+#' status for each observation. Values equal to 1 are treated as "reported
+#' positive", values equal to 0 as "reported negative".
+#' @param model_predictions Numeric vector of model predictions used for
+#' threshold-based classification. Must be the same length as
+#' \code{cv_method_1}.
+#' @param threshold Numeric. Threshold on the log-odds scale used to classify
+#' predictions as positive or negative.
+#' @param xlab Character string. Label for the x-axis.
+#' @param ylab Character string. Label for the y-axis.
+#'
+#' @return A \code{ggplot2} plot object.
+#'
+#' @details
+#' Classification is performed using \code{model_predictions} and
+#' \code{threshold}.
+#'
+#' @examples
+#' \dontrun{
+#' plot_cv_comparison(
+#'   cv_method_1 = loo_lodds,
+#'   cv_method_2 = kfold_lodds,
+#'   reported_status = host_status,
+#'   model_predictions = prediction_lodds,
+#'   threshold = threshold
+#' )
+#' }
+#'
+#' @import ggplot2
+#' @export
+plot_cv_comparison <- function(cv_method_1,
+                               cv_method_2,
+                               reported_status,
+                               model_predictions,
+                               threshold,
+                               xlab = "CV method 1 predictions",
+                               ylab = "CV method 2 predictions") {
+
+  # Checks
+  if (!is.numeric(cv_method_1)) {
+    stop("'cv_method_1' must be a numeric vector")
+  }
+  if (!is.numeric(cv_method_2)) {
+    stop("'cv_method_2' must be a numeric vector")
+  }
+  if (length(cv_method_2) != length(cv_method_1)) {
+    stop("'cv_method_1' and 'cv_method_2' must have the same length")
+  }
+  if (!(is.logical(reported_status)
+        || is.factor(reported_status)
+        || is.numeric(reported_status)
+        || all(reported_status %in% c(0, 1)))) {
+    stop("'reported_status' must be logical, factor, or binary (0/1) numeric")
+  }
+  if (length(reported_status) != length(cv_method_1)) {
+    stop("'reported_status' must match length of 'cv_method_1")
+  }
+  if (!is.numeric(model_predictions)) {
+    stop("'model_predictions' must be a numeric vector")
+  }
+  if (length(model_predictions) != length(cv_method_1)) {
+    stop("'model_predictions' must match length of 'cv_method_1")
+  }
+  if (!is.numeric(threshold) || length(threshold) != 1) {
+    stop("'model_predictions' must be a single numeric value")
+  }
+  if (!is.character(xlab) || length(xlab) != 1) {
+    stop("'xlab' must be single character string")
+  }
+  if (!is.character(ylab) || length(ylab) != 1) {
+    stop("'ylab' must be single character string")
+  }
+
+  # Build plotting data frame
+  df <- data.frame(
+    cv_method_1 = cv_method_1,
+    cv_method_2 = cv_method_2,
+    reported_status = reported_status,
+    model_predictions = model_predictions
+  )
+
+  # Classify interactions
+  df$class <- with(df,
+                   ifelse(reported_status != 1
+                          & model_predictions < threshold,
+                          "true_neg",
+                          ifelse(reported_status != 1
+                                 & model_predictions > threshold,
+                                 "false_pos",
+                                 ifelse(reported_status == 1
+                                        & model_predictions < threshold,
+                                        "false_neg",
+                                        "true_pos"))))
+
+  df$class <- factor(df$class,
+                     levels = c("true_neg", "false_pos",
+                                "false_neg", "true_pos"))
+
+  # Compute correlations
+  cor_all <- cor(cv_method_1, cv_method_2)
+  cor_pos <- cor(cv_method_1[which(reported_status == 1)],
+                 cv_method_2[which(reported_status == 1)])
+
+  # Plot
+  p <- ggplot2::ggplot(df,
+                       ggplot2::aes(x = cv_method_1,
+                                    y = cv_method_2,
+                                    shape = class,
+                                    fill = class,
+                                    alpha = class)) +
+
+    ggplot2::geom_point(colour = "black", size = 2) +
+
+    ggplot2::scale_shape_manual(values = c(
+      true_neg = 16,   # filled circle
+      false_pos = 17,  # filled triangle
+      false_neg = 21,  # filled circle (border)
+      true_pos = 24    # filled triangle (border)
+    )) +
+
+    ggplot2::scale_fill_manual(values = c(
+      true_neg = "black",
+      false_pos = "black",
+      false_neg = "steelblue",
+      true_pos = "steelblue"
+    )) +
+
+    ggplot2::scale_alpha_manual(values = c(
+      true_neg = 0.05,
+      false_pos = 0.05,
+      false_neg = 1,
+      true_pos = 1
+    )) +
+
+    ggplot2::geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+    ggplot2::geom_hline(yintercept = threshold, linetype = "dashed") +
+    ggplot2::geom_vline(xintercept = threshold, linetype = "dashed") +
+
+    ggplot2::annotate(
+      "text",
+      x = min(df$cv_method_1),
+      y = max(df$cv_method_2),
+      hjust = 0,
+      vjust = 1,
+      label = paste0(
+        "Pearson's r (all) = ", round(cor_all, 3), "\n",
+        "Pearson's r (known positives) = ", round(cor_pos, 3)
+      )
+    ) +
+
+    ggplot2::labs(x = xlab, y = ylab) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(legend.title = ggplot2::element_blank())
+
+  p
 }

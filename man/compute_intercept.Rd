@@ -14,7 +14,7 @@ associated with the sensitivity and specificity estimates.}
 }
 \value{
 A named numeric vector with two elements:
-  \describe{
+  \itemize{
     \item{x}{The estimated threshold at which sensitivity and specificity
              intersect.}
     \item{y}{The corresponding value of sensitivity (= specificity) at that

@@ -25,12 +25,14 @@ variations by substituting a specified `pattern` with one or more
 removed.
 }
 \examples{
-formulas <- c("y ~ x + (1 | group)")
+\dontrun{
+formulas <- list(as.formula("y ~ x + (1 | group)"))
 pattern <- "(1 | group)"
 replacements <- c("(x | group)", "(x + z | group)")
 add_formula_variations(formulas, pattern, replacements)
 # [1] "y ~ x + (1 | group)"
 # [2] "y ~ x + (x | group)"
 # [3] "y ~ x + (x + z | group)"
+}
 
 }

@@ -15,6 +15,7 @@
 #' @return A list of \code{formula} objects representing all model combinations.
 #'
 #' @examples
+#' \dontrun{
 #' vars <- c("geo.dist",
 #'           "phylo.dist",
 #'           "(1 | gr(plant_sp, cov = phylo_cov))")
@@ -24,6 +25,7 @@
 #'   response = "interaction",
 #'   include_null = TRUE
 #' )
+#' }
 #'
 #' @export
 generate_formulas <- function(variables,
@@ -80,13 +82,15 @@ generate_formulas <- function(variables,
 #' any newly generated variants, with duplicates removed.
 #'
 #' @examples
-#' formulas <- c("y ~ x + (1 | group)")
+#' \dontrun{
+#' formulas <- list(as.formula("y ~ x + (1 | group)"))
 #' pattern <- "(1 | group)"
 #' replacements <- c("(x | group)", "(x + z | group)")
 #' add_formula_variations(formulas, pattern, replacements)
 #' # [1] "y ~ x + (1 | group)"
 #' # [2] "y ~ x + (x | group)"
 #' # [3] "y ~ x + (x + z | group)"
+#' }
 #'
 #' @export
 add_formula_variations <- function(formulas,
@@ -152,6 +156,7 @@ add_formula_variations <- function(formulas,
 #'   according to the specified criteria.
 #'
 #' @examples
+#' \dontrun{
 #' formulas <- list(
 #'   as.formula("resp ~ b"),
 #'   as.formula("resp ~ a + (1 | e)"),
@@ -162,6 +167,7 @@ add_formula_variations <- function(formulas,
 #' )
 #'
 #' sort_formulas(formulas)
+#' }
 #'
 #' @export
 sort_formulas <- function(formulas,
@@ -422,9 +428,6 @@ loo_compare_parallel_groups <- function(models_list,
 #' the subset of \code{x} belonging to that group. Group names are assigned as
 #' \code{"grp1"}, \code{"grp2"}, and so on.
 #'
-#' @examples
-#' models <- paste0("oak_mod", sprintf("%03d", 1:10))
-#' split_models(models, 3)
 #' @keywords internal
 split_vector_into_lists <- function(x,
                                     n_groups) {
@@ -490,8 +493,10 @@ split_vector_into_lists <- function(x,
 #' indicating the scale of the response variable. Defaults to 'linear'.
 #'
 #' @return A data frame with one row per positive observation. Columns:
-#'   * `row_no`: the index of the row modified,
-#'   * `pred`: the predicted estimate for the modified row.
+#' #' \itemize{
+#'   \item \code{row_no}: the index of the row modified
+#'   \item \code{pred}: the predicted estimate for the modified row
+#' }
 #'
 #' @details
 #' This approach is similar in spirit to leave-one-out cross-validation,
@@ -600,4 +605,240 @@ predict_as_zero_loo <- function(model,
   parallel::stopCluster(cl)
 
   results
+}
+
+
+#' K-fold cross-validated predictions per observation from a brms model
+#'
+#' Computes out-of-fold predictions for each observation using K-fold
+#' cross-validation via \code{brms::kfold()}, and summarises posterior draws
+#' into a single value per observation.
+#'
+#' For each observation, predictions are obtained from the model fit that did
+#' not include that observation in training. Posterior expected predictions are
+#' averaged across draws to yield a mean predicted probability, which can
+#' optionally be transformed to log-odds.
+#'
+#' @param model A fitted \code{brmsfit} model object.
+#' @param k Integer. Number of folds for K-fold cross-validation. Must be a
+#' positive integer. Defaults to 5.
+#' @param method Character string passed to \code{brms::kfold_predict()}.
+#' Defaults to \code{"posterior_epred"}.
+#' @param type Character string indicating the output scale:
+#' \itemize{
+#'   \item \code{"prob"}: return predicted probabilities
+#'   \item \code{"lodds"}: return log-odds (logit-transformed probabilities)
+#' }
+#'
+#' @return A numeric vector of length equal to the number of observations in the
+#' original dataset, containing either predicted probabilities or log-odds.
+#'
+#' @examples
+#' \dontrun{
+#' fit <- brms::brm(y ~ x1 + x2, data = dat, family = bernoulli())
+#'
+#' # Predicted probabilities
+#' kfold_pred <- kfold_predict_observations(fit, type = "prob")
+#'
+#' # Log-odds
+#' kfold_lodds <- kfold_predict_observations(fit, type = "lodds")
+#' }
+#'
+#' @import brms
+#' @export
+kfold_predict_observations <- function(model,
+                                       k = 5,
+                                       method = "posterior_epred",
+                                       type = c("prob", "lodds")) {
+
+  # Checks
+  if (!inherits(model, "brmsfit") || is.null(model$data)) {
+    stop("'model' must be a 'brmsfit' object with a data slot (model$data)")
+  }
+  if (!is.numeric(k) || k < 1 || k != as.integer(k)) {
+    stop("'k' must be a positive integer")
+  }
+  if (!is.character(method) || length(method) != 1) {
+    stop("'method' must be a single character string")
+  }
+  if ((length(type) != 1) || !(type %in% c("prob", "lodds"))) {
+    stop("'type' must be 'prob', or 'lodds'")
+  }
+
+  # Run k-fold CV, storing the fitted models (save_fits = TRUE) to be able to
+  # generate predictions
+  kfold <- brms::kfold(model, K = k, save_fits = TRUE)
+
+  # For each observation, use the model where that observation was held out, and
+  # return posterior draws of predictions (yrep)
+  preds <- brms::kfold_predict(kfold, method = method)
+
+  # Compute one predicted probability per observation
+  prob <- colMeans(preds$yrep)
+
+  # Return prob or log-odds result according to type
+  if (type == "prob") {
+    message("Returning predicted probabilities")
+    prob
+  } else if (type == "lodds") {
+    message("Returning predicted log-odds")
+    lodds <- qlogis(prob)
+    lodds
+  }
+
+}
+
+
+#' Summarise threshold-based metrics for model and cross-validation predictions
+#'
+#' Computes simple classification summaries for a set of prediction vectors
+#' evaluated against a common threshold. Metrics are calculated for model
+#' predictions, cross-validation method 1, and cross-validation method 2
+#' }
+#'
+#' For each method, the following are returned:
+#' \itemize{
+#'   \item \code{true_positive_rate}: percentage of reported positive cases
+#'   (where \code{reported_status == 1}) with predictions above the threshold
+#'   \item \code{count_over_threshold}: number of predictions above the
+#'   threshold
+#'   \item \code{percent_over_threshold}: percentage of all predictions above
+#'   the threshold
+#' }
+#'
+#' @param cv_method_1 Numeric vector. Predictions from the first
+#' cross-validation method.
+#' @param cv_method_2 Numeric vector. Predictions from the second
+#' cross-validation method. Must be the same length and of the same scale
+#' as \code{cv_method_1}.
+#' @param model Numeric vector of model predictions used for
+#' threshold-based classification. Must be the same length and of the same
+#' scale as \code{cv_method_1}.
+#' @param reported_status Numeric, factor, or logical vector indicating observed
+#' status for each observation. Values equal to 1 are treated as "reported
+#' positive", values equal to 0 as "reported negative". Must be the same length
+#' as \code{cv_method_1}.
+#' @param threshold Numeric. Threshold used to classify predictions as positive
+#' or negative. Must be on the same scale as \code{cv_method_1}.
+#' @param names Named character vector of length 3 giving row names for the
+#' output. Must have names \code{cv_method_1}, \code{cv_method_2}, and
+#' \code{model}. Values are used as row labels in the output.
+#'
+#' @return A \code{data.frame} with three rows (one per method) and columns:
+#' \code{true_positive_rate}, \code{percent_over_threshold}, and
+#' \code{count_over_threshold}.
+#'
+#' @seealso \code{\link{compute_summary_metrics}}
+#'
+#' @examples
+#' \dontrun{
+#' cv_summary_table(
+#'   cv_method_1 = loo_lodds,
+#'   cv_method_2 = kfold_lodds,
+#'   model_predictions = predictions$prediction_lodds,
+#'   reported_status = predictions$host_status,
+#'   threshold = thr_intercepts["threshold"]
+#' )
+#' }
+#'
+#' @export
+cv_summary_table <- function(cv_method_1,
+                             cv_method_2,
+                             model,
+                             reported_status,
+                             threshold,
+                             names = c(cv_method_1 = "cv_method_1",
+                                       cv_method_2 = "cv_method_2",
+                                       model = "model")) {
+
+  # Checks
+  if (!is.numeric(cv_method_1)) {
+    stop("'cv_method_1' must be a numeric vector")
+  }
+  if (!is.numeric(cv_method_2)) {
+    stop("'cv_method_2' must be a numeric vector")
+  }
+  if (length(cv_method_2) != length(cv_method_1)) {
+    stop("'cv_method_1' and 'cv_method_2' must have the same length")
+  }
+  if (!(is.logical(reported_status)
+        || is.factor(reported_status)
+        || is.numeric(reported_status)
+        || all(reported_status %in% c(0, 1)))) {
+    stop("'reported_status' must be logical, factor, or binary (0/1) numeric")
+  }
+  if (length(reported_status) != length(cv_method_1)) {
+    stop("'reported_status' must match length of 'cv_method_1")
+  }
+  if (!is.numeric(model)) {
+    stop("'model_predictions' must be a numeric vector")
+  }
+  if (length(model) != length(cv_method_1)) {
+    stop("'model_predictions' must match length of 'cv_method_1")
+  }
+  if (!is.numeric(threshold) || length(threshold) != 1) {
+    stop("'model_predictions' must be a single numeric value")
+  }
+  if (!is.character(names)
+      || length(names) != 3
+      || is.null(names(names))
+      || !setequal(names(names), c("cv_method_1", "cv_method_2", "model"))) {
+    stop("'names' must be a named character vector of length 3 with names:",
+         "'cv_method_1', 'cv_method_2', 'model'")
+  }
+
+  # Build table
+  metrics_summary <- rbind(
+    compute_summary_metrics(predictions = model,
+                            reported_status = reported_status,
+                            threshold = threshold),
+    compute_summary_metrics(predictions = cv_method_1,
+                            reported_status = reported_status,
+                            threshold = threshold),
+    compute_summary_metrics(predictions = cv_method_2,
+                            reported_status = reported_status,
+                            threshold = threshold)
+  )
+  rownames(metrics_summary) <- names
+
+  metrics_summary
+}
+
+
+#' Compute threshold-based performance metrics for a numeric prediction vector
+#'
+#' Internal helper function to summarise classification performance given a
+#' threshold on the log-odds scale.
+#'
+#' Computes:
+#' \itemize{
+#'   \item \code{true_positive_rate}: percentage of reported positive cases
+#'   (where \code{reported_status == 1}) with predictions above the threshold
+#'   \item \code{count_over_threshold}: number of predictions above the
+#'   threshold
+#'   \item \code{percent_over_threshold}: percentage of all predictions above
+#'   the threshold
+#' }
+#'
+#' @param predictions Numeric vector of predictions (on the same scale as
+#' \code{threshold}).
+#' @param threshold Numeric. Threshold on the log-odds scale used to classify
+#' predictions as positive or negative.
+#' @param reported_status Numeric, factor, or logical vector indicating observed
+#' status for each observation. Values equal to 1 are treated as "reported
+#' positive"; all other values are treated as "reported negative".
+#' @return A one-row \code{data.frame} containing the computed metrics.
+#'
+#' @keywords internal
+compute_summary_metrics <- function(predictions,
+                                    reported_status,
+                                    threshold) {
+  metrics <- data.frame(
+    true_positive_rate = mean(predictions[reported_status == 1]
+                              > threshold) * 100,
+    count_over_threshold = sum(predictions > threshold),
+    percent_over_threshold = mean(predictions > threshold) * 100
+  )
+
+  metrics
 }

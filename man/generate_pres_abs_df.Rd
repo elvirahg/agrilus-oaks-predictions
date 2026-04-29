@@ -15,7 +15,7 @@ present in `observed_hosts` and 0 otherwise.}
 }
 \value{
 A data.frame with two columns:
-  \describe{
+  \itemize{
     \item{species}{Species names from `species_list`.}
    \item{host.status}{Integer (0/1) indicating whether the species is a known host.}
   }
@@ -27,6 +27,7 @@ species, and returns a data frame marking species as hosts (1) or non-hosts
 (0). Can be used to prepare data for input to `caper::comparative.data()`.
 }
 \examples{
+\dontrun{
 oak_hosts <- c("Quercus_robur", "Quercus_petraea")
 all_oaks <- c("Quercus_rubra", "Quercus_robur",
               "Quercus_alba", "Quercus_petraea")
@@ -36,5 +37,6 @@ generate_pres_abs_df(oak_hosts, all_oaks)
 # 3 Quercus_robur 1
 # 4 Quercus_petraea 1
 # 5 Quercus_alba 0
+}
 
 }

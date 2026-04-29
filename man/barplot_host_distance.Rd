@@ -59,12 +59,14 @@ This function creates a barplot showing phylogenetic distances
 associated with host species for a given focal species.
 }
 \examples{
+\dontrun{
 barplot_host_distance(interaction_df = interaction_data,
                       species = "Agrilus coxalis",
                       species_col = "agrilus_sp",
                       host_col = "quercus_sp",
                       host_status_col = "interaction",
                       dist_col = "phylo_dist_min")
+}
 
 }
 \seealso{

@@ -19,7 +19,7 @@ restrict the search.}
 }
 \value{
 A data.frame with two columns:
-  \describe{
+  \itemize{
     \item{species}{Original species name.}
     \item{key}{Corresponding GBIF taxon key (NA if not found).}
   }

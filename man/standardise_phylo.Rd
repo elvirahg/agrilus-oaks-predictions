@@ -49,8 +49,8 @@ tree <- standardise_phylo(tree,
                           pattern = "^([A-Z])[a-z]+_*([a-z]+).*",
                           replacement = "\\\\1. \\\\2",
                           remove_duplicates = TRUE,
-                          old_labels = c"Quercus maxima",
-                          new_labels = "Quercus rubra"))
+                          old_labels = "Quercus maxima",
+                          new_labels = "Quercus rubra")
 plot(tree)
 }
 

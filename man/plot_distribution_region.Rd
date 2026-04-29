@@ -45,7 +45,10 @@ This function prepares counts of plant species per region and plots them
 on a world map with discrete colour bins.
 }
 \examples{
-plot_distribution_region(oak_distributions, counts_type = "native_sp")
+\dontrun{
+plot_distribution_region(oak_distributions,
+                         counts_type = "native_sp")
+}
 
 }
 \seealso{

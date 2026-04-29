@@ -66,11 +66,13 @@ circular (or rectangular) tree with:
 - Known hosts marked with a tip point and custom colour.
 }
 \examples{
+\dontrun{
 pred_hosts <- data.frame(
   quercus_sp = oak_phylo$tip.label,
   is_known = oak_phylo$tip.label \%in\% known_hosts,
   is_pred = oak_phylo$tip.label \%in\% pred_hosts
 )
 plot_oak_phylo_hosts(oak_phylo, pred_hosts, label = "quercus_sp")
+}
 
 }

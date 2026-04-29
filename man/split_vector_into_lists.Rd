@@ -22,8 +22,4 @@ equal-sized groups. If the total number of models is not divisible by
 the number of groups,
 group sizes will differ by at most one.
 }
-\examples{
-models <- paste0("oak_mod", sprintf("\%03d", 1:10))
-split_models(models, 3)
-}
 \keyword{internal}

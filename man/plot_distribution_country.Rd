@@ -50,7 +50,10 @@ This function computes counts of plant species per country and plots
 them on a world map with discrete colour bins.
 }
 \examples{
-plot_distribution_country(oak_distributions, counts_type = "species_native")
+\dontrun{
+plot_distribution_country(oak_distributions,
+                          counts_type = "species_native")
+}
 
 }
 \seealso{

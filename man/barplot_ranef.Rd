@@ -61,12 +61,14 @@ This function extracts and plots random effect estimates from a
 \code{brmsfit} model for host species associated with a given focal species.
 }
 \examples{
+\dontrun{
 plot_ranef(interaction_df = interaction_data,
            model = oak_model,
            species = "Agrilus coxalis",
            species_col = "agrilus_sp",
            host_col = "quercus_sp",
            host_status_col = "interaction")
+}
 
 }
 \seealso{

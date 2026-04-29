@@ -70,12 +70,14 @@ This function plots a phylogenetic tree and highlights host species
 associated with a given focal species using tip label colours.
 }
 \examples{
+\dontrun{
 plot_phylogeny(phylo = oak_phylo,
                interaction_df = interaction_data,
                species = "Agrilus coxalis",
                species_col = "agrilus_sp",
                host_status_col = "interaction",
                host_col = "quercus_sp")
+}
 
 }
 \seealso{

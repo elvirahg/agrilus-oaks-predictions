@@ -48,8 +48,11 @@ dataset and you want to provide a placeholder occurrence at a country/region
 centroid.
 }
 \examples{
+\dontrun{
 # Add Quercus sagrana in Cuba
 df <- add_species_centroid(gbif_df,
                            "Quercus sagrana",
                            "CUB")
+}
+
 }

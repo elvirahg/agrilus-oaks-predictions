@@ -25,8 +25,8 @@
 #'                           pattern = "^([A-Z])[a-z]+_*([a-z]+).*",
 #'                           replacement = "\\1. \\2",
 #'                           remove_duplicates = TRUE,
-#'                           old_labels = c"Quercus maxima",
-#'                           new_labels = "Quercus rubra"))
+#'                           old_labels = "Quercus maxima",
+#'                           new_labels = "Quercus rubra")
 #' plot(tree)
 #' }
 #'
@@ -160,12 +160,13 @@ remove_duplicate_tips <- function(tree) {
 #'   present in `observed_hosts` and 0 otherwise.
 #'
 #' @return A data.frame with two columns:
-#'   \describe{
+#'   \itemize{
 #'     \item{species}{Species names from `species_list`.}
  #'    \item{host.status}{Integer (0/1) indicating whether the species is a known host.}
 #'   }
 #'
 #' @examples
+#' \dontrun{
 #' oak_hosts <- c("Quercus_robur", "Quercus_petraea")
 #' all_oaks <- c("Quercus_rubra", "Quercus_robur",
 #'               "Quercus_alba", "Quercus_petraea")
@@ -175,6 +176,7 @@ remove_duplicate_tips <- function(tree) {
 #' # 3 Quercus_robur 1
 #' # 4 Quercus_petraea 1
 #' # 5 Quercus_alba 0
+#' }
 #'
 #' @export
 generate_pres_abs_df <- function(observed_hosts, species_list) {

@@ -29,11 +29,11 @@
 #' Defaults to `TRUE`.
 #'
 #' @return A data frame with columns:
-#' \describe{
-#'   \item{host}{Host taxon name}
-#'   \item{hosted}{Hosted taxon name}
+#' \itemize{
+#'   \item{host}{Host taxon name.}
+#'   \item{hosted}{Hosted taxon name.}
 #'   \item{interaction}{Integer (0/1) indicating whether the pair occurs in
-#'   `known_interactions`}
+#'   `known_interactions`.}
 #' }
 #'
 #' @examples
@@ -192,6 +192,7 @@ create_interaction_df <- function(known_interactions,
 #'   other hosts.
 #'
 #' @examples
+#' \dontrun{
 #' # Generate example dataset
 #' host_spp <- paste0("Quercus_", LETTERS[1:5])
 #' hosted_spp <- paste0("Agrilus_", LETTERS[1:3])
@@ -221,6 +222,7 @@ create_interaction_df <- function(known_interactions,
 #'                                     host_taxon_col = "plant_sp",
 #'                                     hosted_taxon_col = "agrilus_sp")
 #' head(results)
+#' }
 #'
 #' @import dplyr
 #' @export
@@ -449,7 +451,7 @@ precompute_geo_distances <- function(taxa,
     stop("'coords_df' must be a data frame")
   }
   if (!is.character(taxa) || !is.character(hosts)) {
-    stop("'taxa' and 'hosts' must be a character object")
+    stop("'taxa' and 'hosts' must be character objects")
   }
   if (!(host_taxon_col %in% colnames(coords_df))) {
     stop("'host_taxon_col' must indicate host taxon column name in 'coords_df'")

@@ -15,7 +15,7 @@
 #' @param step Numeric, the increment between threshold values. Defaults to 0.5.
 #'
 #' @return A \code{data.frame} with columns:
-#' \describe{
+#' \itemize{
 #'   \item{threshold}{Threshold used to classify predictions.}
 #'   \item{sensitivity}{True positive rate (TP / (TP + FN)).}
 #'   \item{specificity}{True negative rate (TN / (TN + FP)).}
@@ -111,7 +111,7 @@ compute_threshold_metrics <- function(pred_values,
 #' associated with the sensitivity and specificity estimates.
 #'
 #' @return A named numeric vector with two elements:
-#'   \describe{
+#'   \itemize{
 #'     \item{x}{The estimated threshold at which sensitivity and specificity
 #'              intersect.}
 #'     \item{y}{The corresponding value of sensitivity (= specificity) at that
@@ -180,7 +180,9 @@ compute_intercept <- function(thr_df) {
 #' The function assumes that both input vectors contain only binary values.
 #'
 #' @examples
+#' \dontrun{
 #' tpr(c(1, 0, 1, 1), c(1, 1, 1, 0))
+#' }
 #'
 #' @export
 tpr <- function(predictions,

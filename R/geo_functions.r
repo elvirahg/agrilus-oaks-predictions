@@ -15,7 +15,7 @@
 #' @param ... Additional arguments passed directly to `rgbif::name_lookup()`.
 #'
 #' @return A data.frame with two columns:
-#'   \describe{
+#'   \itemize{
 #'     \item{species}{Original species name.}
 #'     \item{key}{Corresponding GBIF taxon key (NA if not found).}
 #'   }
@@ -99,8 +99,10 @@ get_gbif_keys <- function(species,
 #' @return A character vector of cleaned scientific names.
 #'
 #' @examples
+#' \dontrun{
 #' names <- c("Quercus martensiana f. perplexans", "Quercus × robur L.")
-#' clean_sci_name(names)
+#' clean_taxon_name(names)
+#' }
 #'
 #' @export
 clean_taxon_name <- function(x) {
@@ -304,10 +306,13 @@ filter_gbif_data <- function(data,
 #' centroid.
 #'
 #' @examples
+#' \dontrun{
 #' # Add Quercus sagrana in Cuba
 #' df <- add_species_centroid(gbif_df,
 #'                            "Quercus sagrana",
 #'                            "CUB")
+#' }
+#'
 #' @import CoordinateCleaner
 #' @export
 add_species_centroid <- function(df,
